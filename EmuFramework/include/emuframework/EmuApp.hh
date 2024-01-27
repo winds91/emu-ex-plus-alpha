@@ -134,6 +134,11 @@ WISE_ENUM_CLASS((CPUAffinityMode, uint8_t),
 	Auto, Any, Manual
 );
 
+struct SystemKeyInputFlags
+{
+	bool allowTurboModifier{true};
+};
+
 constexpr float menuVideoBrightnessScale = .25f;
 
 class EmuApp : public IG::Application
@@ -220,7 +225,7 @@ public:
 	static std::unique_ptr<View> makeCustomView(ViewAttachParams attach, ViewID id);
 	bool handleKeyInput(KeyInfo, const Input::Event &srcEvent);
 	bool handleAppActionKeyInput(InputAction, const Input::Event &srcEvent);
-	void handleSystemKeyInput(KeyInfo, Input::Action, uint32_t metaState = 0);
+	void handleSystemKeyInput(KeyInfo, Input::Action, uint32_t metaState = 0, SystemKeyInputFlags flags = {});
 	void runTurboInputEvents();
 	void resetInput();
 	void setRunSpeed(double speed);
@@ -248,7 +253,8 @@ public:
 	static std::unique_ptr<View> makeView(ViewAttachParams, ViewID);
 	void applyOSNavStyle(IG::ApplicationContext, bool inGame);
 	void setCPUNeedsLowLatency(IG::ApplicationContext, bool needed);
-	void runFrames(EmuSystemTaskContext, EmuVideo *, EmuAudio *, int frames, bool skipForward);
+	void advanceFrames(FrameParams, EmuSystemTask *);
+	void runFrames(EmuSystemTaskContext, EmuVideo *, EmuAudio *, int frames);
 	void skipFrames(EmuSystemTaskContext, int frames, EmuAudio *);
 	bool skipForwardFrames(EmuSystemTaskContext, int frames);
 	IG::Audio::Manager &audioManager() { return audioManager_; }
@@ -266,7 +272,7 @@ public:
 	IG::Viewport makeViewport(const Window &win) const;
 	void setEmuViewOnExtraWindow(bool on, IG::Screen &);
 	void record(FrameTimeStatEvent, SteadyClockTimePoint t = {});
-	bool supportsPresentModes() const { return windowFrameTimeSource != WindowFrameTimeSource::RENDERER; }
+	bool supportsPresentModes() const { return windowFrameTimeSource != FrameTimeSource::renderer; }
 	void setIntendedFrameRate(Window &, FrameTimeConfig);
 	static std::u16string_view mainViewName();
 	void runBenchmarkOneShot(EmuVideo &);
@@ -289,13 +295,8 @@ public:
 	bool setVideoAspectRatio(float val);
 	float videoAspectRatio() const;
 	float defaultVideoAspectRatio() const;
-	auto &videoFilterOption() { return optionImgFilter; }
-	auto &videoEffectOption() { return optionImgEffect; }
 	IG::PixelFormat videoEffectPixelFormat() const;
 	auto &videoEffectPixelFormatOption() { return optionImageEffectPixelFormat; }
-	auto &overlayEffectOption() { return optionOverlayEffect; }
-	bool setOverlayEffectLevel(EmuVideoLayer &, uint8_t val);
-	uint8_t overlayEffectLevel() { return optionOverlayEffectLevel; }
 	void setFrameInterval(int);
 	int frameInterval() const;
 	bool setVideoZoom(uint8_t val);
@@ -335,7 +336,7 @@ public:
 	void setHideStatusBarMode(Tristate mode);
 	Tristate lowProfileOSNavMode() const { return (Tristate)(uint8_t)optionLowProfileOSNav; }
 	Tristate hideOSNavMode() const { return (Tristate)(uint8_t)optionHideOSNav; }
-	Tristate hideStatusBarMode() const { return (Tristate)(uint8_t)optionHideStatusBar; }
+	Tristate hideStatusBarMode() const { return optionHideStatusBar; }
 	void setEmuOrientation(Orientations);
 	void setMenuOrientation(Orientations);
 	Orientations emuOrientation() const { return optionEmuOrientation; }
@@ -530,22 +531,18 @@ protected:
 	static constexpr int16_t defaultSlowModeSpeed{50};
 	int16_t fastModeSpeed{defaultFastModeSpeed};
 	int16_t slowModeSpeed{defaultSlowModeSpeed};
+	int8_t optionFrameInterval{1};
 	Byte2Option optionFontSize;
 	Byte1Option optionNotificationIcon;
 	Byte1Option optionTitleBar;
 	IG_UseMemberIf(Config::NAVIGATION_BAR, Byte1Option, optionLowProfileOSNav);
 	IG_UseMemberIf(Config::NAVIGATION_BAR, Byte1Option, optionHideOSNav);
-	IG_UseMemberIf(Config::STATUS_BAR, Byte1Option, optionHideStatusBar);
+	IG_UseMemberIf(Config::STATUS_BAR, Tristate, optionHideStatusBar){Tristate::IN_EMU};
 	Orientations optionEmuOrientation;
 	Orientations optionMenuOrientation;
-	Byte1Option optionShowBundledGames;
+	bool optionShowBundledGames{true};
 	IG_UseMemberIf(Config::Input::BLUETOOTH, Byte1Option, optionShowBluetoothScan);
-	Byte1Option optionImgFilter;
-	Byte1Option optionImgEffect;
 	Byte1Option optionImageEffectPixelFormat;
-	Byte1Option optionOverlayEffect;
-	Byte1Option optionOverlayEffectLevel;
-	Byte1Option optionFrameInterval;
 	Byte1Option optionImageZoom;
 	Byte1Option optionViewportZoom;
 	Byte1Option optionShowOnSecondScreen;
@@ -564,7 +561,7 @@ public:
 	IG_UseMemberIf(Config::Input::BLUETOOTH && Config::BASE_CAN_BACKGROUND_APP, bool, keepBluetoothActive){};
 	IG_UseMemberIf(Config::Input::DEVICE_HOTSWAP, bool, notifyOnInputDeviceChange){true};
 	IG_UseMemberIf(Config::multipleScreenFrameRates, FrameRate, overrideScreenFrameRate){};
-	WindowFrameTimeSource windowFrameTimeSource{WindowFrameTimeSource::AUTO};
+	FrameTimeSource windowFrameTimeSource{FrameTimeSource::unset};
 	IG_UseMemberIf(Config::cpuAffinity, CPUAffinityMode, cpuAffinityMode){CPUAffinityMode::Auto};
 	IG_UseMemberIf(Config::envIsAndroid && Config::DEBUG_BUILD, bool, useNoopThread){};
 	IG_UseMemberIf(enableFrameTimeStats, bool, showFrameTimeStats){};
