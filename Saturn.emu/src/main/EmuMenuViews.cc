@@ -319,6 +319,26 @@ class ConsoleOptionView : public TableView, public MainAppHelper<ConsoleOptionVi
 		}
 	};
 
+	TextMenuItem deinterlaceModeItems[2]
+	{
+		{"Bob",   attachParams(), {.id = DeinterlaceMode::Bob}},
+		{"Weave", attachParams(), {.id = DeinterlaceMode::Weave}},
+	};
+
+	MultiChoiceMenuItem deinterlaceMode
+	{
+		"Deinterlace Mode", attachParams(),
+		MenuId{system().deinterlaceMode},
+		deinterlaceModeItems,
+		{
+			.defaultItemOnSelect = [this](TextMenuItem &item)
+			{
+				system().sessionOptionSet();
+				system().deinterlaceMode = DeinterlaceMode(item.id.val);
+			}
+		}
+	};
+
 	TextMenuItem contentRotationItems[5]
 	{
 		{"Auto",        attachParams(), {.id = Rotation::ANY}},
@@ -339,6 +359,28 @@ class ConsoleOptionView : public TableView, public MainAppHelper<ConsoleOptionVi
 				system().sessionOptionSet();
 				system().sysContentRotation = Rotation(item.id.val);
 				app().updateContentRotation();
+			}
+		}
+	};
+
+	TextMenuItem widescreenModeItems[3]
+	{
+		{"Auto",  attachParams(), {.id = WidescreenMode::Auto}},
+		{"On",    attachParams(), {.id = WidescreenMode::On}},
+		{"Off",   attachParams(), {.id = WidescreenMode::Off}},
+	};
+
+	MultiChoiceMenuItem widescreenMode
+	{
+		"Anamorphic Widescreen Content", attachParams(),
+		MenuId{system().widescreenMode},
+		widescreenModeItems,
+		{
+			.defaultItemOnSelect = [this](TextMenuItem &item)
+			{
+				system().sessionOptionSet();
+				system().widescreenMode = WidescreenMode(item.id.val);
+				app().viewController().placeEmuViews();
 			}
 		}
 	};
@@ -457,7 +499,9 @@ public:
 		menuItems.emplace_back(&videoHeading);
 		menuItems.emplace_back(&showHOverscan);
 		menuItems.emplace_back(&visibleVideoLines);
+		menuItems.emplace_back(&deinterlaceMode);
 		menuItems.emplace_back(&contentRotation);
+		menuItems.emplace_back(&widescreenMode);
 		menuItems.emplace_back(&inputHeading);
 		menuItems.emplace_back(&multitaps[0]);
 		menuItems.emplace_back(&multitaps[1]);
@@ -561,7 +605,7 @@ class CustomVideoOptionView : public VideoOptionView, public MainAppHelper<Custo
 		{
 			.defaultItemOnSelect = [this](TextMenuItem &item)
 			{
-				system().defaultNtscLines = std::bit_cast<VideoLineRange>(item.id);
+				system().defaultNtscLines = std::bit_cast<VideoLineRange>(item.id.val);
 			}
 		}
 	};

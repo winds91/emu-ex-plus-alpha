@@ -397,6 +397,7 @@ void SaturnSystem::updateVideoSettings()
 
 void SaturnSystem::renderFramebuffer(EmuVideo &video)
 {
+	espec.taskCtx = {};
 	espec.video = &video;
 	int32 lineWidths[2]{video.size().x};
 	espec.LineWidths = lineWidths;
@@ -405,12 +406,15 @@ void SaturnSystem::renderFramebuffer(EmuVideo &video)
 
 double SaturnSystem::videoAspectRatioScale() const
 {
-	double horizontalScaler = 352. / 341.; // full pixel width / cropped width
-	double baseLines = 224.;
+	const double horizontalScaler = 352. / 341.; // full pixel width / cropped width
+	const double widescreenScaler = 4. / 3.; // scale 4:3 to 16:9
+	const bool isWidescreen = widescreenMode == WidescreenMode::On;
+	const double baseLines = 224.;
 	assumeExpr(videoLines.size() != 0);
-	double lineAspectScaler = baseLines / videoLines.size();
+	const double lineAspectScaler = baseLines / videoLines.size();
 	return (correctLineAspect ? lineAspectScaler : 1.)
-		* (showHOverscan ? horizontalScaler : 1.);
+		* (showHOverscan ? horizontalScaler : 1.)
+		* (isWidescreen ? widescreenScaler : 1.);
 }
 
 size_t SaturnSystem::stateSize() { return currStateSize; }
@@ -444,12 +448,18 @@ void MDFN_MidSync(EmulateSpecStruct *espec, const unsigned flags)
 
 void MDFND_commitVideoFrame(EmulateSpecStruct *espec)
 {
-	auto &sys = static_cast<EmuEx::SaturnSystem&>(*espec->sys);
+	auto &sys = static_cast<const EmuEx::SaturnSystem&>(*espec->sys);
 	int width = std::max(espec->LineWidths[0], espec->LineWidths[1]);
-	IG::PixmapView srcPix = sys.mSurfacePix.subView(
-		{espec->DisplayRect.x, espec->DisplayRect.y},
-		{width, espec->DisplayRect.h});
-	espec->video->startFrameWithFormat(espec->taskCtx, srcPix);
+	auto &video = *espec->video;
+	video.isOddField = false;
+	auto srcPix = sys.mSurfacePix.subView({espec->DisplayRect.x, espec->DisplayRect.y}, {width, espec->DisplayRect.h});
+	if(MDFN_IEN_SS::VDP2::InterlaceMode && sys.deinterlaceMode == EmuEx::DeinterlaceMode::Bob)
+	{
+		bool isOddField = espec->LineWidths[1];
+		video.isOddField = isOddField;
+		srcPix = video.takeInterlacedFields(srcPix, isOddField);
+	}
+	video.startFrameWithFormat(espec->taskCtx, srcPix);
 }
 
 void MDFN_MediaStateAction(StateMem *sm, const unsigned load, const bool data_only)

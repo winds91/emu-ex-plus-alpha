@@ -20,8 +20,12 @@
 #include <imagine/util/rectangle2.h>
 #include <array>
 
+#ifndef CONFIG_GFX_OPENGL
+#define CONFIG_GFX_OPENGL 1
+#endif
+
 #ifdef CONFIG_GFX_OPENGL
-#include <imagine/gfx/opengl/gfx-globals.hh>
+#include <imagine/gfx/opengl/defs.hh>
 #endif
 
 namespace IG::Gfx
