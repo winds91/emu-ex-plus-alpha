@@ -27,6 +27,7 @@
 #include <imagine/gui/AlertView.hh>
 #include <imagine/util/format.hh>
 #include <ss/cart.h>
+#include <imagine/logger/logger.h>
 
 namespace EmuEx
 {
@@ -35,7 +36,7 @@ template <class T>
 using MainAppHelper = EmuAppHelper<T, MainApp>;
 using namespace MDFN_IEN_SS;
 
-constexpr SystemLogger log{"AppMenus"};
+constexpr SystemLogger log{"Saturn.emu"};
 
 static bool hasBIOSExtension(std::string_view name)
 {
@@ -567,12 +568,15 @@ class CustomSystemOptionView : public SystemOptionView, public MainAppHelper<Cus
 		}
 	};
 
+	BoolMenuItem saveFilenameType = saveFilenameTypeMenuItem(*this, system());
+
 public:
 	CustomSystemOptionView(ViewAttachParams attach): SystemOptionView{attach, true}
 	{
 		loadStockItems();
 		item.emplace_back(&biosLanguage);
 		item.emplace_back(&autoSetRTC);
+		item.emplace_back(&saveFilenameType);
 	}
 };
 
