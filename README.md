@@ -27,20 +27,20 @@
 [Actions]: https://github.com/winds91/emu-ex-plus-alpha/actions/workflows/build.yml
 [Build]: https://github.com/winds91/emu-ex-plus-alpha/actions/workflows/build.yml/badge.svg
 [Download]: https://img.shields.io/badge/Download-blue
-[EX emulators]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/EX-Emulators.zip
-[2600 emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/2600Emu.zip
-[C64 emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/C64Emu.zip
-[GBA emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/GbaEmu.zip
-[GBC emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/GbcEmu.zip
-[Lynx emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/LynxEmu.zip
-[MD emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/MdEmu.zip
-[MSX emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/MsxEmu.zip
-[NEO emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/NeoEmu.zip
-[NES emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/NesEmu.zip
-[NGP emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/NgpEmu.zip
-[PCE emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/PceEmu.zip
-[Saturn emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/SaturnEmu.zip
-[Snes9x EX 1.43-9]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/Snes9xEX-9.zip
-[Snes9x EX 1.43-15]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/Snes9xEX-15.zip
-[Snes9x EX Plus]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/Snes9xEXPlus.zip
-[Swan emu]: https://download.ixnic.net/winds91/emu-ex-plus-alpha/releases/download/Pre-release/SwanEmu.zip
+[EX emulators]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/EX-Emulators.zip
+[2600 emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/2600Emu.zip
+[C64 emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/C64Emu.zip
+[GBA emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/GbaEmu.zip
+[GBC emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/GbcEmu.zip
+[Lynx emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/LynxEmu.zip
+[MD emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/MdEmu.zip
+[MSX emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/MsxEmu.zip
+[NEO emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/NeoEmu.zip
+[NES emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/NesEmu.zip
+[NGP emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/NgpEmu.zip
+[PCE emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/PceEmu.zip
+[Saturn emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/SaturnEmu.zip
+[Snes9x EX 1.43-9]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/Snes9xEX-9.zip
+[Snes9x EX 1.43-15]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/Snes9xEX-15.zip
+[Snes9x EX Plus]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/Snes9xEXPlus.zip
+[Swan emu]: https://github.moeyy.xyz/winds91/emu-ex-plus-alpha/releases/download/Pre-release/SwanEmu.zip
