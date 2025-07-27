@@ -30,7 +30,7 @@ static bool S9xInterlaceField()
 namespace EmuEx
 {
 
-const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2024\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nSnes9x Team\nwww.snes9x.com";
+const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nSnes9x Team\nwww.snes9x.com";
 #if PIXEL_FORMAT == RGB565
 constexpr auto srcPixFmt = IG::PixelFmtRGB565;
 #else
@@ -308,10 +308,10 @@ void Snes9xSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDele
 	IPPU.RenderThisFrame = TRUE;
 }
 
-void Snes9xSystem::configAudioRate(FrameTime outputFrameTime, int outputRate)
+void Snes9xSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 {
 	#ifndef SNES9X_VERSION_1_4
-	auto inputRate = frameTimeSecs().count() / duration_cast<FloatSeconds>(outputFrameTime).count() * 32040.;
+	auto inputRate = frameTimeSecs().count() / duration_cast<FloatSeconds>(outputFrameRate.duration()).count() * 32040.;
 	if(inputRate == Settings.SoundInputRate && outputRate == Settings.SoundPlaybackRate)
 		return;
 	Settings.SoundPlaybackRate = outputRate;
@@ -319,7 +319,7 @@ void Snes9xSystem::configAudioRate(FrameTime outputFrameTime, int outputRate)
 	logMsg("set sound input rate:%.2f output rate:%d", inputRate, outputRate);
 	S9xUpdateDynamicRate(0, 10);
 	#else
-	int mixRate = std::round(audioMixRate(outputRate, outputFrameTime));
+	int mixRate = std::round(audioMixRate(outputRate, outputFrameRate));
 	if(mixRate == Settings.SoundPlaybackRate)
 		return;
 	Settings.SoundPlaybackRate = mixRate;
