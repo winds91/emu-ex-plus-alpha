@@ -29,7 +29,7 @@ namespace IG
 
 constexpr SystemLogger log{"X11Screen"};
 
-XScreen::XScreen(ApplicationContext ctx, InitParams params)
+XScreen::XScreen(ApplicationContext, InitParams params)
 {
 	auto &screen = params.screen;
 	xScreen = &screen;
@@ -91,7 +91,6 @@ XScreen::XScreen(ApplicationContext ctx, InitParams params)
 	}
 	log.info("screen:{} {}x{} ({}x{}mm) {}Hz", (void*)&screen,
 		screen.width_in_pixels, screen.height_in_pixels, (int)xMM, (int)yMM, frameRate_.hz());
-	ctx.application().emplaceFrameTimer(frameTimer, *static_cast<Screen*>(this));
 }
 
 xcb_screen_t* XScreen::nativeObject() const
@@ -125,7 +124,6 @@ int Screen::height() const
 }
 
 FrameRate Screen::frameRate() const { return frameRate_; }
-FrameRate Screen::frameTimerRate() const { return frameTimer.frameRate(); }
 
 bool Screen::frameRateIsReliable() const
 {
@@ -161,16 +159,6 @@ void Screen::setFrameRate(FrameRate rate)
 	}
 }
 
-void Screen::postFrameTimer()
-{
-	frameTimer.scheduleVSync();
-}
-
-void Screen::unpostFrameTimer()
-{
-	frameTimer.cancel();
-}
-
 void Screen::setFrameInterval(int)
 {
 	// TODO
@@ -191,24 +179,6 @@ std::span<const FrameRate> Screen::supportedFrameRates() const
 {
 	// TODO
 	return {&frameRate_, 1};
-}
-
-void Screen::setVariableFrameRate(bool useVariableTime)
-{
-	if(!shouldUpdateFrameTimer(frameTimer, useVariableTime))
-		return;
-	application().emplaceFrameTimer(frameTimer, *static_cast<Screen*>(this), useVariableTime);
-}
-
-void Screen::setFrameEventsOnThisThread()
-{
-	unpostFrame();
-	frameTimer.setEventsOnThisThread(appContext());
-}
-
-void Screen::removeFrameEvents()
-{
-	unpostFrame();
 }
 
 }

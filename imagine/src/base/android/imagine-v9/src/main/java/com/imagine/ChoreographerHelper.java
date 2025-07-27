@@ -51,10 +51,17 @@ final class ChoreographerHelper
 		choreographer.postFrameCallback(callback);
 	}
 
-	void setInstance()
+	void setInstance(boolean set)
 	{
-		if(Looper.myLooper() == null)
-			Looper.prepare();
-		choreographer = Choreographer.getInstance();
+		if(set)
+		{
+			if(Looper.myLooper() == null)
+				Looper.prepare();
+			choreographer = Choreographer.getInstance();
+		}
+		else if(choreographer != null)
+		{
+			choreographer.removeFrameCallback(callback);
+		}
 	}
 }

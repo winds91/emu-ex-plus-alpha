@@ -147,7 +147,6 @@ AndroidScreen::AndroidScreen(ApplicationContext ctx, InitParams params)
 		else
 			reliableFrameRate = false;
 	}
-	ctx.application().emplaceFrameTimer(frameTimer, *static_cast<Screen*>(this));
 	updateSupportedFrameRates(ctx, env);
 
 	// DisplayMetrics
@@ -223,37 +222,8 @@ void AndroidScreen::updateSupportedFrameRates(ApplicationContext ctx, JNIEnv *en
 int Screen::width() const { return width_; }
 int Screen::height() const { return height_; }
 FrameRate Screen::frameRate() const { return frameRate_; }
-FrameRate Screen::frameTimerRate() const { return frameTimer.frameRate(); }
 SteadyClockDuration Screen::presentationDeadline() const { return presentationDeadline_; }
 bool Screen::frameRateIsReliable() const { return reliableFrameRate; }
-
-void Screen::postFrameTimer()
-{
-	frameTimer.scheduleVSync();
-}
-
-void Screen::unpostFrameTimer()
-{
-	frameTimer.cancel();
-}
-
-void Screen::setVariableFrameRate(bool useVariableTime)
-{
-	if(!shouldUpdateFrameTimer(frameTimer, useVariableTime))
-		return;
-	application().emplaceFrameTimer(frameTimer, *static_cast<Screen*>(this), useVariableTime);
-}
-
-void Screen::setFrameEventsOnThisThread()
-{
-	unpostFrame();
-	frameTimer.setEventsOnThisThread(appContext());
-}
-
-void Screen::removeFrameEvents()
-{
-	unpostFrame();
-}
 
 void Screen::setFrameInterval([[maybe_unused]] int interval)
 {

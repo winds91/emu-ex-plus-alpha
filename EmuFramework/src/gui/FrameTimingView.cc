@@ -144,10 +144,17 @@ FrameTimingView::FrameTimingView(ViewAttachParams attach):
 	},
 	frameClockItems
 	{
-		{"Auto",                                  attach, MenuItem::Config{.id = FrameClockSource::Unset}},
-		{"Screen (Less latency & power use)",     attach, MenuItem::Config{.id = FrameClockSource::Screen}},
-		{"Timer (Best for VRR displays)",         attach, MenuItem::Config{.id = FrameClockSource::Timer}},
-		{"Renderer (May buffer multiple frames)", attach, MenuItem::Config{.id = FrameClockSource::Renderer}},
+		[&]()
+		{
+			StaticArrayList<TextMenuItem, maxFrameClockItems> frameClockItems;
+			frameClockItems.emplace_back("Auto", attach, MenuItem::Config{.id = FrameClockSource::Unset});
+			if(app().emuWindow().supportsFrameClockSource(FrameClockSource::Screen))
+				frameClockItems.emplace_back("Screen (For standard displays)", attach, MenuItem::Config{.id = FrameClockSource::Screen});
+			if(app().emuWindow().supportsFrameClockSource(FrameClockSource::Renderer))
+				frameClockItems.emplace_back("Renderer (For drivers with double buffering)", attach, MenuItem::Config{.id = FrameClockSource::Renderer});
+			frameClockItems.emplace_back("Timer (For VRR displays)", attach, MenuItem::Config{.id = FrameClockSource::Timer});
+			return frameClockItems;
+		}()
 	},
 	frameClock
 	{

@@ -126,11 +126,11 @@ int FrameParams::elapsedFrames(SteadyClockTimePoint time, SteadyClockTimePoint l
 {
 	if(!hasTime(lastTime)) [[unlikely]]
 		return 1;
-	assumeExpr(time > lastTime);
+	assumeExpr(time >= lastTime);
 	assumeExpr(frameDuration.count() > 0);
 	auto diff = time - lastTime;
 	auto elapsed = divRoundClosestPositive(diff.count(), frameDuration.count());
-	return std::max(elapsed, decltype(elapsed){1});
+	return elapsed;
 }
 
 WRect Viewport::relRect(WPt pos, WSize size, _2DOrigin posOrigin, _2DOrigin screenOrigin) const

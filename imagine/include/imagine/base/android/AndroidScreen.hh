@@ -67,7 +67,6 @@ public:
 
 protected:
 	JNI::UniqueGlobalRef aDisplay;
-	FrameTimer frameTimer;
 	FrameRate frameRate_{};
 	SteadyClockDuration presentationDeadline_{};
 	std::vector<FrameRate> supportedFrameRates_;

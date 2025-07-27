@@ -29,21 +29,20 @@ constexpr SystemLogger log{"Screen"};
 Screen::Screen(ApplicationContext ctx, InitParams params):
 	ScreenImpl{ctx, params},
 	windowsPtr{&ctx.application().windows()},
-	appCtx{ctx} {}
-
-void Screen::addOnFrame(OnFrameDelegate del, int priority)
+	appCtx{ctx}
 {
-	postFrame();
-	onFrameDelegate.insert(del, priority);
+	ctx.application().emplaceFrameTimer(frameTimer, *this);
 }
 
-bool Screen::removeOnFrame(OnFrameDelegate del)
+void Screen::addOnFrame(OnFrameDelegate del, int priority, InsertMode mode)
 {
-	bool removed = onFrameDelegate.remove(del);
-	if(!onFrameDelegate.size())
-	{
-		unpostFrame();
-	}
+	postFrame();
+	onFrameDelegate.insert(del, priority, mode);
+}
+
+bool Screen::removeOnFrame(OnFrameDelegate del, DelegateFuncEqualsMode mode)
+{
+	bool removed = onFrameDelegate.removeFirst(del, mode);
 	return removed;
 }
 
@@ -54,8 +53,11 @@ bool Screen::containsOnFrame(OnFrameDelegate del) const
 
 void Screen::runOnFrameDelegates(SteadyClockTimePoint time)
 {
-	postFrame();
-	auto params = makeFrameParams(time, std::exchange(lastFrameTime_, time));
+	FrameParams params
+	{
+		.time = time, .lastTime = std::exchange(lastFrameTime_, time),
+		.duration = frameTimerRate().duration(), .mode = FrameClockMode::screen
+	};
 	onFrameDelegate.runAll([&](OnFrameDelegate del)
 	{
 		return del(params);
@@ -82,6 +84,7 @@ bool Screen::frameUpdate(SteadyClockTimePoint timestamp)
 		lastFrameTime_ = {};
 		return false;
 	}
+	postFrame();
 	runOnFrameDelegates(timestamp);
 	for(auto &w : *windowsPtr)
 	{
@@ -89,10 +92,6 @@ bool Screen::frameUpdate(SteadyClockTimePoint timestamp)
 		{
 			w->dispatchOnDraw();
 		}
-	}
-	if(!framePosted)
-	{
-		lastFrameTime_ = {};
 	}
 	return true;
 }
@@ -114,11 +113,6 @@ void Screen::setActive(bool active)
 	}
 }
 
-FrameParams Screen::makeFrameParams(SteadyClockTimePoint time, SteadyClockTimePoint lastTime) const
-{
-	return {.time = time, .lastTime = lastTime, .duration = frameRate().duration(), .timeSource = FrameClockSource::Screen};
-}
-
 void Screen::postFrame()
 {
 	if(!isActive) [[unlikely]]
@@ -130,7 +124,7 @@ void Screen::postFrame()
 		return;
 	//log.info("posting frame");
 	framePosted = true;
-	postFrameTimer();
+	frameTimer.scheduleVSync();
 }
 
 void Screen::unpostFrame()
@@ -139,7 +133,7 @@ void Screen::unpostFrame()
 		return;
 	framePosted = false;
 	lastFrameTime_ = {};
-	unpostFrameTimer();
+	frameTimer.cancel();
 }
 
 bool Screen::shouldUpdateFrameTimer(const FrameTimer& frameTimer, bool newVariableFrameTimeValue)
@@ -149,6 +143,24 @@ bool Screen::shouldUpdateFrameTimer(const FrameTimer& frameTimer, bool newVariab
 }
 
 [[gnu::weak]] SteadyClockDuration Screen::presentationDeadline() const { return {}; }
+FrameRate Screen::frameTimerRate() const { return frameTimer.frameRate() ?: frameRate(); }
 
+void Screen::setVariableFrameRate(bool useVariableTime)
+{
+	if(!shouldUpdateFrameTimer(frameTimer, useVariableTime))
+		return;
+	application().emplaceFrameTimer(frameTimer, *this, useVariableTime);
+}
+
+void Screen::setFrameEventsOnThisThread()
+{
+	frameTimer.setEventsOnThisThread(appContext());
+}
+
+void Screen::removeFrameEvents()
+{
+	unpostFrame();
+	frameTimer.removeEvents(appContext());
+}
 
 }

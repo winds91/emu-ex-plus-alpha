@@ -45,14 +45,13 @@ public:
 	int height() const;
 	WSize sizePx() const { return {width(), height()}; }
 	bool isPosted() const;
-	void addOnFrame(OnFrameDelegate, int priority = 0);
-	bool removeOnFrame(OnFrameDelegate);
+	void addOnFrame(OnFrameDelegate, int priority = 0, InsertMode mode = {});
+	bool removeOnFrame(OnFrameDelegate, DelegateFuncEqualsMode mode = {});
 	bool containsOnFrame(OnFrameDelegate) const;
 	size_t onFrameDelegates() const;
 	void setVariableFrameRate(bool);
 	void setFrameEventsOnThisThread();
 	void removeFrameEvents();
-	FrameParams makeFrameParams(SteadyClockTimePoint time, SteadyClockTimePoint lastTime) const;
 	bool frameRateIsReliable() const;
 	void setFrameRate(FrameRate);
 	FrameRate frameRate() const;
@@ -71,6 +70,7 @@ public:
 private:
 	DelegateFuncSet<OnFrameDelegate> onFrameDelegate{};
 	SteadyClockTimePoint lastFrameTime_{};
+	FrameTimer frameTimer;
 	const WindowContainer *windowsPtr{};
 	ApplicationContext appCtx;
 	bool framePosted{};
@@ -79,8 +79,6 @@ private:
 	void runOnFrameDelegates(SteadyClockTimePoint timestamp);
 	void postFrame();
 	void unpostFrame();
-	void postFrameTimer();
-	void unpostFrameTimer();
 	bool shouldUpdateFrameTimer(const FrameTimer&, bool newVariableFrameTimeValue);
 };
 

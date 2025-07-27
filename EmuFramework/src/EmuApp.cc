@@ -399,6 +399,11 @@ void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::Applicatio
 			videoLayer.setRendererTask(renderer.task());
 			applyRenderPixelFormat();
 			videoLayer.updateEffect(system(), videoEffectPixelFormat());
+			if((frameClockSource == FrameClockSource::Screen   && !emuWindow().supportsFrameClockSource(FrameClockSource::Screen)) ||
+				 (frameClockSource == FrameClockSource::Renderer && !emuWindow().supportsFrameClockSource(FrameClockSource::Renderer)))
+			{
+				frameClockSource = {};
+			}
 
 			win.onEvent = [this](Window& win, const WindowEvent& winEvent)
 			{
@@ -1218,6 +1223,8 @@ void EmuApp::setEmuViewOnExtraWindow(bool on, IG::Screen &screen)
 				extraWinData.hasPopup = false;
 				extraWinData.focused = true;
 				auto suspendCtx = systemTask.setWindow(win);
+				mainWindow().setFrameEventsOnThisThread();
+				mainWindow().setDrawEventPriority(); // allow UI to post draws again
 				extraWinData.updateWindowViewport(win, makeViewport(win), renderer);
 				viewController().moveEmuViewToWindow(win);
 

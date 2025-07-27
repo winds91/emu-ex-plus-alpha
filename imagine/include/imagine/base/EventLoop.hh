@@ -21,7 +21,6 @@
 #include <imagine/base/eventloop/ALooperEventLoop.hh>
 #elif defined __linux__
 #include <imagine/base/eventloop/GlibEventLoop.hh>
-#define CONFIG_BASE_GLIB
 #elif defined __APPLE__
 #include <imagine/base/eventloop/CFEventLoop.hh>
 #endif
@@ -54,6 +53,7 @@ struct FDEventSourceDesc
 class FDEventSource : public FDEventSourceImpl
 {
 public:
+	constexpr FDEventSource() = default;
 	FDEventSource(MaybeUniqueFileDescriptor fd, FDEventSourceDesc desc, PollEventDelegate del):
 		FDEventSourceImpl{std::move(fd), desc, del},
 		debugLabel_{desc.debugLabel ? desc.debugLabel : "unnamed"}
@@ -61,7 +61,6 @@ public:
 		if(desc.eventLoop)
 			attach(*desc.eventLoop, desc.events);
 	}
-	FDEventSource(): FDEventSource{-1, {}, {}} {}
 	bool attach(EventLoop loop = {}, PollEventFlags events = pollEventInput);
 	void detach();
 	void setEvents(PollEventFlags);

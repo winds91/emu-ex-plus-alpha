@@ -62,19 +62,18 @@ DRMFrameTimer::DRMFrameTimer(Screen &screen, EventLoop loop)
 					auto uSecs = ((uint64_t)sec * USEC_PER_SEC) + (uint64_t)usec;
 					frameTimer.timestamp = IG::Microseconds(uSecs);
 				};
-			auto err = drmHandleEvent(fd, &ctx);
-			if(err)
+			if(auto err = drmHandleEvent(fd, &ctx); err)
 			{
 				log.error("error in drmHandleEvent");
 			}
-			if(screen.isPosted())
+			if(screen.frameUpdate(SteadyClockTimePoint{timestamp}))
 			{
-				if(screen.frameUpdate(SteadyClockTimePoint{timestamp}))
-					scheduleVSync();
+				cancel();
 			}
 			return true;
 		}
 	};
+	log.info("created frame timer");
 }
 
 void DRMFrameTimer::scheduleVSync()
@@ -103,6 +102,12 @@ void DRMFrameTimer::cancel()
 void DRMFrameTimer::setEventsOnThisThread(ApplicationContext)
 {
 	fdSrc.attach(EventLoop::forThread(), {});
+}
+
+void DRMFrameTimer::removeEvents(ApplicationContext)
+{
+	cancel();
+	fdSrc.detach();
 }
 
 bool DRMFrameTimer::testSupport()

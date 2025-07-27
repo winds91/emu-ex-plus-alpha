@@ -61,12 +61,16 @@ public:
 	void setFormat(PixelFormat);
 	PixelFormat pixelFormat() const;
 	bool operator ==(Window const &rhs) const;
-	void addOnFrame(OnFrameDelegate, FrameClockSource src = {}, int priority = 0);
-	bool removeOnFrame(OnFrameDelegate, FrameClockSource src = {});
-	void moveOnFrame(Window &srcWin, OnFrameDelegate, FrameClockSource src = {});
-	FrameClockSource defaultFrameClockSource() const;
-	FrameClockSource evalFrameClockSource(FrameClockSource) const;
-	void configureFrameClock(FrameClockSource);
+	void addOnFrame(OnFrameDelegate, FrameClockMode mode, int priority = 0, InsertMode insMode = {});
+	bool removeOnFrame(OnFrameDelegate, FrameClockMode mode, DelegateFuncEqualsMode eqMode = {});
+	void addOnFrame(OnFrameDelegate d, int priority = 0, InsertMode insMode = {}) { addOnFrame(d, defaultFrameClockMode(), priority, insMode); }
+	bool removeOnFrame(OnFrameDelegate d, DelegateFuncEqualsMode eqMode = {})  { return removeOnFrame(d, defaultFrameClockMode(), eqMode); }
+	FrameClockSource defaultFrameClockSource(FrameClockUsage usage = {}) const;
+	FrameClockSource evalFrameClockSource(FrameClockSource, FrameClockUsage usage = {}) const;
+	FrameClockMode toFrameClockMode(FrameClockSource, FrameClockUsage usage = {}) const;
+	FrameClockMode defaultFrameClockMode() const { return toFrameClockMode(defaultFrameClockSource()); }
+	bool supportsFrameClockSource(FrameClockSource) const;
+	void configureFrameClock(FrameClockSource src = {}, FrameClockUsage usage = {});
 	void resetAppData();
 	void resetRendererData();
 	bool isMainWindow() const;

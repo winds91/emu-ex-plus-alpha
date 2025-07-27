@@ -29,26 +29,18 @@ SimpleFrameTimer::SimpleFrameTimer(Screen &screen, EventLoop loop):
 		{.debugLabel = "SimpleFrameTimer", .eventLoop = loop},
 		[this, &screen]()
 		{
-			if(!requested)
+			if(!requested || !screen.frameUpdate(SteadyClock::now()))
 			{
-				if(keepTimer)
-				{
-					// wait one more tick due to simulated vsync inaccuracy
-					keepTimer = false;
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				cancel();
+				return false;
 			}
-			requested = false;
-			if(screen.frameUpdate(SteadyClock::now()))
-				scheduleVSync();
 			return true;
 		}
 	},
-	rate{screen.frameRate()} {}
+	rate{screen.frameRate()}
+{
+	log.info("created frame timer");
+}
 
 void SimpleFrameTimer::scheduleVSync()
 {
@@ -57,7 +49,6 @@ void SimpleFrameTimer::scheduleVSync()
 		return;
 	}
 	requested = true;
-	keepTimer = true;
 	if(timer.isArmed())
 	{
 		return;
@@ -69,7 +60,6 @@ void SimpleFrameTimer::scheduleVSync()
 void SimpleFrameTimer::cancel()
 {
 	requested = false;
-	keepTimer = false;
 }
 
 void SimpleFrameTimer::setFrameRate(FrameRate rate_)
@@ -87,6 +77,10 @@ void SimpleFrameTimer::setEventsOnThisThread(ApplicationContext)
 	timer.setEventLoop({});
 }
 
-void NullFrameTimer::setEventsOnThisThread(ApplicationContext) {}
+void SimpleFrameTimer::removeEvents(ApplicationContext)
+{
+	cancel();
+	timer.unsetEventLoop();
+}
 
 }

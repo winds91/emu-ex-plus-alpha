@@ -166,12 +166,12 @@ bool BaseApplication::isExiting() const
 
 bool BaseApplication::addOnResume(ResumeDelegate del, int priority)
 {
-	return onResume_.insertUnique(del, priority);
+	return onResume_.insert(del, priority, InsertMode::unique);
 }
 
 bool BaseApplication::removeOnResume(ResumeDelegate del)
 {
-	return onResume_.remove(del);
+	return onResume_.removeFirst(del);
 }
 
 bool BaseApplication::containsOnResume(ResumeDelegate del) const
@@ -181,12 +181,12 @@ bool BaseApplication::containsOnResume(ResumeDelegate del) const
 
 bool BaseApplication::addOnExit(ExitDelegate del, int priority)
 {
-	return onExit_.insertUnique(del, priority);
+	return onExit_.insert(del, priority, InsertMode::unique);
 }
 
 bool BaseApplication::removeOnExit(ExitDelegate del)
 {
-	return onExit_.remove(del);
+	return onExit_.removeFirst(del);
 }
 
 bool BaseApplication::containsOnExit(ExitDelegate del) const

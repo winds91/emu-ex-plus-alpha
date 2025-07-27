@@ -23,6 +23,8 @@
 namespace IG
 {
 
+enum class InsertMode: uint8_t {normal, unique};
+
 template<std::ranges::range Range>
 constexpr void fill(Range&& r)
 {

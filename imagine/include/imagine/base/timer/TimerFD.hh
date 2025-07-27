@@ -30,6 +30,7 @@ class TimerFD
 public:
 	using TimePoint = SteadyClockTimePoint;
 
+	constexpr TimerFD() = default;
 	TimerFD(TimerDesc, CallbackDelegate);
 	const char* debugLabel() const { return fdSrc.debugLabel(); }
 

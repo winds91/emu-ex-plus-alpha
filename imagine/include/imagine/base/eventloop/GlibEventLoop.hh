@@ -47,6 +47,7 @@ using UniqueGSource = std::unique_ptr<GSource, GSourceDeleter>;
 class GlibFDEventSource
 {
 public:
+	constexpr GlibFDEventSource() = default;
 	GlibFDEventSource(MaybeUniqueFileDescriptor, FDEventSourceDesc, PollEventDelegate);
 
 protected:

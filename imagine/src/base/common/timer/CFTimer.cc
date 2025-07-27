@@ -127,6 +127,8 @@ void Timer::setEventLoop(EventLoop loop)
 	info->setLoop = loop.nativeObject() ?: EventLoop::forThread().nativeObject();
 }
 
+void Timer::unsetEventLoop() { cancel(); }
+
 void Timer::dispatchEarly()
 {
 	cancel();

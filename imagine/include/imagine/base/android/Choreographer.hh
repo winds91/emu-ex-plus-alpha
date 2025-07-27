@@ -36,6 +36,7 @@ public:
 	void scheduleVSync();
 	void cancel() { requested = false; }
 	void setEventsOnThisThread(ApplicationContext);
+	void removeEvents(ApplicationContext);
 	explicit constexpr operator bool() const { return choreographer; }
 
 protected:
@@ -57,6 +58,7 @@ public:
 	void scheduleVSync();
 	void cancel() { requested = false; }
 	void setEventsOnThisThread(ApplicationContext);
+	void removeEvents(ApplicationContext);
 	explicit constexpr operator bool() const { return frameHelper; }
 
 protected:
@@ -64,7 +66,7 @@ protected:
 	JNIEnv* jniEnv{};
 	JNI::UniqueGlobalRef frameHelper;
 	JNI::InstMethod<void()> jPostFrame;
-	JNI::InstMethod<void()> jSetInstance;
+	JNI::InstMethod<void(jboolean)> jSetInstance;
 	bool requested{};
 };
 
@@ -78,6 +80,7 @@ public:
 	void scheduleVSync() { choreographerPtr->scheduleVSync(); }
 	void cancel() { choreographerPtr->cancel(); }
 	void setEventsOnThisThread(ApplicationContext ctx) { choreographerPtr->setEventsOnThisThread(ctx); }
+	void removeEvents(ApplicationContext ctx) { choreographerPtr->removeEvents(ctx); }
 
 protected:
 	ChoreographerBase *choreographerPtr{};

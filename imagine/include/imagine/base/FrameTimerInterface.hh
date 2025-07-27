@@ -51,6 +51,7 @@ public:
 		});
 	}
 	void setEventsOnThisThread(ApplicationContext ctx) { visit([&](auto& e){ e.setEventsOnThisThread(ctx); }); }
+	void removeEvents(ApplicationContext ctx) { visit([&](auto& e){ e.removeEvents(ctx); }); }
 };
 
 }

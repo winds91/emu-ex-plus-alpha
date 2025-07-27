@@ -24,10 +24,13 @@
 #include <imagine/gui/AlertView.hh>
 #include <imagine/gfx/RendererCommands.hh>
 #include <imagine/util/variant.hh>
+#include <imagine/logger/logger.h>
 #include <format>
 
 namespace EmuEx
 {
+
+[[maybe_unused]] constexpr SystemLogger log{"EmuInputView"};
 
 EmuInputView::EmuInputView() {}
 

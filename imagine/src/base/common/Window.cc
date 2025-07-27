@@ -63,21 +63,15 @@ BaseWindow::BaseWindow(ApplicationContext ctx, WindowConfig config):
 		}
 	} {}
 
-FrameClockSource Window::evalFrameClockSource(FrameClockSource src) const
+void Window::addOnFrame(OnFrameDelegate del, FrameClockMode mode, int priority, InsertMode insMode)
 {
-	return src == FrameClockSource::Unset ? defaultFrameClockSource() : src;
-}
-
-void Window::addOnFrame(OnFrameDelegate del, FrameClockSource src, int priority)
-{
-	src = evalFrameClockSource(src);
-	if(src != FrameClockSource::Renderer)
+	if(mode == FrameClockMode::screen)
 	{
-		screen()->addOnFrame(del);
+		screen()->addOnFrame(del, priority, insMode);
 	}
 	else
 	{
-		onFrame.insert(del, priority);
+		onFrame.insert(del, priority, insMode);
 		if(drawPhase == DrawPhase::UPDATE)
 		{
 			// trigger a draw so delegate runs at start of next frame
@@ -87,35 +81,63 @@ void Window::addOnFrame(OnFrameDelegate del, FrameClockSource src, int priority)
 	}
 }
 
-bool Window::removeOnFrame(OnFrameDelegate del, FrameClockSource src)
+bool Window::removeOnFrame(OnFrameDelegate del, FrameClockMode mode, DelegateFuncEqualsMode eqMode)
 {
-	src = evalFrameClockSource(src);
-	if(src != FrameClockSource::Renderer)
+	if(mode == FrameClockMode::screen)
 	{
-		return screen()->removeOnFrame(del);
+		return screen()->removeOnFrame(del, eqMode);
 	}
 	else
 	{
-		return onFrame.remove(del);
+		return onFrame.removeFirst(del, eqMode);
 	}
 }
 
-void Window::moveOnFrame(Window &srcWin, OnFrameDelegate del, FrameClockSource src)
+FrameClockSource Window::defaultFrameClockSource(FrameClockUsage usage) const
 {
-	srcWin.removeOnFrame(del, src);
-	addOnFrame(del, src);
+	if(usage == FrameClockUsage::normal)
+	{
+		return supportsFrameClockSource(FrameClockSource::Screen) ? FrameClockSource::Screen : FrameClockSource::Renderer;
+	}
+	else
+	{
+		return supportsFrameClockSource(FrameClockSource::Screen) ? FrameClockSource::Screen :
+			Config::envIsAndroid ? FrameClockSource::Renderer : // Prefer double buffer vsync on old Android versions
+			FrameClockSource::Timer;
+	}
 }
 
-FrameClockSource Window::defaultFrameClockSource() const
+FrameClockSource Window::evalFrameClockSource(FrameClockSource src, FrameClockUsage usage) const
 {
-	return screen()->supportsTimestamps() ? FrameClockSource::Screen :
-		(Config::envIsAndroid ? FrameClockSource::Renderer : FrameClockSource::Timer);
+	return src == FrameClockSource::Unset ? defaultFrameClockSource(usage) : src;
 }
 
-void Window::configureFrameClock(FrameClockSource src)
+FrameClockMode Window::toFrameClockMode(FrameClockSource src, FrameClockUsage usage) const
 {
-	src = evalFrameClockSource(src);
-	log.info("configuring for frame time source:{}", wise_enum::to_string(src));
+	src = evalFrameClockSource(src, usage);
+	return src == FrameClockSource::Renderer ? FrameClockMode::renderer : FrameClockMode::screen;
+}
+
+bool Window::supportsFrameClockSource(FrameClockSource src) const
+{
+	if(src == FrameClockSource::Screen)
+	{
+		return screen()->supportsTimestamps();
+	}
+	else if(src == FrameClockSource::Renderer)
+	{
+		if(Config::envIsAndroid) // Older Android versions without Choreographer API use double buffer vsync
+		{
+			return !screen()->supportsTimestamps();
+		}
+		return true;
+	}
+	return true;
+}
+
+void Window::configureFrameClock(FrameClockSource src, FrameClockUsage usage)
+{
+	src = evalFrameClockSource(src, usage);
 	if(src != FrameClockSource::Renderer)
 	{
 		screen()->setVariableFrameRate(src == FrameClockSource::Timer);
@@ -205,7 +227,6 @@ void Window::postFrameReadyToMainThread()
 
 void Window::setFrameEventsOnThisThread()
 {
-	unpostDraw();
 	screen()->setFrameEventsOnThisThread();
 	drawEvent.attach();
 }
@@ -307,17 +328,15 @@ void Window::dispatchOnFrame()
 {
 	if(drawPhase != DrawPhase::READY || !onFrame.size())
 	{
+		lastFrameTime = {};
 		return;
 	}
 	drawPhase = DrawPhase::UPDATE;
 	//log.debug("running {} onFrame delegates", onFrame.size());
 	auto now = SteadyClock::now();
-	FrameParams frameParams{.time = now, .lastTime = std::exchange(lastFrameTime, now), .duration = screen()->frameRate().duration(), .timeSource = FrameClockSource::Renderer};
+	FrameParams frameParams{.time = now, .lastTime = std::exchange(lastFrameTime, now), .duration = screen()->frameRate().duration(), .mode = FrameClockMode::renderer};
 	onFrame.runAll([&](OnFrameDelegate del){ return del(frameParams); });
-	if(!onFrame.size())
-	{
-		lastFrameTime = {};
-	}
+	setNeedsDraw(true);
 }
 
 void Window::draw(bool needsSync)
