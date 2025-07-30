@@ -44,8 +44,7 @@ EmuSystemTask::EmuSystemTask(EmuApp& app_):
 			}
 			if(params.isFromRenderer() && !renderingFrame)
 			{
-				window().drawNow();
-				framePresentedSem.acquire();
+				drawWindowNow();
 			}
 			return true;
 		}
@@ -57,13 +56,14 @@ void EmuSystemTask::start(Window& win)
 		return;
 	win.setDrawEventPriority(Window::drawEventPriorityLocked); // block UI from posting draws
 	setWindowInternal(win);
+	win.removeFrameEvents();
 	taskThread = makeThreadSync(
 		[this](auto &sem)
 		{
 			auto threadId = thisThreadId();
 			threadId_ = threadId;
 			auto eventLoop = EventLoop::makeForThread();
-			winPtr->setFrameEventsOnThisThread();
+			window().setFrameEventsOnThisThread();
 			addOnFrameDelayed();
 			bool started = true;
 			commandPort.attach(eventLoop, [this, &started](auto msgs)
@@ -75,9 +75,10 @@ void EmuSystemTask::start(Window& win)
 						[&](SetWindowCommand& cmd)
 						{
 							//log.debug("got set window command");
-							cmd.winPtr->moveOnFrame(*winPtr, onFrameUpdate, app.frameClockSource);
-							cmd.winPtr->moveOnFrame(*winPtr, onFrameCalibrate(), FrameClockSource::Screen);
+							isSuspended = true;
+							removeOnFrame();
 							setWindowInternal(*cmd.winPtr);
+							addOnFrame();
 							assumeExpr(msg.semPtr);
 							msg.semPtr->release();
 							suspendSem.acquire();
@@ -96,7 +97,7 @@ void EmuSystemTask::start(Window& win)
 						{
 							started = false;
 							removeOnFrame();
-							winPtr->removeFrameEvents();
+							window().removeFrameEvents();
 							threadId_ = 0;
 							frameRateConfig = {};
 							EventLoop::forThread().stop();
@@ -121,10 +122,7 @@ EmuSystemTask::SuspendContext EmuSystemTask::setWindow(Window& win)
 	assert(!isSuspended);
 	if(!isStarted())
 		return {};
-	auto oldWinPtr = winPtr;
 	commandPort.send({.command = SetWindowCommand{&win}}, MessageReplyMode::wait);
-	oldWinPtr->setFrameEventsOnThisThread();
-	oldWinPtr->setDrawEventPriority(); // allow UI to post draws again
 	app.flushMainThreadMessages();
 	return {this};
 }
@@ -134,6 +132,13 @@ void EmuSystemTask::setWindowInternal(Window& win)
 	winPtr = &win;
 	hostFrameRate = win.screen()->frameRate();
 	updateFrameRate();
+}
+
+void EmuSystemTask::drawWindowNow()
+{
+	waitingForPresent_ = true;
+	window().drawNow();
+	framePresentedSem.acquire();
 }
 
 EmuSystemTask::SuspendContext EmuSystemTask::suspend()
@@ -197,11 +202,6 @@ IG::OnFrameDelegate EmuSystemTask::onFrameCalibrate()
 	frameRateDetector = {};
 	return [this](IG::FrameParams params)
 	{
-		if(!app.system().isActive())
-		{
-			log.info("aborted frame rate detection");
-			return false;
-		}
 		if(auto opt = frameRateDetector.run(params.time, Nanoseconds{100}, screen().frameRate().duration()); opt)
 		{
 			if(opt->count())
@@ -220,9 +220,7 @@ IG::OnFrameDelegate EmuSystemTask::onFrameDelayed(int8_t delay)
 	{
 		if(params.isFromRenderer() || app.video.image())
 		{
-			waitingForPresent_ = true;
-			winPtr->drawNow();
-			framePresentedSem.acquire();
+			drawWindowNow();
 		}
 		if(delay)
 		{
@@ -230,10 +228,7 @@ IG::OnFrameDelegate EmuSystemTask::onFrameDelayed(int8_t delay)
 		}
 		else
 		{
-			if(app.system().isActive())
-			{
-				addOnFrame();
-			}
+			addOnFrame();
 		}
 		return false;
 	};
@@ -241,13 +236,13 @@ IG::OnFrameDelegate EmuSystemTask::onFrameDelayed(int8_t delay)
 
 void EmuSystemTask::addOnFrameDelegate(IG::OnFrameDelegate onFrame)
 {
-	winPtr->addOnFrame(onFrame, app.frameClockSource);
+	window().addOnFrame(onFrame, window().toFrameClockMode(app.frameClockSource, FrameClockUsage::fixedRate));
 }
 
 void EmuSystemTask::addOnFrameDelayed()
 {
 	// delay before adding onFrame handler to let timestamps stabilize
-	auto delay = winPtr->screen()->frameRate().hz() / 4;
+	auto delay = window().screen()->frameRate().hz() / 4;
 	//log.info("delaying onFrame handler by {} frames", onFrameHandlerDelay);
 	addOnFrameDelegate(onFrameDelayed(delay));
 	calibrateHostFrameRate();
@@ -261,8 +256,10 @@ void EmuSystemTask::addOnFrame()
 
 void EmuSystemTask::removeOnFrame()
 {
-	winPtr->removeOnFrame(onFrameUpdate, app.frameClockSource);
-	winPtr->removeOnFrame(onFrameCalibrate(), FrameClockSource::Screen);
+	auto mode = window().toFrameClockMode(app.frameClockSource, FrameClockUsage::fixedRate);
+	window().removeOnFrame(onFrameDelayed(0), mode, DelegateFuncEqualsMode::byFunc);
+	window().removeOnFrame(onFrameUpdate, mode);
+	window().removeOnFrame(onFrameCalibrate(), FrameClockMode::screen);
 }
 
 FrameRateConfig EmuSystemTask::configFrameRate(const Screen& screen)
@@ -275,12 +272,16 @@ FrameRateConfig EmuSystemTask::configFrameRate(const Screen& screen)
 FrameRateConfig EmuSystemTask::configFrameRate(const Screen& screen, std::span<const FrameRate> supportedRates)
 {
 	auto &system = app.system();
-	frameRateConfig = app.outputTimingManager.frameRateConfig(system, supportedRates, app.frameClockSource);
+	auto frameClockSrc = app.effectiveFrameClockSource();
+	frameRateConfig = app.outputTimingManager.frameRateConfig(system, supportedRates, frameClockSrc);
 	system.configFrameRate(app.audio.format().rate, frameRateConfig.rate.duration());
 	system.timing.exactFrameDivisor = 0;
-	if(frameRateConfig.refreshMultiplier > 0)
+	if(frameRateConfig.refreshMultiplier > 0 && frameClockSrc != FrameClockSource::Renderer)
 	{
-		system.timing.exactFrameDivisor = std::round(screen.frameRate().hz() / frameRateConfig.rate.hz());
+		if(frameClockSrc == FrameClockSource::Screen)
+			system.timing.exactFrameDivisor = std::round(screen.frameRate().hz() / frameRateConfig.rate.hz());
+		else
+			system.timing.exactFrameDivisor = 1;
 		log.info("using exact frame divisor:{}", system.timing.exactFrameDivisor);
 	}
 	return frameRateConfig;
@@ -305,9 +306,9 @@ void EmuSystemTask::calibrateHostFrameRate()
 {
 	if(!app.system().isActive())
 		return;
-	if(winPtr->evalFrameClockSource(app.frameClockSource) == FrameClockSource::Screen)
+	if(window().evalFrameClockSource(app.frameClockSource, FrameClockUsage::fixedRate) == FrameClockSource::Screen)
 	{
-		winPtr->addOnFrame(onFrameCalibrate(), FrameClockSource::Screen);
+		window().addOnFrame(onFrameCalibrate(), FrameClockMode::screen, 0, InsertMode::unique);
 	}
 }
 
@@ -319,13 +320,12 @@ void EmuSystemTask::setIntendedFrameRate(FrameRateConfig config)
 		enableBlankFrameInsertion = true;
 		if(!app.overrideScreenFrameRate)
 		{
-			log.info("{} {}", config.rate.hz(),  config.refreshMultiplier);
 			config.rate = config.rate.hz() * config.refreshMultiplier;
 			log.info("Multiplied intended frame rate to:{:g}", config.rate.hz());
 		}
 	}
 	return window().setIntendedFrameRate(app.overrideScreenFrameRate ? FrameRate{app.overrideScreenFrameRate} :
-		app.frameClockSource == FrameClockSource::Timer || config.refreshMultiplier ? config.rate :
+		app.effectiveFrameClockSource() == FrameClockSource::Timer || config.refreshMultiplier ? config.rate :
 		screen().supportedFrameRates().back()); // frame rate doesn't divide evenly in screen's refresh rate, prefer the highest rate
 }
 
@@ -441,7 +441,7 @@ std::optional<SteadyClockDuration> FrameRateDetector::run(SteadyClockTimePoint f
 		auto delta  = std::chrono::abs(duration_cast<Nanoseconds>(frameDurations[i + 1] - frameDurations[i]));
 		if(delta > slack)
 		{
-			log.info("frame durations differed by:{}", delta);
+			//log.info("frame durations differed by:{}", delta);
 			return {};
 		}
 	}

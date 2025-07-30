@@ -87,6 +87,7 @@ public:
 	}
 
 	constexpr bool operator ==(DelegateFuncBase const&) const = default;
+	constexpr bool equalsByFunc(DelegateFuncBase const& other) const { return exec == other.exec; }
 
 	template<class... CallArgs>
 	constexpr R callCopy(CallArgs&&... args) const

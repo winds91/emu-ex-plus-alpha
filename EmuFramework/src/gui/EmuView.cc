@@ -128,7 +128,7 @@ void EmuView::setFrameTimingStats(FrameTimingViewStats viewStats)
 	if(hasTime(viewStats.lastFrameTime))
 		deltaDuration = duration_cast<Milliseconds>(stats.startOfFrame - viewStats.lastFrameTime);
 	auto frameDuration = duration_cast<Milliseconds>(stats.endOfFrame - stats.startOfFrame);
-	auto clockHz = emuScreen.frameTimerRate().hz() ?: viewStats.hostRate.hz();
+	auto clockHz = emuScreen.frameTimerRate().hz();
 	frameTimingStatsStr = std::format("Frame Time Stats\n\n"
 		"Screen: {:g}Hz\n"
 		"Clock Source: {:g}Hz\n"

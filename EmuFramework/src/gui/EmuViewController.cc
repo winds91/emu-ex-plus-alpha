@@ -216,7 +216,7 @@ void EmuViewController::showEmulationView()
 		return;
 	viewStack.top().onHide();
 	showingEmulation = true;
-	emuView.window().configureFrameClock(app().frameClockSource);
+	emuView.window().configureFrameClock(app().frameClockSource, FrameClockUsage::fixedRate);
 	configureWindowForEmulation(emuView.window(), true);
 	if(emuView.window() != inputView.window())
 		inputView.postDraw();
@@ -230,7 +230,7 @@ void EmuViewController::showMenuView(bool updateTopView)
 	if(!showingEmulation)
 		return;
 	showingEmulation = false;
-	emuView.window().configureFrameClock(FrameClockSource::Unset);
+	emuView.window().configureFrameClock();
 	presentTime = {};
 	inputView.setSystemGestureExclusion(false);
 	configureWindowForEmulation(emuView.window(), false);

@@ -206,19 +206,15 @@ void ButtonConfigSetView::place()
 	text.compile({.alignment = Gfx::TextAlignment::center});
 	using Quad = decltype(quads)::Type;
 	auto map = quads.map();
-	Quad{{.bounds = viewRect().as<int16_t>()}}.write(map, 0);
+	Quad{{.bounds = displayRect().as<int16_t>()}}.write(map, 0);
 	if(pointerUIIsInit())
 	{
 		unbind.compile();
 		cancel.compile();
-		WRect btnFrame;
-		btnFrame.setPosRel(viewRect().pos(LB2DO), unbind.nominalHeight() * 2, LB2DO);
-		unbindB = btnFrame;
-		unbindB.x = (viewRect().xSize()/2)*0;
-		unbindB.x2 = (viewRect().xSize()/2)*1;
-		cancelB = btnFrame;
-		cancelB.x = (viewRect().xSize()/2)*1;
-		cancelB.x2 = (viewRect().xSize()/2)*2;
+		WRect btnFrame{{0, 0}, {viewRect().xSize() / 2 - unbind.nominalHeight() / 2, unbind.nominalHeight() * 2}};
+		unbindB = cancelB = btnFrame;
+		unbindB.setPos(viewRect().pos(CB2DO) + Point2D{-viewRect().xSize() / 4, -unbind.nominalHeight() / 2}, CB2DO);
+		cancelB.setPos(viewRect().pos(CB2DO) + Point2D{ viewRect().xSize() / 4, -unbind.nominalHeight() / 2}, CB2DO);
 		Quad{{.bounds = unbindB.as<int16_t>()}}.write(map, 1);
 		Quad{{.bounds = cancelB.as<int16_t>()}}.write(map, 2);
 	}

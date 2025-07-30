@@ -56,10 +56,9 @@ FBDevFrameTimer::FBDevFrameTimer(Screen &screen, EventLoop loop):
 				cancelled = false;
 				return true; // frame request was cancelled
 			}
-			if(screen.isPosted())
+			if(!screen.frameUpdate(SteadyClockTimePoint{Nanoseconds{time}}))
 			{
-				if(screen.frameUpdate(SteadyClockTimePoint{Nanoseconds{time}}))
-					scheduleVSync();
+				cancel();
 			}
 			return true;
 		}
@@ -97,6 +96,7 @@ FBDevFrameTimer::FBDevFrameTimer(Screen &screen, EventLoop loop):
 			}
 			close(fbdev);
 		});
+	log.info("created frame timer");
 }
 
 FBDevFrameTimer::~FBDevFrameTimer()
@@ -126,6 +126,12 @@ void FBDevFrameTimer::cancel()
 void FBDevFrameTimer::setEventsOnThisThread(ApplicationContext)
 {
 	fdSrc.attach(EventLoop::forThread(), {});
+}
+
+void FBDevFrameTimer::removeEvents(ApplicationContext)
+{
+	cancel();
+	fdSrc.detach();
 }
 
 bool FBDevFrameTimer::testSupport()

@@ -34,7 +34,6 @@ namespace IG
 class ApplicationContext;
 
 using FrameTimerVariant = std::variant<
-	NullFrameTimer,
 	SimpleFrameTimer,
 	#if CONFIG_PACKAGE_LIBDRM
 	DRMFrameTimer,
@@ -71,7 +70,6 @@ public:
 
 protected:
 	xcb_screen_t* xScreen{};
-	FrameTimer frameTimer;
 	FrameRate frameRate_{};
 	float xMM{}, yMM{};
 	bool reliableFrameTime = true;

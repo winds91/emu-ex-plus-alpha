@@ -30,6 +30,7 @@ public:
 	void scheduleVSync();
 	void cancel();
 	void setEventsOnThisThread(ApplicationContext);
+	void removeEvents(ApplicationContext);
 	static bool testSupport();
 
 	explicit operator bool() const

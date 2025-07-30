@@ -142,6 +142,7 @@ private:
 	FrameRateConfig configFrameRate(const Screen&);
 	FrameRateConfig configFrameRate(const Screen&, std::span<const FrameRate> supportedRates);
 	void setWindowInternal(Window&);
+	void drawWindowNow();
 };
 
 }

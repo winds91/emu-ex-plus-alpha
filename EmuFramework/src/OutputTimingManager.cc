@@ -78,10 +78,13 @@ FrameRateConfig OutputTimingManager::frameRateConfig(const EmuSystem &system, st
 {
 	auto t = frameRateVar(system.videoSystem());
 	assumeExpr(frameRateOptionIsValid(t));
+	assert(frameClockSrc != FrameClockSource::Unset);
 	if(t.count() > 0)
 		return {t, 0};
-	else if(t == originalOption || frameClockSrc == FrameClockSource::Timer)
+	else if(t == originalOption)
 		return {system.scaledFrameRate(), 0};
+	else if(frameClockSrc == FrameClockSource::Timer)
+		return {system.scaledFrameRate(), 1};
 	return bestOutputRateForScreen(supportedFrameRates, system.scaledFrameRate());
 }
 

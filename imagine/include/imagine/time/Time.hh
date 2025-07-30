@@ -104,19 +104,23 @@ WISE_ENUM_CLASS((FrameClockSource, uint8_t),
 	Screen,
 	Timer);
 
+enum class FrameClockUsage: uint8_t {normal, fixedRate};
+
+enum class FrameClockMode: uint8_t {renderer, screen};
+
 class FrameParams
 {
 public:
 	SteadyClockTimePoint time;
 	SteadyClockTimePoint lastTime;
 	SteadyClockDuration duration;
-	FrameClockSource timeSource;
+	FrameClockMode mode;
 
 	SteadyClockTimePoint presentTime(int frames) const;
 	int elapsedFrames() const;
 	static int elapsedFrames(SteadyClockTimePoint time, SteadyClockTimePoint lastTime, SteadyClockDuration frameDuration);
-	bool isFromRenderer() const { return timeSource == FrameClockSource::Renderer; }
-	bool isFromScreen() const { return timeSource == FrameClockSource::Screen; }
+	bool isFromRenderer() const { return mode == FrameClockMode::renderer; }
+	bool isFromScreen() const { return mode == FrameClockMode::screen; }
 };
 
 class FrameRate

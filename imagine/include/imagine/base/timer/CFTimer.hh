@@ -36,6 +36,7 @@ class CFTimer
 public:
 	using TimePoint = SteadyClockTimePoint;
 
+	constexpr CFTimer() = default;
 	CFTimer(TimerDesc, CallbackDelegate);
 	CFTimer(CFTimer&&) noexcept;
 	CFTimer &operator=(CFTimer&&) noexcept;

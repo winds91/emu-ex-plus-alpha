@@ -239,13 +239,13 @@ public:
 	void updateContentRotation();
 	Gfx::PresentMode effectivePresentMode() const
 	{
-		if(frameClockSource == FrameClockSource::Renderer)
+		if(effectiveFrameClockSource() == FrameClockSource::Renderer)
 			return Gfx::PresentMode::Auto;
 		return presentMode;
 	};
 	FrameClockSource effectiveFrameClockSource() const
 	{
-		return emuWindow().evalFrameClockSource(frameClockSource);
+		return emuWindow().evalFrameClockSource(frameClockSource, FrameClockUsage::fixedRate);
 	};
 
 	// System Options

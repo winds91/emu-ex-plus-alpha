@@ -119,7 +119,7 @@ ssize_t PosixIO::read(void *buff, size_t bytes, std::optional<off_t> offset)
 		if(bytesRead == -1) [[unlikely]]
 		{
 			if(Config::DEBUG_BUILD && errno != EAGAIN)
-				log.error("error reading %zu bytes", bytes);
+				log.error("error reading {} bytes", bytes);
 		}
 		return bytesRead;
 	}

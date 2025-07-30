@@ -37,6 +37,7 @@ struct ALooperFDEventSourceInfo
 class ALooperFDEventSource
 {
 public:
+	constexpr ALooperFDEventSource() = default;
 	ALooperFDEventSource(MaybeUniqueFileDescriptor, FDEventSourceDesc, PollEventDelegate);
 	ALooperFDEventSource(ALooperFDEventSource&&) noexcept;
 	ALooperFDEventSource &operator=(ALooperFDEventSource&&) noexcept;

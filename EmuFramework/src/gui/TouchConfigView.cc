@@ -926,7 +926,7 @@ TouchConfigView::TouchConfigView(ViewAttachParams attach, VController &vCtrl):
 	},
 	resetEmuPositions
 	{
-		"Reset Emulated Device Positions", attach,
+		"Reset Emulator Button Positions", attach,
 		[this](const Input::Event &e)
 		{
 			pushAndShowModal(makeView<YesNoAlertView>("Reset buttons to default positions?",
@@ -942,7 +942,7 @@ TouchConfigView::TouchConfigView(ViewAttachParams attach, VController &vCtrl):
 	},
 	resetEmuGroups
 	{
-		"Reset Emulated Device Groups", attach,
+		"Reset Emulator Button Groups", attach,
 		[this](const Input::Event &e)
 		{
 			pushAndShowModal(makeView<YesNoAlertView>("Reset buttons groups to default?",
@@ -992,7 +992,7 @@ TouchConfigView::TouchConfigView(ViewAttachParams attach, VController &vCtrl):
 	},
 	devButtonsHeading
 	{
-		"Emulated Device Button Groups", attach
+		"Emulator Button Groups", attach
 	},
 	uiButtonsHeading
 	{

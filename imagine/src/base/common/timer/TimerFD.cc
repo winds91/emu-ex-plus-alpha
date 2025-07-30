@@ -138,8 +138,13 @@ void Timer::setCallback(CallbackDelegate callback)
 
 void Timer::setEventLoop(EventLoop loop)
 {
-	cancel();
 	fdSrc.attach(loop);
+}
+
+void Timer::unsetEventLoop()
+{
+	cancel();
+	fdSrc.detach();
 }
 
 void Timer::dispatchEarly()

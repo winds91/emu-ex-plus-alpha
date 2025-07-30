@@ -431,7 +431,12 @@ bool InputManager::readSavedInputDevices(MapIO &io)
 		readSizedData<uint8_t>(io, devConf.keyConfName);
 		if(!find(savedDevConfigs, [&](const auto &confPtr){ return *confPtr == devConf;}))
 		{
-			log.info("read input device config:{}, id:{}", devConf.name, devConf.enumId);
+			log.info("read input device config:{}, id:{} key conf:{}", devConf.name, devConf.enumId, devConf.keyConfName);
+			if(!std::ranges::contains(customKeyConfigs, devConf.keyConfName, [](const auto& p) -> std::string_view { return p->name; }))
+			{
+				log.warn("key conf:{} doesn't exist, resetting to default", devConf.keyConfName);
+				devConf.keyConfName.clear();
+			}
 			savedDevConfigs.emplace_back(std::make_unique<InputDeviceSavedConfig>(std::move(devConf)));
 		}
 		else

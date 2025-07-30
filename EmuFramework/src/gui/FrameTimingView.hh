@@ -36,7 +36,7 @@ public:
 	void loadStockItems();
 
 protected:
-	static constexpr int MAX_ASPECT_RATIO_ITEMS = 5;
+	static constexpr size_t maxFrameClockItems = 4;
 	TextMenuItem frameIntervalItem[5];
 	MultiChoiceMenuItem frameInterval;
 	TextMenuItem frameRateItems[3];
@@ -44,7 +44,7 @@ protected:
 	MultiChoiceMenuItem frameRate;
 	MultiChoiceMenuItem frameRatePAL;
 	BoolMenuItem frameTimingStats;
-	TextMenuItem frameClockItems[4];
+	StaticArrayList<TextMenuItem, maxFrameClockItems> frameClockItems;
 	MultiChoiceMenuItem frameClock;
 	ConditionalMember<Gfx::supportsPresentModes, TextMenuItem> presentModeItems[3];
 	ConditionalMember<Gfx::supportsPresentModes, MultiChoiceMenuItem> presentMode;

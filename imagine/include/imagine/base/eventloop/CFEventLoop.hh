@@ -41,6 +41,7 @@ struct CFFDEventSourceInfo
 class CFFDEventSource
 {
 public:
+	constexpr CFFDEventSource() = default;
 	CFFDEventSource(MaybeUniqueFileDescriptor, FDEventSourceDesc, PollEventDelegate);
 	CFFDEventSource(CFFDEventSource&&) noexcept;
 	CFFDEventSource &operator=(CFFDEventSource&&) noexcept;

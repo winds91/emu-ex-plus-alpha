@@ -105,6 +105,7 @@ public:
 
 	constexpr bool operator==(KeyConfig const& rhs) const { return name == rhs.name; }
 	constexpr bool operator==(KeyConfigDesc const& rhs) const { return name == rhs.name; }
+	constexpr bool operator==(std::string_view rhs) const { return name == rhs; }
 	constexpr explicit operator bool() { return name.size(); }
 	constexpr KeyConfigDesc desc() const { return{map, devSubtype, name, keyMap}; }
 	void set(KeyInfo, MappedKeys);

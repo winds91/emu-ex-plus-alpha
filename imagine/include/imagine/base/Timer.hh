@@ -42,11 +42,13 @@ struct Timer : public TimerImpl
 public:
 	using Time = TimePoint::duration;
 
+	constexpr Timer() = default;
 	Timer(TimerDesc desc, CallbackDelegate del): TimerImpl{desc, del} {}
 	void run(Time time, Time repeatTime, bool isAbsoluteTime = false, CallbackDelegate c = {});
 	void cancel();
 	void setCallback(CallbackDelegate);
 	void setEventLoop(EventLoop);
+	void unsetEventLoop();
 	void dispatchEarly();
 	bool isArmed();
 	explicit operator bool() const;
