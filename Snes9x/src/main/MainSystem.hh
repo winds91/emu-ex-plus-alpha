@@ -91,10 +91,8 @@ public:
 	Property<uint8_t, CFGKEY_AUDIO_DSP_INTERPOLATON,
 		PropertyDesc<uint8_t>{.defaultValue = DSP_INTERPOLATION_GAUSSIAN, .isValid = isValidWithMax<4>}> optionAudioDSPInterpolation;
 	#endif
-	static constexpr FloatSeconds ntscFrameTimeSecs{357366. / 21477272.}; // ~60.098Hz
-	static constexpr FloatSeconds palFrameTimeSecs{425568. / 21281370.}; // ~50.00Hz
-	static constexpr auto ntscFrameRate{round<SteadyClockDuration>(ntscFrameTimeSecs)};
-	static constexpr auto palFrameRate{round<SteadyClockDuration>(palFrameTimeSecs)};
+	static constexpr FrameRate ntscFrameRate{21477272. / 357366.}; // ~60.098Hz
+	static constexpr FrameRate palFrameRate{21281370. / 425568.}; // ~50.00Hz
 
 	Snes9xSystem(ApplicationContext ctx):
 		EmuSystem{ctx}
@@ -119,7 +117,6 @@ public:
 	}
 	void setupSNESInput(VController &);
 	static bool hasBiosExtension(std::string_view name);
-	FloatSeconds frameTimeSecs() const { return videoSystem() == VideoSystem::PAL ? palFrameTimeSecs : ntscFrameTimeSecs; }
 	MutablePixmapView fbPixmapView(WSize size, bool useInterlaceFields);
 	void writeCheatFile();
 

@@ -56,7 +56,10 @@ bool EmuSystem::hasRectangularPixels = true;
 bool EmuApp::needsGlobalInstance = true;
 
 MdApp::MdApp(ApplicationInitParams initParams, ApplicationContext &ctx):
-	EmuApp{initParams, ctx}, mdSystem{ctx} {}
+	EmuApp{initParams, ctx}, mdSystem{ctx}
+{
+	audio_init(44100, 60);
+}
 
 static bool hasBinExtension(std::string_view name)
 {
@@ -453,9 +456,8 @@ void MdSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 	if(snd.sample_rate == outputRate && snd.frame_rate == outputFrameRate.hz())
 		return;
 	log.info("set sound output rate:{} for fps:{}", outputRate, outputFrameRate.hz());
-	audio_init(outputRate, outputFrameRate.hz());
+	audio_set_rate(outputRate, outputFrameRate.hz());
 	sound_restore();
-	//log.debug("set sound buffer size:{}", snd.buffer_size);
 }
 
 bool MdSystem::onVideoRenderFormatChange(EmuVideo &, IG::PixelFormat fmt)

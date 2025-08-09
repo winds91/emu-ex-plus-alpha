@@ -21,6 +21,7 @@
 #include <imagine/time/Time.hh>
 #include <imagine/util/variant.hh>
 #include <imagine/util/ScopeGuard.hh>
+#include <flat_map>
 
 namespace EmuEx
 {
@@ -34,12 +35,32 @@ class EmuApp;
 class FrameRateDetector
 {
 public:
-	std::optional<SteadyClockDuration> run(SteadyClockTimePoint frameTime, SteadyClockDuration slack, SteadyClockDuration screenFrameDuration);
+	constexpr FrameRateDetector() = default;
+	bool addFrame(FrameParams);
+	auto framesCounted() const { return frameDurations; }
+	bool hasConsistentRate() const { return consistentDurations >= wantedConsistentFrames; }
+	auto frameDuration() const { return frameDuration_; }
+
+	bool setFrameDuration(SteadyClockDuration duration)
+	{
+		if(duration == frameDuration_ && hasConsistentRate())
+			return false;
+		*this = {};
+		frameDuration_ = duration;
+		return true;
+	}
+
+	SteadyClockDuration estimatedFrameDuration() const
+	{
+		return hasConsistentRate() ? allFrameDurations / frameDurations : SteadyClockDuration{};
+	}
 
 private:
-	using FrameTimeSamples = StaticArrayList<SteadyClockTimePoint, 4>;
-	FrameTimeSamples frameTimeSamples;
-	int totalFrameTimeCount{};
+	SteadyClockDuration frameDuration_{};
+	SteadyClockDuration allFrameDurations{};
+	uint16_t frameDurations{};
+	uint16_t consistentDurations{};
+	static constexpr int wantedConsistentFrames = 128;
 };
 
 class EmuSystemTask
@@ -105,9 +126,8 @@ public:
 	auto threadId() const { return threadId_; }
 	Window &window(this auto&& self) { return *self.winPtr; }
 	Screen &screen(this auto&& self) { return *self.window().screen(); }
-	void updateHostFrameRate(FrameRate);
-	void updateFrameRate();
-	void calibrateHostFrameRate();
+	void updateScreenFrameRate(FrameRate);
+	void updateSystemFrameRate();
 	bool advanceFrames(FrameParams);
 	bool waitingForPresent() const { return waitingForPresent_; }
 	void notifyWindowPresented();
@@ -121,10 +141,10 @@ private:
 	ThreadId threadId_{};
 	std::binary_semaphore framePresentedSem{0};
 	std::binary_semaphore suspendSem{0};
-	FrameRate hostFrameRate;
 	FrameRateConfig frameRateConfig;
 	int savedAdvancedFrames{};
 	FrameRateDetector frameRateDetector;
+	ConditionalMember<Config::multipleScreenFrameRates, std::flat_map<SteadyClockDuration, FrameRate>> detectedFrameRateMap;
 public:
 	bool enableBlankFrameInsertion{};
 private:
@@ -136,11 +156,14 @@ private:
 	void addOnFrame();
 	void removeOnFrame();
 	IG::OnFrameDelegate onFrameCalibrate();
-	IG::OnFrameDelegate onFrameDelayed(int8_t delay);
+	IG::OnFrameDelegate onFrameDelayed(uint16_t delay);
 	void addOnFrameDelegate(IG::OnFrameDelegate);
 	void setIntendedFrameRate(FrameRateConfig);
+	FrameRate remapScreenFrameRate(FrameRate) const;
 	FrameRateConfig configFrameRate(const Screen&);
-	FrameRateConfig configFrameRate(const Screen&, std::span<const FrameRate> supportedRates);
+	FrameRateConfig configFrameRate(FrameRate rate) { return configFrameRate(std::span{&rate, 1}); }
+	FrameRateConfig configFrameRate(std::span<const FrameRate> supportedRates);
+	void calibrateScreenFrameRate(FrameRate);
 	void setWindowInternal(Window&);
 	void drawWindowNow();
 };

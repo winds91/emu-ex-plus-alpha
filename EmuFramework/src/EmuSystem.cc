@@ -334,7 +334,7 @@ void EmuSystem::configFrameRate(int outputRate, FrameDuration outputFrameDuratio
 {
 	if(!hasContent())
 		return;
-	if(frameDurationMultiplier == 1.)
+	if(frameRateMultiplier == 1.)
 	{
 		configAudioRate(outputFrameDuration, outputRate);
 		audioFramesPerVideoFrameFloat = outputRate * duration_cast<FloatSeconds>(outputFrameDuration).count();
@@ -353,9 +353,9 @@ void EmuSystem::onFrameRateChanged()
 double EmuSystem::audioMixRate(int outputRate, FrameRate inputFrameRate, FrameRate outputFrameRate)
 {
 	assumeExpr(outputRate > 0);
-	assumeExpr(inputFrameRate.duration().count() > 0);
-	assumeExpr(outputFrameRate.duration().count() > 0);
-	return inputFrameRate.hz() * duration_cast<FloatSeconds>(outputFrameRate.duration()).count() * outputRate;
+	assumeExpr(inputFrameRate.hz() > 0);
+	assumeExpr(outputFrameRate.hz() > 0);
+	return (inputFrameRate.hz() / outputFrameRate.hz()) * outputRate;
 }
 
 int EmuSystem::updateAudioFramesPerVideoFrame()

@@ -119,8 +119,8 @@ public:
 	Property<uint8_t, CFGKEY_DEFAULT_VIDEO_SYSTEM,
 		PropertyDesc<uint8_t>{.defaultValue = 0, .isValid = isValidWithMax<3>}> optionDefaultVideoSystem;
 	Property<bool, CFGKEY_SPRITE_LIMIT, PropertyDesc<bool>{.defaultValue = true}> optionSpriteLimit;
-	Property<uint8_t, CFGKEY_SOUND_QUALITY,
-		PropertyDesc<uint8_t>{.defaultValue = 0, .isValid = isValidWithMax<2>}> optionSoundQuality;
+	Property<uint8_t, CFGKEY_SOUND_QUALITY, // default to "High" (1) as "Normal" (0) has low accuracy affecting samples per frame
+		PropertyDesc<uint8_t>{.defaultValue = 1, .isValid = isValidWithMax<2>}> optionSoundQuality;
 	Property<bool, CFGKEY_COMPATIBLE_FRAMESKIP> optionCompatibleFrameskip;
 	Property<uint8_t, CFGKEY_START_VIDEO_LINE,
 		PropertyDesc<uint8_t>{.defaultValue = 8, .isValid = isSupportedStartingLine}> optionDefaultStartVideoLine;
@@ -132,8 +132,8 @@ public:
 		PropertyDesc<uint8_t>{.defaultValue = 224, .isValid = isSupportedLineCount}> optionVisibleVideoLines;
 	Property<bool, CFGKEY_HORIZONTAL_VIDEO_CROP> optionHorizontalVideoCrop;
 	Property<bool, CFGKEY_CORRECT_LINE_ASPECT> optionCorrectLineAspect;
-	static constexpr FrameRate ntscFrameRate{fromSeconds<SteadyClockDuration>(16777215./ 1008307711.)}; // ~60.099Hz
-	static constexpr FrameRate palFrameRate{fromSeconds<SteadyClockDuration>(16777215. / 838977920.)}; // ~50.00Hz
+	static constexpr FrameRate ntscFrameRate{1008307711. / 16777215.}; // ~60.099Hz
+	static constexpr FrameRate palFrameRate{838977920. / 16777215.}; // ~50.00Hz
 
 	NesSystem(ApplicationContext);
 	void connectNESInput(int port, ESI type);

@@ -29,8 +29,9 @@ namespace EmuEx
 
 using CheatCodeString = StaticString<11>;
 
-struct CheatCode
+class CheatCode
 {
+public:
 	CheatCodeString text;
 	uint32_t address{};
 	uint16_t data{};
@@ -40,8 +41,9 @@ struct CheatCode
 	constexpr bool operator==(const CheatCode& rhs) const { return text == rhs.text;  }
 };
 
-struct Cheat
+class Cheat
 {
+public:
 	StaticString<MAX_CHEAT_NAME_CHARS> name;
 	std::vector<CheatCode> codes;
 	union

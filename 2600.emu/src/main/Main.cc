@@ -193,7 +193,7 @@ void A2600System::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAud
 	}
 	if(auto newInputVideoFrameRate = osystem.console().currentFrameRate();
 		configuredInputVideoFrameRate != newInputVideoFrameRate
-		&& newInputVideoFrameRate >= 40.0 && newInputVideoFrameRate <= 70.0) [[unlikely]]
+		&& newInputVideoFrameRate >= 40.0f && newInputVideoFrameRate <= 70.0f) [[unlikely]]
 	{
 		onFrameRateChanged();
 	}

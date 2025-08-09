@@ -162,12 +162,12 @@ class BaseEditCheatView : public TableView, public EmuAppHelper
 {
 public:
 	BaseEditCheatView(UTF16Convertible auto &&viewName, ViewAttachParams attach, Cheat& cheat,
-		BaseEditCheatsView& editCheatsView_, TableView::ItemSourceDelegate itemSrc):
+		BaseEditCheatsView& editCheatsView_):
 		TableView
 		{
 			IG_forward(viewName),
 			attach,
-			itemSrc
+			items
 		},
 		cheatPtr{&cheat},
 		editCheatsView{editCheatsView_},

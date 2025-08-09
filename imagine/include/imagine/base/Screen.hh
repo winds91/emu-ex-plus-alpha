@@ -56,7 +56,7 @@ public:
 	void setFrameRate(FrameRate);
 	FrameRate frameRate() const;
 	FrameRate frameTimerRate() const;
-	SteadyClockDuration presentationDeadline() const;
+	SteadyClockDuration targetFrameDuration() const;
 	std::span<const FrameRate> supportedFrameRates() const;
 	void setFrameInterval(int interval);
 	static bool supportsFrameInterval();
@@ -76,7 +76,7 @@ private:
 	bool framePosted{};
 	bool isActive{true};
 
-	void runOnFrameDelegates(SteadyClockTimePoint timestamp);
+	void runOnFrameDelegates(SteadyClockTimePoint);
 	void postFrame();
 	void unpostFrame();
 	bool shouldUpdateFrameTimer(const FrameTimer&, bool newVariableFrameTimeValue);

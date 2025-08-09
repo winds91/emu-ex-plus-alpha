@@ -101,8 +101,8 @@ void EmuApp::saveConfigFile(FileIO &io)
 	writeOptionValueIfNotDefault(io, cpuAffinityMask);
 	writeOptionValueIfNotDefault(io, cpuAffinityMode);
 	writeOptionValueIfNotDefault(io, presentMode);
-	if(renderer.supportsPresentationTime())
-		writeOptionValueIfNotDefault(io, CFGKEY_RENDERER_PRESENTATION_TIME, presentationTimeMode, PresentationTimeMode::basic);
+	if(emuWindow().supportsFrameClockSource(FrameClockSource::Screen))
+		writeOptionValueIfNotDefault(io, outputFrameRateMode);
 	writeStringOptionValue(io, CFGKEY_LAST_DIR, contentSearchPath);
 	writeStringOptionValue(io, CFGKEY_SAVE_PATH, system().userSaveDirectory());
 	writeStringOptionValue(io, CFGKEY_SCREENSHOTS_PATH, userScreenshotPath);
@@ -210,8 +210,7 @@ EmuApp::ConfigParams EmuApp::loadConfigFile(IG::ApplicationContext ctx)
 				case CFGKEY_CPU_AFFINITY_MASK: return readOptionValue(io, cpuAffinityMask);
 				case CFGKEY_CPU_AFFINITY_MODE: return readOptionValue(io, cpuAffinityMode);
 				case CFGKEY_RENDERER_PRESENT_MODE: return readOptionValue(io, presentMode);
-				case CFGKEY_RENDERER_PRESENTATION_TIME:
-					return used(presentationTimeMode) ? readOptionValue(io, presentationTimeMode, [](auto m){return m <= lastEnum<PresentationTimeMode>;}) : false;
+				case CFGKEY_OUTPUT_FRAME_RATE_MODE: return readOptionValue(io, outputFrameRateMode);
 				case CFGKEY_FRAME_CLOCK: return readOptionValue(io, frameClockSource);
 				case CFGKEY_AUDIO_SOLO_MIX:
 					audio.manager.setSoloMix(readOptionValue<bool>(io));

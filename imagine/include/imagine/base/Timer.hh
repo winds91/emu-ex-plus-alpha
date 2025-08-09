@@ -27,55 +27,57 @@
 #endif
 
 #include <chrono>
+#include <string_view>
 
 namespace IG
 {
 
 struct TimerDesc
 {
-	const char* debugLabel{};
+	std::string_view debugLabel{};
 	EventLoop eventLoop{};
 };
 
 struct Timer : public TimerImpl
 {
 public:
-	using Time = TimePoint::duration;
+	using Duration = TimePoint::duration;
 
 	constexpr Timer() = default;
 	Timer(TimerDesc desc, CallbackDelegate del): TimerImpl{desc, del} {}
-	void run(Time time, Time repeatTime, bool isAbsoluteTime = false, CallbackDelegate c = {});
+	void run(Duration timeUntilRun, Duration repeatInterval, bool isAbsoluteTime = false, CallbackDelegate c = {});
 	void cancel();
 	void setCallback(CallbackDelegate);
 	void setEventLoop(EventLoop);
 	void unsetEventLoop();
 	void dispatchEarly();
-	bool isArmed();
+	bool isArmed() const;
+	Duration timeUntilRun() const;
 	explicit operator bool() const;
 
-	void runIn(ChronoDuration auto time,
-		ChronoDuration auto repeatTime,
+	void runIn(ChronoDuration auto timeUntilRun,
+		ChronoDuration auto repeatInterval,
 		CallbackDelegate f = {})
 	{
-		run(time, repeatTime, false, f);
+		run(timeUntilRun, repeatInterval, false, f);
 	}
 
 	void runAt(TimePoint time,
-		ChronoDuration auto repeatTime,
+		ChronoDuration auto repeatInterval,
 		CallbackDelegate f = {})
 	{
-		run(time.time_since_epoch(), repeatTime, true, f);
+		run(time.time_since_epoch(), repeatInterval, true, f);
 	}
 
 	// non-repeating timer
-	void runIn(ChronoDuration auto time, CallbackDelegate f = {})
+	void runIn(ChronoDuration auto timeUntilRun, CallbackDelegate f = {})
 	{
-		run(time, Time{}, false, f);
+		run(timeUntilRun, Duration{}, false, f);
 	}
 
 	void runAt(TimePoint time, CallbackDelegate f = {})
 	{
-		run(time.time_since_epoch(), Time{}, true, f);
+		run(time.time_since_epoch(), Duration{}, true, f);
 	}
 };
 

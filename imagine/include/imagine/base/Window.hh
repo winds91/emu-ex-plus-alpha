@@ -56,7 +56,7 @@ public:
 	void drawNow(bool needsSync = false);
 	Screen *screen() const;
 	NativeWindow nativeObject() const;
-	void setIntendedFrameRate(FrameRate rate);
+	void setIntendedFrameRate(FrameRate);
 	void setFormat(NativeWindowFormat);
 	void setFormat(PixelFormat);
 	PixelFormat pixelFormat() const;

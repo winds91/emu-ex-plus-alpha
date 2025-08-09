@@ -70,8 +70,8 @@ enum class AltSpeedMode
 	fast, slow
 };
 
-WISE_ENUM_CLASS((PresentationTimeMode, uint8_t),
-	off, basic, full
+WISE_ENUM_CLASS((OutputFrameRateMode, uint8_t),
+	Auto, Detect, Screen
 );
 
 WISE_ENUM_CLASS((CPUAffinityMode, uint8_t),
@@ -199,7 +199,7 @@ public:
 	std::unique_ptr<YesNoAlertView> makeCloseContentView();
 	void applyOSNavStyle(IG::ApplicationContext, bool inEmu);
 	void setCPUNeedsLowLatency(IG::ApplicationContext, bool needed);
-	void reportFrameWorkTime(Nanoseconds);
+	void reportFrameWorkDuration(Nanoseconds);
 	void renderSystemFramebuffer(EmuVideo &);
 	void renderSystemFramebuffer() { renderSystemFramebuffer(video); }
 	bool writeScreenshot(IG::PixmapView, CStringView path);
@@ -246,6 +246,11 @@ public:
 	FrameClockSource effectiveFrameClockSource() const
 	{
 		return emuWindow().evalFrameClockSource(frameClockSource, FrameClockUsage::fixedRate);
+	};
+	OutputFrameRateMode effectiveOutputFrameRateMode() const
+	{
+		return outputFrameRateMode == OutputFrameRateMode::Auto ?
+			(emuScreen().frameRateIsReliable() ? OutputFrameRateMode::Screen : OutputFrameRateMode::Detect) : outputFrameRateMode;
 	};
 
 	// System Options
@@ -375,7 +380,7 @@ public:
 	ConditionalProperty<Config::envIsAndroid, bool, CFGKEY_SUSTAINED_PERFORMANCE_MODE> useSustainedPerformanceMode;
 	ConditionalProperty<Config::Input::BLUETOOTH && Config::BASE_CAN_BACKGROUND_APP, bool, CFGKEY_KEEP_BLUETOOTH_ACTIVE> keepBluetoothActive;
 	ConditionalProperty<Config::Input::DEVICE_HOTSWAP, bool, CFGKEY_NOTIFY_INPUT_DEVICE_CHANGE, {.defaultValue = true}> notifyOnInputDeviceChange;
-	ConditionalMember<Config::multipleScreenFrameRates, float> overrideScreenFrameRate{};
+	ConditionalMember<Config::multipleScreenFrameRates, double> overrideScreenFrameRate{};
 	Property<FrameClockSource, CFGKEY_FRAME_CLOCK,
 		{.defaultValue = FrameClockSource::Unset, .isValid = enumIsValidUpToLast}> frameClockSource;
 	ConditionalProperty<Config::cpuAffinity, CPUAffinityMode, CFGKEY_CPU_AFFINITY_MODE,
@@ -383,9 +388,10 @@ public:
 	ConditionalMember<Config::envIsAndroid && Config::DEBUG_BUILD, bool> useNoopThread{};
 	ConditionalProperty<Gfx::supportsPresentModes, Gfx::PresentMode, CFGKEY_RENDERER_PRESENT_MODE,
 		{.defaultValue = Gfx::PresentMode::Auto, .isValid = enumIsValidUpToLast}> presentMode;
-	ConditionalMember<Gfx::supportsPresentationTime, PresentationTimeMode> presentationTimeMode{PresentationTimeMode::basic};
 	Property<bool, CFGKEY_BLANK_FRAME_INSERTION> allowBlankFrameInsertion;
 	Property<bool, CFGKEY_SHOW_FRAME_TIMING_STATS> showFrameTimingStats;
+	Property<OutputFrameRateMode, CFGKEY_OUTPUT_FRAME_RATE_MODE,
+		{.defaultValue = OutputFrameRateMode::Auto, .isValid = enumIsValidUpToLast}> outputFrameRateMode;
 
 protected:
 	struct ConfigParams

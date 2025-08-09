@@ -448,7 +448,9 @@ static Cheat& prepareCheat(auto& cheatList, std::string_view name)
 {
 	auto cheatIt = find(cheatList, [&](auto& c){ return name == c.name; });
 	if(cheatIt)
-		return **cheatIt;
+	{;
+		return std::ref(**cheatIt);
+	}
 	return cheatList.emplace_back(Cheat{.name = StaticString<MAX_CHEAT_NAME_CHARS>{name}});
 }
 
@@ -650,8 +652,7 @@ EditCheatView::EditCheatView(ViewAttachParams attach, Cheat& cheat, BaseEditChea
 		"Edit Cheat",
 		attach,
 		cheat,
-		editCheatsView,
-		items
+		editCheatsView
 	},
 	addCode
 	{

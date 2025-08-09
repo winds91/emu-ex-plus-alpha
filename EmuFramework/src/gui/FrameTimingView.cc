@@ -63,11 +63,6 @@ FrameTimingView::FrameTimingView(ViewAttachParams attach):
 		{"Auto (Match screen when rates are similar)", attach,
 			[this]
 			{
-				if(!app().viewController().emuWindowScreen()->frameRateIsReliable())
-				{
-					app().postErrorMessage("Reported rate potentially unreliable, "
-						"using the detected rate may give better results");
-				}
 				onFrameRateChange(activeVideoSystem, OutputTimingManager::autoOption);
 			}, {.id = OutputTimingManager::autoOption.count()}
 		},
@@ -102,7 +97,7 @@ FrameTimingView::FrameTimingView(ViewAttachParams attach):
 	},
 	frameRate
 	{
-		"Frame Rate", attach,
+		"Input Rate", attach,
 		app().outputTimingManager.frameRateOptionAsMenuId(VideoSystem::NATIVE_NTSC),
 		frameRateItems,
 		{
@@ -120,7 +115,7 @@ FrameTimingView::FrameTimingView(ViewAttachParams attach):
 	},
 	frameRatePAL
 	{
-		"Frame Rate (PAL)", attach,
+		"Input Rate (PAL)", attach,
 		app().outputTimingManager.frameRateOptionAsMenuId(VideoSystem::PAL),
 		frameRateItems,
 		{
@@ -175,11 +170,35 @@ FrameTimingView::FrameTimingView(ViewAttachParams attach):
 			}
 		},
 	},
+	outputRateModeItems
+	{
+		{"Auto",                                     attach, MenuItem::Config{.id = OutputFrameRateMode::Auto}},
+		{"Detect (Calculate rate during emulation)", attach, MenuItem::Config{.id = OutputFrameRateMode::Detect}},
+		{"Screen (Use reported rate directly)",      attach, MenuItem::Config{.id = OutputFrameRateMode::Screen}},
+	},
+	outputRateMode
+	{
+		"Output Rate", attach,
+		MenuId{OutputFrameRateMode(app().outputFrameRateMode)},
+		outputRateModeItems,
+		MultiChoiceMenuItem::Config
+		{
+			.onSetDisplayString = [this](auto, Gfx::Text& t)
+			{
+				t.resetString(wise_enum::to_string(app().effectiveOutputFrameRateMode()));
+				return true;
+			},
+			.defaultItemOnSelect = [this](TextMenuItem &item)
+			{
+				app().outputFrameRateMode = OutputFrameRateMode(item.id.val);
+			}
+		},
+	},
 	presentModeItems
 	{
-		{"Auto",                                                 attach, MenuItem::Config{.id = Gfx::PresentMode::Auto}},
-		{"Immediate (Less compositor latency, may drop frames)", attach, MenuItem::Config{.id = Gfx::PresentMode::Immediate}},
-		{"Queued (Better frame rate stability)",                 attach, MenuItem::Config{.id = Gfx::PresentMode::FIFO}},
+		{"Auto",                              attach, MenuItem::Config{.id = Gfx::PresentMode::Auto}},
+		{"Immediate (For VRR/VSync off use)", attach, MenuItem::Config{.id = Gfx::PresentMode::Immediate}},
+		{"Queued (For standard use)",         attach, MenuItem::Config{.id = Gfx::PresentMode::FIFO}},
 	},
 	presentMode
 	{
@@ -204,10 +223,19 @@ FrameTimingView::FrameTimingView(ViewAttachParams attach):
 		[&]
 		{
 			std::vector<TextMenuItem> items;
-			auto setRateDel = [this](TextMenuItem& item) { app().overrideScreenFrameRate = std::bit_cast<float>(item.id); };
-			items.emplace_back("Off", attach, setRateDel, MenuItem::Config{.id = 0});
+			items.emplace_back("Off", attach, [this]() { app().overrideScreenFrameRate = 0; }, MenuItem::Config{.id = 0});
 			for(auto rate : app().emuScreen().supportedFrameRates())
-				items.emplace_back(std::format("{:g}Hz", rate.hz()), attach, setRateDel, MenuItem::Config{.id = std::bit_cast<MenuId>(rate.hz())});
+			{
+				doIfUsed(screenFrameRateItems, [&]([[maybe_unused]] auto& _)
+				{
+					items.emplace_back(std::format("{:g}Hz", rate.hz()), attach,
+					[this, hz = rate.hz()]()
+					{
+						app().overrideScreenFrameRate = hz;
+					},
+					MenuItem::Config{.id = std::bit_cast<MenuId>(float(rate.hz()))});
+				});
+			}
 			return items;
 		}()
 	},
@@ -216,32 +244,6 @@ FrameTimingView::FrameTimingView(ViewAttachParams attach):
 		"Override Screen Frame Rate", attach,
 		std::bit_cast<MenuId>(float(app().overrideScreenFrameRate)),
 		screenFrameRateItems
-	},
-	presentationTimeItems
-	{
-		{"Full (Apply to all frame rate targets)",         attach, MenuItem::Config{.id = PresentationTimeMode::full}},
-		{"Basic (Only apply to lower frame rate targets)", attach, MenuItem::Config{.id = PresentationTimeMode::basic}},
-		{"Off",                                            attach, MenuItem::Config{.id = PresentationTimeMode::off}},
-	},
-	presentationTime
-	{
-		"Precise Frame Pacing", attach,
-		MenuId{PresentationTimeMode(app().presentationTimeMode)},
-		presentationTimeItems,
-		MultiChoiceMenuItem::Config
-		{
-			.onSetDisplayString = [this](auto, Gfx::Text& t)
-			{
-				if(app().presentationTimeMode == PresentationTimeMode::off)
-					return false;
-				t.resetString(app().presentationTimeMode == PresentationTimeMode::full ? "Full" : "Basic");
-				return true;
-			},
-			.defaultItemOnSelect = [this](TextMenuItem &item)
-			{
-				app().presentationTimeMode = PresentationTimeMode(item.id.val);
-			}
-		},
 	},
 	blankFrameInsertion
 	{
@@ -262,13 +264,13 @@ void FrameTimingView::loadStockItems()
 	{
 		item.emplace_back(&frameRatePAL);
 	}
+	if(app().emuWindow().supportsFrameClockSource(FrameClockSource::Screen))
+		item.emplace_back(&outputRateMode);
 	item.emplace_back(&frameTimingStats);
 	item.emplace_back(&advancedHeading);
 	item.emplace_back(&frameClock);
 	if(used(presentMode))
 		item.emplace_back(&presentMode);
-	if(used(presentationTime) && renderer().supportsPresentationTime())
-		item.emplace_back(&presentationTime);
 	item.emplace_back(&blankFrameInsertion);
 	if(used(screenFrameRate) && app().emuScreen().supportedFrameRates().size() > 1)
 		item.emplace_back(&screenFrameRate);

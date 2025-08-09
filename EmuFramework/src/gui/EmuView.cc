@@ -63,7 +63,7 @@ void EmuView::drawStatsText(Gfx::RendererCommands &__restrict__ cmds)
 	using namespace IG::Gfx;
 	cmds.basicEffect().disableTexture(cmds);
 	cmds.set(BlendMode::ALPHA);
-	cmds.setColor({0., 0., 0., .7});
+	cmds.setColor({0., 0., 0., .25});
 	cmds.drawQuad(statsDisplay.bgQuads, 0);
 	cmds.basicEffect().enableAlphaTexture(cmds);
 	statsDisplay.text.draw(cmds, statsDisplay.rect.pos(LC2DO) + WPt{statsDisplay.text.spaceWidth(), 0}, LC2DO, ColorName::WHITE);
@@ -124,27 +124,31 @@ void EmuView::setFrameTimingStats(FrameTimingViewStats viewStats)
 		return;
 	const Screen& emuScreen = *screen();
 	auto& stats = viewStats.stats;
-	Milliseconds deltaDuration{};
+	SteadyClockDuration deltaDuration{};
+	Milliseconds deltaDurationMS{};
 	if(hasTime(viewStats.lastFrameTime))
-		deltaDuration = duration_cast<Milliseconds>(stats.startOfFrame - viewStats.lastFrameTime);
+	{
+		deltaDuration = stats.startOfFrame - viewStats.lastFrameTime;
+		deltaDurationMS = duration_cast<Milliseconds>(stats.startOfFrame - viewStats.lastFrameTime);
+	}
 	auto frameDuration = duration_cast<Milliseconds>(stats.endOfFrame - stats.startOfFrame);
 	auto clockHz = emuScreen.frameTimerRate().hz();
 	frameTimingStatsStr = std::format("Frame Time Stats\n\n"
 		"Screen: {:g}Hz\n"
-		"Clock Source: {:g}Hz\n"
+		"Clock: {:g}Hz\n"
 		"Input: {:g}Hz\n"
 		"Output: {:g}Hz\n"
-		"Delta Time: {}\n"
+		"Delta Time: {} ({:.2f}Hz)\n"
 		"Frame Time: {}\n",
 		emuScreen.frameRate().hz(), clockHz,
 		viewStats.inputRate.hz(), viewStats.outputRate.hz(),
-		deltaDuration, frameDuration);
+		deltaDurationMS, toHz(deltaDuration), frameDuration);
 	if(enableFullFrameTimingStats)
 	{
 		auto callbackOverhead = duration_cast<Milliseconds>(stats.startOfEmulation - stats.startOfFrame);
 		auto emulationTime = duration_cast<Milliseconds>(stats.waitForPresent - stats.startOfEmulation);
 		auto presentTime = duration_cast<Milliseconds>(stats.endOfFrame - SteadyClockTimePoint{stats.waitForPresent});
-		frameTimingStatsStr += std::format("Callback/Emulate/Present Time: {} {} {}\n"
+		frameTimingStatsStr += std::format("Callback/Emulate/Present: {} {} {}\n"
 			"Missed Frames: {}",
 			callbackOverhead, emulationTime, presentTime, int(stats.missedFrameCallbacks));
 	}

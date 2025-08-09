@@ -57,10 +57,6 @@ void EmuApp::initOptions([[maybe_unused]] IG::ApplicationContext ctx)
 	{
 		showsBluetoothScan.resetDefault(false);
 	}
-	if(androidSdk < 27) // use safer value for devices defaulting to OpenSL ES
-	{
-		audio.soundBuffers = audio.defaultSoundBuffers = 4;
-	}
 	#endif
 }
 

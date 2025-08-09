@@ -46,12 +46,12 @@ protected:
 	BoolMenuItem frameTimingStats;
 	StaticArrayList<TextMenuItem, maxFrameClockItems> frameClockItems;
 	MultiChoiceMenuItem frameClock;
+	TextMenuItem outputRateModeItems[3];
+	MultiChoiceMenuItem outputRateMode;
 	ConditionalMember<Gfx::supportsPresentModes, TextMenuItem> presentModeItems[3];
 	ConditionalMember<Gfx::supportsPresentModes, MultiChoiceMenuItem> presentMode;
 	ConditionalMember<Config::multipleScreenFrameRates, std::vector<TextMenuItem>> screenFrameRateItems;
 	ConditionalMember<Config::multipleScreenFrameRates, MultiChoiceMenuItem> screenFrameRate;
-	ConditionalMember<Gfx::supportsPresentationTime, TextMenuItem> presentationTimeItems[3];
-	ConditionalMember<Gfx::supportsPresentationTime, MultiChoiceMenuItem> presentationTime;
 	BoolMenuItem blankFrameInsertion;
 	TextHeadingMenuItem advancedHeading;
 	StaticArrayList<MenuItem*, 10> item;

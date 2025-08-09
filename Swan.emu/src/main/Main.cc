@@ -125,7 +125,7 @@ bool WsSystem::onVideoRenderFormatChange(EmuVideo &, IG::PixelFormat fmt)
 
 static uint8_t lcdVTotal() { return WSwan_GfxRead(0x16) + 1; }
 
-FrameRate WsSystem::frameRate() const { return round<SteadyClockDuration>(FloatSeconds{lcdVTotal() * 256 / 3072000.}); }
+FrameRate WsSystem::frameRate() const { return 3072000. / (lcdVTotal() * 256); }
 
 void WsSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 {

@@ -110,26 +110,10 @@ GLBufferConfig GLManager::makeBufferConfig(ApplicationContext ctx, std::span<con
 	throw std::runtime_error("Error finding a GL configuration");
 }
 
-SteadyClockTimePoint FrameParams::presentTime(int frames) const
+int FrameParams::elapsedFrames(SteadyClockDuration delta, SteadyClockDuration frameDuration)
 {
-	if(frames <= 0)
-		return {};
-	return duration * frames + time;
-}
-
-int FrameParams::elapsedFrames() const
-{
-	return elapsedFrames(time, lastTime, duration);
-}
-
-int FrameParams::elapsedFrames(SteadyClockTimePoint time, SteadyClockTimePoint lastTime, SteadyClockDuration frameDuration)
-{
-	if(!hasTime(lastTime)) [[unlikely]]
-		return 1;
-	assumeExpr(time >= lastTime);
 	assumeExpr(frameDuration.count() > 0);
-	auto diff = time - lastTime;
-	auto elapsed = divRoundClosestPositive(diff.count(), frameDuration.count());
+	auto elapsed = divRoundClosestPositive(delta.count(), frameDuration.count());
 	return elapsed;
 }
 

@@ -113,13 +113,12 @@ static int32_t AMotionEvent_getActionButtonCompat(const AInputEvent* event, int3
 	{
 		return AMotionEvent_getActionButton_(event);
 	}
-	static const bool ptrIs64Bits = sizeof(void*) == 8;
 	auto asIntPtr = (const int32_t *)event;
 	switch(sdkVersion)
 	{
-		case 23 ... 28: return asIntPtr[ptrIs64Bits ? 5  : 4];
-		case 29:        return asIntPtr[ptrIs64Bits ? 6  : 5];
-		case 30 ... 32: return asIntPtr[ptrIs64Bits ? 15 : 14];
+		case 23 ... 28: return asIntPtr[Config::is64Bit ? 5  : 4];
+		case 29:        return asIntPtr[Config::is64Bit ? 6  : 5];
+		case 30 ... 32: return asIntPtr[Config::is64Bit ? 15 : 14];
 	}
 	return AMOTION_EVENT_BUTTON_PRIMARY; // can't determine button, fall back to primary
 }

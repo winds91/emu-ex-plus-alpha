@@ -74,9 +74,9 @@ bool Screen::isPosted() const
 	return framePosted;
 }
 
-bool Screen::frameUpdate(SteadyClockTimePoint timestamp)
+bool Screen::frameUpdate(SteadyClockTimePoint time)
 {
-	assert(hasTime(timestamp));
+	assert(hasTime(time));
 	assert(isActive);
 	framePosted = false;
 	if(!onFrameDelegate.size())
@@ -85,7 +85,7 @@ bool Screen::frameUpdate(SteadyClockTimePoint timestamp)
 		return false;
 	}
 	postFrame();
-	runOnFrameDelegates(timestamp);
+	runOnFrameDelegates(time);
 	for(auto &w : *windowsPtr)
 	{
 		if(w->screen() == this)
@@ -142,7 +142,8 @@ bool Screen::shouldUpdateFrameTimer(const FrameTimer& frameTimer, bool newVariab
 		(!newVariableFrameTimeValue && std::holds_alternative<SimpleFrameTimer>(frameTimer));
 }
 
-[[gnu::weak]] SteadyClockDuration Screen::presentationDeadline() const { return {}; }
+[[gnu::weak]] SteadyClockDuration Screen::targetFrameDuration() const { return frameRate().duration(); }
+
 FrameRate Screen::frameTimerRate() const { return frameTimer.frameRate() ?: frameRate(); }
 
 void Screen::setVariableFrameRate(bool useVariableTime)
@@ -162,5 +163,8 @@ void Screen::removeFrameEvents()
 	unpostFrame();
 	frameTimer.removeEvents(appContext());
 }
+
+[[gnu::weak]] void Screen::setFrameInterval([[maybe_unused]] int interval) {}
+[[gnu::weak]] bool Screen::supportsFrameInterval() { return false; }
 
 }

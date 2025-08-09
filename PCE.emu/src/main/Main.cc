@@ -38,8 +38,8 @@ const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobe
 bool EmuSystem::hasRectangularPixels = true;
 bool EmuSystem::stateSizeChangesAtRuntime = true;
 constexpr double masterClockFrac = 21477272.727273 / 3.;
-constexpr auto pceFrameRateWith262Lines{fromSeconds<SteadyClockDuration>(455. * 262. / masterClockFrac)}; // ~60.05Hz
-constexpr auto pceFrameRate{fromSeconds<SteadyClockDuration>(455. * 263. / masterClockFrac)}; //~59.82Hz
+constexpr FrameRate pceFrameRateWith262Lines{masterClockFrac / (455. * 262.)}; // ~60.05Hz
+constexpr FrameRate pceFrameRate{masterClockFrac / (455. * 263.)}; // ~59.82Hz
 bool EmuApp::needsGlobalInstance = true;
 
 PceApp::PceApp(ApplicationInitParams initParams, ApplicationContext &ctx):

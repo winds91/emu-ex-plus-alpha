@@ -78,7 +78,7 @@ XScreen::XScreen(ApplicationContext, InitParams params)
 					{
 						if(modeInfo.id == crtcInfoReply->mode && modeInfo.htotal && modeInfo.vtotal)
 						{
-							frameRate_ = {float(modeInfo.dot_clock) / (modeInfo.htotal * modeInfo.vtotal),
+							frameRate_ = {double(modeInfo.dot_clock) / (modeInfo.htotal * modeInfo.vtotal),
 								fromSeconds<SteadyClockDuration>(modeInfo.htotal * modeInfo.vtotal / double(modeInfo.dot_clock))};
 							reliableFrameTime = true;
 							break;
@@ -159,17 +159,6 @@ void Screen::setFrameRate(FrameRate rate)
 	}
 }
 
-void Screen::setFrameInterval(int)
-{
-	// TODO
-	//log.info("setting frame interval:{}", interval);
-}
-
-bool Screen::supportsFrameInterval()
-{
-	return false;
-}
-
 bool Screen::supportsTimestamps() const
 {
 	return application().supportedFrameTimerType() != SupportedFrameTimer::SIMPLE;
@@ -177,8 +166,15 @@ bool Screen::supportsTimestamps() const
 
 std::span<const FrameRate> Screen::supportedFrameRates() const
 {
-	// TODO
-	return {&frameRate_, 1};
+	if constexpr(Config::MACHINE_IS_PANDORA)
+	{
+		static constexpr std::array<FrameRate, 2> rates{50, 60};
+		return rates;
+	}
+	else
+	{
+		return {&frameRate_, 1};
+	}
 }
 
 }

@@ -257,7 +257,7 @@ void DrawContextSupport::setGLDebugOutput(bool on)
 				{
 					return;
 				}
-				if(Config::envIsLinux && type == GL_DEBUG_TYPE_OTHER)
+				if(type == GL_DEBUG_TYPE_OTHER)
 				{
 					return;
 				}

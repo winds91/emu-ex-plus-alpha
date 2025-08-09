@@ -375,8 +375,7 @@ EditCheatView::EditCheatView(ViewAttachParams attach, Cheat& cheat, BaseEditChea
 		"Edit Cheat",
 		attach,
 		cheat,
-		editCheatsView,
-		items
+		editCheatsView
 	}
 	#ifndef SNES9X_VERSION_1_4
 	,addCode

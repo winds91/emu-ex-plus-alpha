@@ -41,7 +41,7 @@ static auto makePipe()
 	return std::array<PosixIO, 2>{UniqueFileDescriptor{fd[0]}, UniqueFileDescriptor{fd[1]}};
 }
 
-Pipe::Pipe(const char *debugLabel, int preferredSize):
+Pipe::Pipe(std::string_view debugLabel, int preferredSize):
 	io{makePipe()},
 	fdSrc{io[0].fd(), {.debugLabel = debugLabel}, {}}
 {

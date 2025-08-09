@@ -116,9 +116,29 @@ public:
 	SteadyClockDuration duration;
 	FrameClockMode mode;
 
-	SteadyClockTimePoint presentTime(int frames) const;
-	int elapsedFrames() const;
-	static int elapsedFrames(SteadyClockTimePoint time, SteadyClockTimePoint lastTime, SteadyClockDuration frameDuration);
+	SteadyClockDuration delta() const
+	{
+		if(!hasTime(lastTime)) [[unlikely]]
+			return {};
+		assumeExpr(time >= lastTime);
+		return time - lastTime;
+	}
+
+	SteadyClockTimePoint presentTime(int frames) const
+	{
+		if(frames <= 0)
+			return {};
+		return duration * frames + time;
+	}
+
+	int elapsedFrames() const
+	{
+		if(!hasTime(lastTime)) [[unlikely]]
+			return 1;
+		return elapsedFrames(delta(), duration);
+	}
+
+	static int elapsedFrames(SteadyClockDuration delta, SteadyClockDuration frameDuration);
 	bool isFromRenderer() const { return mode == FrameClockMode::renderer; }
 	bool isFromScreen() const { return mode == FrameClockMode::screen; }
 };
@@ -126,19 +146,19 @@ public:
 class FrameRate
 {
 public:
-	constexpr FrameRate() {}
-	constexpr FrameRate(SteadyClockDuration duration): duration_{duration}, hz_{float(toHz(duration))} {}
-	constexpr FrameRate(std::convertible_to<float> auto hz): duration_{fromHz<SteadyClockDuration>(hz)}, hz_{float(hz)} {}
-	constexpr FrameRate(std::convertible_to<float> auto hz, SteadyClockDuration duration): duration_{duration}, hz_{float(hz)} {}
+	constexpr FrameRate() = default;
+	constexpr FrameRate(SteadyClockDuration duration): duration_{duration}, hz_{toHz(duration)} {}
+	constexpr FrameRate(std::convertible_to<double> auto hz): duration_{fromHz<SteadyClockDuration>(hz)}, hz_{double(hz)} {}
+	constexpr FrameRate(std::convertible_to<double> auto hz, SteadyClockDuration duration): duration_{duration}, hz_{double(hz)} {}
 	constexpr SteadyClockDuration duration() const { return duration_; }
-	constexpr float hz() const { return hz_; }
+	constexpr double hz() const { return hz_; }
 	constexpr explicit operator bool() const { return hz_; }
 	constexpr bool operator==(const FrameRate& rhs) const { return hz_ == rhs.hz_; }
 	constexpr auto operator<=>(const FrameRate& rhs) const { return hz_ <=> rhs.hz_; }
 
 private:
 	SteadyClockDuration duration_{};
-	float hz_{};
+	double hz_{};
 };
 
 }

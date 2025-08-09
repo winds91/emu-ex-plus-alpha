@@ -106,19 +106,19 @@ bool TimerFD::arm(timespec time, timespec repeatInterval, int flags)
 	return true;
 }
 
-void Timer::run(Time time, Time repeatTime, bool isAbsTime, CallbackDelegate callback)
+void Timer::run(Duration timeUntilRun, Duration repeatInterval, bool isAbsTime, CallbackDelegate callback)
 {
 	if(callback)
 		setCallback(callback);
-	time_t seconds = time.count() / 1000000000l;
-	long leftoverNs = time.count() % 1000000000l;
-	time_t repeatSeconds = repeatTime.count() / 1000000000l;
-	long repeatLeftoverNs = repeatTime.count() % 1000000000l;
+	time_t seconds = timeUntilRun.count() / 1000000000l;
+	long leftoverNs = timeUntilRun.count() % 1000000000l;
+	time_t repeatSeconds = repeatInterval.count() / 1000000000l;
+	long repeatLeftoverNs = repeatInterval.count() % 1000000000l;
 	if(Config::DEBUG_BUILD)
 	{
-		FloatSeconds relTime = isAbsTime ? time - SteadyClock::now().time_since_epoch() : time;
+		FloatSeconds relTime = isAbsTime ? timeUntilRun - SteadyClock::now().time_since_epoch() : timeUntilRun;
 		log.info("arming fd:{} ({}) to run in:{}s repeats:{}s",
-			fdSrc.fd(), fdSrc.debugLabel(), relTime.count(), FloatSeconds(repeatTime).count());
+			fdSrc.fd(), fdSrc.debugLabel(), relTime.count(), FloatSeconds(repeatInterval).count());
 	}
 	if(!arm({seconds, leftoverNs}, {repeatSeconds, repeatLeftoverNs}, isAbsTime ? TFD_TIMER_ABSTIME : 0))
 	{
@@ -153,11 +153,16 @@ void Timer::dispatchEarly()
 	(*callback_)();
 }
 
-bool Timer::isArmed()
+bool Timer::isArmed() const
+{
+	return timeUntilRun().count();
+}
+
+Timer::Duration Timer::timeUntilRun() const
 {
 	struct itimerspec currTime{};
 	timerfd_gettime(fdSrc.fd(), &currTime);
-	return currTime.it_value.tv_nsec || currTime.it_value.tv_sec;
+	return Nanoseconds{currTime.it_value.tv_nsec} + Seconds{currTime.it_value.tv_sec};
 }
 
 Timer::operator bool() const

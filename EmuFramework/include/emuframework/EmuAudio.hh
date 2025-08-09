@@ -15,6 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <emuframework/EmuOptions.hh>
 #include <imagine/audio/OutputStream.hh>
 #include <imagine/audio/Manager.hh>
 #include <imagine/time/Time.hh>
@@ -110,8 +111,8 @@ protected:
 	bool addSoundBuffersOnUnderrun{};
 public:
 	bool addSoundBuffersOnUnderrunSetting{};
-	int8_t defaultSoundBuffers{3};
-	int8_t soundBuffers{defaultSoundBuffers};
+	Property<int8_t, CFGKEY_SOUND_BUFFERS,
+		{.defaultValue = 2, .isValid = isValidWithMinMax<1, 7, int8_t>}> soundBuffers;
 
 	size_t framesFree() const;
 	size_t framesWritten() const;

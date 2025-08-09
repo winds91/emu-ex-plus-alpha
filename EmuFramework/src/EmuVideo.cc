@@ -83,10 +83,6 @@ bool EmuVideo::setFormat(IG::PixmapDesc desc, EmuSystemTaskContext taskCtx)
 	{
 		taskCtx.task().sendVideoFormatChangedReply(*this);
 	}
-	else
-	{
-		dispatchFormatChanged();
-	}
 	return true;
 }
 

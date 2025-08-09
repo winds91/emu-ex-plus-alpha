@@ -209,12 +209,12 @@ static FrameRate makeFrameRate(uint8 InterlaceMode)
 	if(VDP2::PAL)
 	{
 		const double lines = InterlaceMode ? 312.5 : 313.;
-		return std::chrono::duration_cast<SteadyClockDuration>(FloatSeconds{454.99 * lines / vdpClock});
+		return vdpClock / (454.99 * lines);
 	}
 	else
 	{
 		const double lines = InterlaceMode ? 262.5 : 263.;
-		return std::chrono::duration_cast<SteadyClockDuration>(FloatSeconds{454.99 * lines / vdpClock});
+		return vdpClock / (454.99 * lines);
 	}
 }
 
