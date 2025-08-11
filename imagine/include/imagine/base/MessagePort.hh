@@ -22,6 +22,7 @@
 #include <imagine/util/utility.h>
 #include <cstring>
 #include <span>
+#include <string_view>
 
 namespace IG
 {
@@ -104,7 +105,7 @@ public:
 	static constexpr size_t MSG_SIZE = sizeof(MsgType);
 	static_assert(MSG_SIZE < PIPE_BUF, "size of message too big for atomic writes");
 
-	PipeMessagePort(const char *debugLabel = nullptr, int capacity = 0):
+	PipeMessagePort(std::string_view debugLabel = {}, int capacity = 0):
 		pipe{debugLabel, (int)MSG_SIZE * capacity} {}
 
 	void attach(auto &&f)

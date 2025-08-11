@@ -32,7 +32,7 @@ public:
 
 	constexpr TimerFD() = default;
 	TimerFD(TimerDesc, CallbackDelegate);
-	const char* debugLabel() const { return fdSrc.debugLabel(); }
+	auto debugLabel() const { return fdSrc.debugLabel(); }
 
 protected:
 	std::unique_ptr<CallbackDelegate> callback_;

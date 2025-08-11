@@ -37,7 +37,7 @@ struct FrameTimingViewStats
 {
 	FrameTimingStats stats;
 	SteadyClockTimePoint lastFrameTime;
-	FrameRate inputRate, outputRate, hostRate;
+	FrameRate inputRate, outputRate;
 };
 
 class EmuView : public View

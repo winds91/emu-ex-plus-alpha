@@ -97,7 +97,7 @@ void KeyConfig::set(KeyInfo key, MappedKeys mapKey)
 	}
 	else
 	{
-		log.info("adding key mapping:{:X}", mapKey[0]);
+		//log.info("adding key mapping:{:X}", mapKey[0]);
 		keyMap.emplace_back(key, mapKey);
 	}
 }

@@ -24,7 +24,7 @@ namespace IG
 constexpr SystemLogger log{"Timer"};
 
 CFTimer::CFTimer(TimerDesc desc, CallbackDelegate del):
-	debugLabel_{desc.debugLabel ? desc.debugLabel : "unnamed"},
+	debugLabel_{desc.debugLabel.size() ? desc.debugLabel : "unnamed"},
 	info{std::make_unique<CFTimerInfo>(del, CFRunLoopRef{}, desc.eventLoop.nativeObject() ?: EventLoop::forThread().nativeObject())} {}
 
 CFTimer::CFTimer(CFTimer&& o) noexcept
@@ -98,14 +98,14 @@ void CFTimer::callbackInCFAbsoluteTime(CFAbsoluteTime absTime, CFTimeInterval re
 	}
 }
 
-void Timer::run(Time time, Time repeatTime, bool isAbsTime, CallbackDelegate callback)
+void Timer::run(Duration timeUntilRun, Duration repeatInterval, bool isAbsTime, CallbackDelegate callback)
 {
 	if(callback)
 		setCallback(callback);
-	CFAbsoluteTime absTime = duration_cast<FloatSeconds>(time).count();
+	CFAbsoluteTime absTime = duration_cast<FloatSeconds>(timeUntilRun).count();
 	if(!isAbsTime)
 		absTime += CFAbsoluteTimeGetCurrent();
-	callbackInCFAbsoluteTime(absTime, repeatTime.count(), info->setLoop);
+	callbackInCFAbsoluteTime(absTime, duration_cast<FloatSeconds>(repeatInterval).count(), info->setLoop);
 }
 
 void Timer::cancel()
@@ -135,9 +135,14 @@ void Timer::dispatchEarly()
 	info->callback();
 }
 
-bool Timer::isArmed()
+bool Timer::isArmed() const
 {
 	return info->loop;
+}
+
+Timer::Duration Timer::timeUntilRun() const
+{
+	return duration_cast<Duration>(FloatSeconds{CFRunLoopTimerGetNextFireDate(timer) - CFAbsoluteTimeGetCurrent()});
 }
 
 void CFTimer::deinit()

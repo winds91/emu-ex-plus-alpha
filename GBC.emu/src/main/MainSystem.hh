@@ -87,8 +87,7 @@ public:
 	Property<uint8_t, CFGKEY_AUDIO_RESAMPLER,
 		PropertyDesc<uint8_t>{.defaultValue = 1}> optionAudioResampler;
 	Property<bool, CFGKEY_FULL_GBC_SATURATION> optionFullGbcSaturation;
-	static constexpr FloatSeconds gbFrameTimeSecs{70224. / 4194304.}; // ~59.7275Hz
-	static constexpr FrameRate gbFrameRate{round<SteadyClockDuration>(gbFrameTimeSecs)};
+	static constexpr FrameRate gbFrameRate{4194304. / 70224.}; // ~59.7275Hz
 
 	GbcSystem(ApplicationContext ctx):
 		EmuSystem{ctx}
@@ -115,7 +114,7 @@ public:
 	void clearInputBuffers(EmuInputView &view);
 	void handleInputAction(EmuApp *, InputAction);
 	SystemInputDeviceDesc inputDeviceDesc(int idx) const;
-	FrameRate frameTime() const { return gbFrameRate; }
+	FrameRate frameRate() const { return gbFrameRate; }
 	void configAudioRate(FrameRate outputFrameRate, int outputRate);
 	static std::span<const AspectRatioInfo> aspectRatioInfos();
 

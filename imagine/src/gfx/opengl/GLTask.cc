@@ -26,9 +26,9 @@ namespace IG::Gfx
 constexpr SystemLogger log{"GLTask"};
 
 GLTask::GLTask(ApplicationContext ctx):
-	GLTask{ctx, nullptr} {}
+	GLTask{ctx, {}} {}
 
-GLTask::GLTask(ApplicationContext ctx, const char *debugLabel):
+GLTask::GLTask(ApplicationContext ctx, std::string_view debugLabel):
 	onExit{ctx},
 	commandPort{debugLabel} {}
 

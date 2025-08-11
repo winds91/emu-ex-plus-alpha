@@ -392,7 +392,7 @@ void AndroidApplication::initActivity(JNIEnv *env, jobject baseActivity, jclass 
 					else
 					{
 						// already in list, update existing
-						screen->updateFrameRate(refreshRate);
+						screen->updateFrameRate(refreshRate, Nanoseconds{presentationDeadline});
 					}
 				}
 			},

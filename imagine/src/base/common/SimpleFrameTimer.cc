@@ -68,7 +68,7 @@ void SimpleFrameTimer::setFrameRate(FrameRate rate_)
 	log.info("set frame rate:{:g} (timer interval:{})", rate.hz(), rate.duration());
 	if(timer.isArmed())
 	{
-		timer.runIn(Nanoseconds{1}, rate.duration());
+		timer.runIn(timer.timeUntilRun(), rate.duration());
 	}
 }
 

@@ -314,15 +314,6 @@ static IG::Screen *extraWindowScreen(IG::ApplicationContext ctx)
 	return ctx.windows()[1]->screen();
 }
 
-static SteadyClockDuration targetFrameDuration(const Screen& s)
-{
-	auto total = s.frameRate().duration() - s.presentationDeadline();
-	auto lowerBound = Milliseconds{1};
-	if(total < lowerBound)
-		total = lowerBound;
-	return total;
-}
-
 void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::ApplicationContext ctx)
 {
 	loadConfigFile(ctx);
@@ -389,11 +380,6 @@ void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::Applicatio
 			winData.viewController.placeElements();
 			winData.viewController.pushAndShow(makeView(viewAttach, ViewID::MAIN_MENU));
 			configureSecondaryScreens();
-			video.onFormatChanged =  [this, &viewController = winData.viewController](EmuVideo&)
-			{
-				videoLayer.onVideoFormatChanged(videoEffectPixelFormat());
-				viewController.placeEmuViews();
-			};
 			video.setRendererTask(renderer.task());
 			video.setTextureBufferMode(system(), textureBufferMode);
 			videoLayer.setRendererTask(renderer.task());
@@ -403,6 +389,10 @@ void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::Applicatio
 				 (frameClockSource == FrameClockSource::Renderer && !emuWindow().supportsFrameClockSource(FrameClockSource::Renderer)))
 			{
 				frameClockSource = {};
+			}
+			if(emuScreen().supportedFrameRates().size() == 1)
+			{
+				overrideScreenFrameRate = {};
 			}
 
 			win.onEvent = [this](Window& win, const WindowEvent& winEvent)
@@ -472,13 +462,12 @@ void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::Applicatio
 							{
 								if(perfHintSession)
 								{
-									auto targetTime = targetFrameDuration(e.screen);
-									perfHintSession.updateTargetWorkTime(targetTime);
-									log.info("updated performance hint session with target time:{}", targetTime);
+									auto targetDuration = e.screen.targetFrameDuration();
+									perfHintSession.updateTargetWorkDuration(targetDuration);
+									log.info("updated performance hint session with target duration:{}", targetDuration);
 								}
 								auto _ = suspendEmulationThread();
-								systemTask.updateHostFrameRate(e.screen.frameRate());
-								systemTask.calibrateHostFrameRate();
+								systemTask.updateScreenFrameRate(e.screen.frameRate());
 							}
 						}
 					},
@@ -681,11 +670,6 @@ void EmuApp::startEmulation()
 	if(!viewController().isShowingEmulation())
 		return;
 	videoLayer.setBrightnessScale(1.f);
-	video.onFrameFinished = [&, &viewController = viewController()](EmuVideo&)
-	{
-		auto &win = viewController.emuWindow();
-		win.drawNow();
-	};
 	frameTimingStats = {};
 	system().start(*this);
 	systemTask.start(emuWindow());
@@ -706,7 +690,6 @@ void EmuApp::pauseEmulation()
 {
 	systemTask.stop();
 	setCPUNeedsLowLatency(appContext(), false);
-	video.onFrameFinished = [](EmuVideo&){};
 	system().pause(*this);
 	setRunSpeed(1.);
 	videoLayer.setBrightnessScale(pausedVideoBrightnessScale);
@@ -1003,9 +986,9 @@ void EmuApp::setRunSpeed(double speed)
 {
 	assumeExpr(speed > 0.);
 	auto _ = suspendEmulationThread();
-	system().frameDurationMultiplier = 1. / speed;
+	system().frameRateMultiplier = speed;
 	audio.setSpeedMultiplier(speed);
-	systemTask.updateFrameRate();
+	systemTask.updateSystemFrameRate();
 }
 
 FS::PathString EmuApp::sessionConfigPath()
@@ -1132,7 +1115,7 @@ void EmuApp::saveSystemOptions(FileIO &configFile)
 
 EmuSystemTask::SuspendContext EmuApp::suspendEmulationThread() { return systemTask.suspend(); }
 
-void EmuApp::updateFrameRate() { systemTask.updateFrameRate(); }
+void EmuApp::updateFrameRate() { systemTask.updateSystemFrameRate(); }
 
 bool EmuApp::writeScreenshot(IG::PixmapView pix, CStringView path)
 {
@@ -1342,13 +1325,12 @@ void EmuApp::applyCPUAffinity(bool active)
 	{
 		if(active)
 		{
-			auto targetTime = targetFrameDuration(emuScreen());
-			perfHintSession = perfHintManager.session(frameThreadGroup, targetTime);
+			auto targetDuration = emuScreen().targetFrameDuration();
+			perfHintSession = perfHintManager.session(frameThreadGroup, targetDuration);
 			if(perfHintSession)
-				log.info("made performance hint session with target time:{} ({} - {})",
-					targetTime, emuScreen().frameRate().duration(), emuScreen().presentationDeadline());
+				log.info("made performance hint session with target duration:{}", targetDuration);
 			else
-				log.error("error making performance hint session");
+				log.error("error making performance hint session with target duration:{}", targetDuration);
 		}
 		else
 		{
@@ -1399,9 +1381,9 @@ void EmuApp::closeBluetoothConnections()
 	Bluetooth::closeBT(bluetoothAdapter);
 }
 
-void EmuApp::reportFrameWorkTime(Nanoseconds nSecs)
+void EmuApp::reportFrameWorkDuration(Nanoseconds nSecs)
 {
-	perfHintSession.reportActualWorkTime(nSecs);
+	perfHintSession.reportActualWorkDuration(nSecs);
 }
 
 MainWindowData &EmuApp::mainWindowData() const

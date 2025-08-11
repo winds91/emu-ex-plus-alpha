@@ -26,7 +26,7 @@ constexpr SystemLogger log{"EmuTiming"};
 
 EmuFrameTimingInfo EmuTiming::advanceFrames(FrameParams params)
 {
-	auto frameTimeDiff = params.time - params.lastTime;
+	auto durationDelta = params.delta();
 	auto framesDiff  = params.elapsedFrames();
 	if(exactFrameDivisor > 0)
 	{
@@ -38,7 +38,7 @@ EmuFrameTimingInfo EmuTiming::advanceFrames(FrameParams params)
 			elapsedFrames = quot;
 			savedAdvancedFrames = rem;
 		}
-		return {elapsedFrames, frameTimeDiff};
+		return {elapsedFrames, durationDelta};
 	}
 	else
 	{
@@ -56,7 +56,7 @@ EmuFrameTimingInfo EmuTiming::advanceFrames(FrameParams params)
 		auto now = divRoundClosestPositive(timeTotal.count(), videoFrameDuration.count());
 		int elapsedFrames = now - lastFrame;
 		lastFrame = now;
-		return {elapsedFrames, frameTimeDiff};
+		return {elapsedFrames, durationDelta};
 	}
 }
 

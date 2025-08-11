@@ -369,8 +369,14 @@ public:
 	int updateAudioFramesPerVideoFrame();
 	FrameRate scaledFrameRate() const
 	{
-		auto t = std::chrono::duration_cast<FloatSeconds>(frameRate().duration()) * frameDurationMultiplier;
-		return std::chrono::duration_cast<SteadyClockDuration>(t);
+		if(frameRateMultiplier == 1.)
+		{
+			return frameRate();
+		}
+		else
+		{
+			return frameRate().hz() * frameRateMultiplier;
+		}
 	}
 	void onFrameRateChanged();
 	static double audioMixRate(int outputRate, FrameRate inputFrameRate, FrameRate outputFrameRate);
@@ -416,7 +422,7 @@ protected:
 	void closeAndSetupNew(CStringView path, std::string_view displayName);
 
 public:
-	double frameDurationMultiplier{1.};
+	double frameRateMultiplier{1.};
 	static constexpr double minFrameRate = 48.;
 };
 

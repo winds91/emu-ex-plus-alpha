@@ -90,7 +90,7 @@ SamplerParams asSamplerParams(TextureSamplerConfig config)
 
 GLTextureSampler::GLTextureSampler(RendererTask &rTask, TextureSamplerConfig config):
 	sampler{GLSamplerRefDeleter{&rTask}},
-	debugLabel{config.debugLabel ? config.debugLabel : ""}
+	debugLabel{config.debugLabel.size() ? config.debugLabel : "unnamed"}
 {
 	auto &r = rTask.renderer();
 	if(!r.support.hasSamplerObjects)

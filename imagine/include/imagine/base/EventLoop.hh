@@ -26,6 +26,7 @@
 #endif
 
 #include <utility>
+#include <string_view>
 
 namespace IG
 {
@@ -45,7 +46,7 @@ public:
 
 struct FDEventSourceDesc
 {
-	const char* debugLabel{};
+	std::string_view debugLabel{};
 	std::optional<EventLoop> eventLoop{};
 	PollEventFlags events{pollEventInput};
 };
@@ -56,7 +57,7 @@ public:
 	constexpr FDEventSource() = default;
 	FDEventSource(MaybeUniqueFileDescriptor fd, FDEventSourceDesc desc, PollEventDelegate del):
 		FDEventSourceImpl{std::move(fd), desc, del},
-		debugLabel_{desc.debugLabel ? desc.debugLabel : "unnamed"}
+		debugLabel_{desc.debugLabel.size() ? desc.debugLabel : "unnamed"}
 	{
 		if(desc.eventLoop)
 			attach(*desc.eventLoop, desc.events);
@@ -68,10 +69,10 @@ public:
 	void setCallback(PollEventDelegate);
 	bool hasEventLoop() const;
 	int fd() const;
-	const char* debugLabel() const { return debugLabel_; }
+	std::string_view debugLabel() const { return debugLabel_; }
 
 protected:
-	ConditionalMember<Config::DEBUG_BUILD, const char *> debugLabel_{};
+	ConditionalMember<Config::DEBUG_BUILD, std::string_view> debugLabel_{};
 };
 
 }

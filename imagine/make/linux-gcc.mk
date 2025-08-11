@@ -26,9 +26,6 @@ else
 endif
 
 CPPFLAGS += -D_GNU_SOURCE
-ifndef PROFILE
- OPTIMIZE_LDFLAGS = -s
-endif
 LDLIBS += -lpthread -lm
 LDFLAGS_SYSTEM += -Wl,-O3,--gc-sections,--as-needed,--compress-debug-sections=$(COMPRESS_DEBUG_SECTIONS),--icf=all
 

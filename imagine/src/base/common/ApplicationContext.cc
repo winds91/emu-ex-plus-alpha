@@ -482,8 +482,8 @@ std::string ApplicationContext::formatDateAndTimeAsFilename(WallClockTimePoint t
 
 [[gnu::weak]] SensorListener::SensorListener(ApplicationContext, SensorType, SensorChangedDelegate) {}
 
-[[gnu::weak]] void PerformanceHintSession::updateTargetWorkTime(Nanoseconds) {}
-[[gnu::weak]] void PerformanceHintSession::reportActualWorkTime(Nanoseconds) {}
+[[gnu::weak]] void PerformanceHintSession::updateTargetWorkDuration(Nanoseconds) {}
+[[gnu::weak]] void PerformanceHintSession::reportActualWorkDuration(Nanoseconds) {}
 [[gnu::weak]] PerformanceHintSession::operator bool() const { return false; }
 [[gnu::weak]] PerformanceHintSession PerformanceHintManager::session(std::span<const ThreadId>, Nanoseconds) { return {}; }
 [[gnu::weak]] PerformanceHintManager::operator bool() const { return false; }

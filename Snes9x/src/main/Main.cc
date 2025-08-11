@@ -311,7 +311,8 @@ void Snes9xSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDele
 void Snes9xSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 {
 	#ifndef SNES9X_VERSION_1_4
-	auto inputRate = frameTimeSecs().count() / duration_cast<FloatSeconds>(outputFrameRate.duration()).count() * 32040.;
+	// input/output frame rate parameters swapped to generate the sound input rate
+	auto inputRate = audioMixRate(32040, outputFrameRate, frameRate());
 	if(inputRate == Settings.SoundInputRate && outputRate == Settings.SoundPlaybackRate)
 		return;
 	Settings.SoundPlaybackRate = outputRate;

@@ -95,7 +95,7 @@ public:
 	Property<bool, CFGKEY_DEFAULT_USE_BIOS> defaultUseBios;
 	ConditionalMember<Config::SENSORS, GbaSensorType> sensorType{};
 	ConditionalMember<Config::SENSORS, GbaSensorType> detectedSensorType{};
-	static constexpr FrameRate gbaFrameRate{fromSeconds<SteadyClockDuration>(280896. / 16777216.)}; // ~59.7275Hz
+	static constexpr FrameRate gbaFrameRate{16777216. / 280896.}; // ~59.7275Hz
 
 	GbaSystem(ApplicationContext ctx):
 		EmuSystem{ctx} {}

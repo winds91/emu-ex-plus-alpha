@@ -124,7 +124,7 @@ constexpr bool SENSORS = false;
 
 constexpr bool threadPerformanceHints = Config::envIsAndroid;
 
-constexpr bool multipleScreenFrameRates = Config::envIsAndroid;
+constexpr bool multipleScreenFrameRates = (Config::envIsAndroid && Config::is64Bit);
 
 constexpr bool cpuAffinity = Config::envIsAndroid || Config::envIsLinux;
 
