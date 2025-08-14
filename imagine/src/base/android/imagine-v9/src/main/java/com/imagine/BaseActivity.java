@@ -243,16 +243,6 @@ public final class BaseActivity extends NativeActivity implements AudioManager.O
 		return getWindow().getAttributes().flags;
 	}
 
-	void setFrameRate(float rate)
-	{
-		if(android.os.Build.VERSION.SDK_INT < 34)
-			return;
-		Window win = getWindow();
-		WindowManager.LayoutParams layoutParams = win.getAttributes();
-		layoutParams.preferredRefreshRate = rate;
-		win.setAttributes(layoutParams);
-	}
-
 	Window setMainContentView(long nativeUserData)
 	{
 		// get rid of NativeActivity's view and layout listener, then add our custom view
@@ -443,6 +433,11 @@ public final class BaseActivity extends NativeActivity implements AudioManager.O
 			// the default value to avoid a spurious surface destroy & create the next time the window flags are set since it may
 			// cause the screen to flash
 			win.setFormat(PixelFormat.UNKNOWN);
+		}
+		if(android.os.Build.VERSION.SDK_INT >= 35)
+		{
+			// Disable ARR to restore usage of ANativeWindow_setFrameRate() API
+			win.setFrameRatePowerSavingsBalanced(false);
 		}
 	}
 	

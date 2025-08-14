@@ -252,10 +252,10 @@ void Snes9xSystem::forEachCheatCode(Cheat& cheat, DelegateFunc<bool(CheatCode&, 
 	#endif
 }
 
-EditRamCheatView::EditRamCheatView(ViewAttachParams attach, Cheat& cheat_, CheatCode& code_, EditCheatView& editCheatView_):
+EditRamCheatView::EditRamCheatView(ViewAttachParams attach, CheatCode& code_, EditCheatView& editCheatView_):
 	TableView
 	{
-		"Edit RAM Patch",
+		"Edit Memory Patch",
 		attach,
 		[this](ItemMessage msg) -> ItemReply
 		{
@@ -276,7 +276,6 @@ EditRamCheatView::EditRamCheatView(ViewAttachParams attach, Cheat& cheat_, Cheat
 			});
 		}
 	},
-	cheat{cheat_},
 	code{code_},
 	editCheatView{editCheatView_},
 	addr
@@ -380,7 +379,7 @@ EditCheatView::EditCheatView(ViewAttachParams attach, Cheat& cheat, BaseEditChea
 	#ifndef SNES9X_VERSION_1_4
 	,addCode
 	{
-		"Add Another Game Genie/Action Replay/Gold Finger Code", attach,
+		"Add Another Code", attach,
 		[this](const Input::Event& e) { addNewCheatCode("Input xxxx-xxxx (GG), xxxxxxxx (AR), GF code, or blank", e); }
 	}
 	#endif
@@ -395,7 +394,7 @@ void EditCheatView::loadItems()
 	{
 		codes.emplace_back("Code", code, attachParams(), [this, &c](const Input::Event& e)
 		{
-			pushAndShow(makeView<EditRamCheatView>(*cheatPtr, c, *this), e);
+			pushAndShow(makeView<EditRamCheatView>(c, *this), e);
 		});
 		return true;
 	});

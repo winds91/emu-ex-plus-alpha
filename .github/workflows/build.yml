@@ -35,7 +35,7 @@ jobs:
     - name: Set up environment
       run: |
         mkdir imagine-sdk
-        NDK_VERSION='r29-beta2'
+        NDK_VERSION='r29-beta3'
         wget "https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
         unzip android-ndk-${NDK_VERSION}-linux.zip
         rm android-ndk-${NDK_VERSION}-linux.zip

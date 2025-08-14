@@ -170,11 +170,11 @@ void EmuSystemTask::stop()
 	}
 	commandPort.send({.command = ExitCommand{}});
 	taskThread.join();
+	app.flushMainThreadMessages();
 	winPtr->setFrameEventsOnThisThread();
 	winPtr->setDrawEventPriority(); // allow UI to post draws again
 	winPtr->setIntendedFrameRate(0);
 	winPtr = {};
-	app.flushMainThreadMessages();
 }
 
 void EmuSystemTask::sendVideoFormatChangedReply(EmuVideo&)
