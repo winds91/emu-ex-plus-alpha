@@ -262,7 +262,7 @@ EditCheatView::EditCheatView(ViewAttachParams attach, Cheat& cheat, BaseEditChea
 	},
 	addGGGS
 	{
-		"Add Another Game Genie / GameShark Code", attach,
+		"Add Another Code", attach,
 		[this](const Input::Event& e) { addNewCheatCode("Input xxxxxxxx (GS) or xxx-xxx-xxx (GG) code", e); }
 	}
 {

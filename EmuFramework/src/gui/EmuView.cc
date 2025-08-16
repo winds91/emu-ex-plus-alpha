@@ -133,13 +133,13 @@ void EmuView::setFrameTimingStats(FrameTimingViewStats viewStats)
 	}
 	auto frameDuration = duration_cast<Milliseconds>(stats.endOfFrame - stats.startOfFrame);
 	auto clockHz = emuScreen.frameTimerRate().hz();
-	frameTimingStatsStr = std::format("Frame Time Stats\n\n"
+	frameTimingStatsStr = std::format("Frame Timing Stats\n\n"
 		"Screen: {:g}Hz\n"
 		"Clock: {:g}Hz\n"
 		"Input: {:g}Hz\n"
 		"Output: {:g}Hz\n"
 		"Delta Time: {} ({:.2f}Hz)\n"
-		"Frame Time: {}\n",
+		"Frame Time: {}",
 		emuScreen.frameRate().hz(), clockHz,
 		viewStats.inputRate.hz(), viewStats.outputRate.hz(),
 		deltaDurationMS, toHz(deltaDuration), frameDuration);
@@ -148,7 +148,7 @@ void EmuView::setFrameTimingStats(FrameTimingViewStats viewStats)
 		auto callbackOverhead = duration_cast<Milliseconds>(stats.startOfEmulation - stats.startOfFrame);
 		auto emulationTime = duration_cast<Milliseconds>(stats.waitForPresent - stats.startOfEmulation);
 		auto presentTime = duration_cast<Milliseconds>(stats.endOfFrame - SteadyClockTimePoint{stats.waitForPresent});
-		frameTimingStatsStr += std::format("Callback/Emulate/Present: {} {} {}\n"
+		frameTimingStatsStr += std::format("\nCallback/Emulate/Present: {} {} {}\n"
 			"Missed Frames: {}",
 			callbackOverhead, emulationTime, presentTime, int(stats.missedFrameCallbacks));
 	}

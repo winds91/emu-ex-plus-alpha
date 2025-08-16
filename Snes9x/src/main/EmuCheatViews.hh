@@ -29,10 +29,9 @@ private:
 class EditRamCheatView: public TableView, public EmuAppHelper
 {
 public:
-	EditRamCheatView(ViewAttachParams, Cheat&, CheatCode&, EditCheatView&);
+	EditRamCheatView(ViewAttachParams, CheatCode&, EditCheatView&);
 
 private:
-	Cheat& cheat;
 	CheatCode& code;
 	EditCheatView& editCheatView;
 	DualTextMenuItem addr, value, conditional;

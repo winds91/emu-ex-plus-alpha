@@ -30,7 +30,6 @@ namespace IG
 constexpr SystemLogger log{"Window"};
 static JNI::InstMethod<jobject(jobject, jlong)> jPresentation{};
 static JNI::InstMethod<void()> jPresentationDeinit{};
-static JNI::InstMethod<void(jfloat)> jSetFrameRate{};
 static int32_t (*ANativeWindow_setFrameRate)(ANativeWindow* window, float frameRate, int8_t compatibility){};
 
 static void initPresentationJNI(JNIEnv* env, jobject presentation)
@@ -215,6 +214,10 @@ void AndroidWindow::setNativeWindow(ApplicationContext ctx, ANativeWindow *nWind
 	if(!nWindow)
 		return;
 	nWin = nWindow;
+	if(ctx.androidSDK() >= 35) // set default refresh rate since ARR is disabled
+	{
+		thisWindow.setIntendedFrameRate(0);
+	}
 	thisWindow.setFormat(nPixelFormat);
 	if(onInit)
 	{
@@ -245,14 +248,9 @@ void Window::setIntendedFrameRate(FrameRate rate)
 	auto ctx = appContext();
 	if(ctx.androidSDK() < 30 || !nWin)
 		return;
-	if(ctx.androidSDK() >= 34)
+	if(ctx.androidSDK() >= 35 && !rate) // explicitly set a refresh rate since ARR is disabled
 	{
-		auto env = ctx.thisThreadJniEnv();
-		auto baseActivity = ctx.baseActivityObject();
-		if(!jSetFrameRate) [[unlikely]]
-			jSetFrameRate = {env, baseActivity, "setFrameRate", "(F)V"};
-		jSetFrameRate(env, baseActivity, rate.hz());
-		return;
+		rate = screen()->supportedFrameRates().back();
 	}
 	if(!ANativeWindow_setFrameRate) [[unlikely]]
 	{

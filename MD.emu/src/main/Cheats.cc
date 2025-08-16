@@ -656,7 +656,7 @@ EditCheatView::EditCheatView(ViewAttachParams attach, Cheat& cheat, BaseEditChea
 	},
 	addCode
 	{
-		"Add Another Game Genie / Action Replay Code", attach,
+		"Add Another Code", attach,
 		[this](const Input::Event& e) { addNewCheatCode(codePromptString(), e); }
 	}
 {
