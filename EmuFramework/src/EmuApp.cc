@@ -59,6 +59,7 @@ constexpr SystemLogger log{"App"};
 static EmuApp *gAppPtr{};
 [[gnu::weak]] bool EmuApp::hasIcon = true;
 [[gnu::weak]] bool EmuApp::needsGlobalInstance = false;
+[[gnu::weak]] bool EmuApp::handlesRecentContent = false;
 constexpr float pausedVideoBrightnessScale = .75f;
 
 EmuApp::EmuApp(ApplicationInitParams initParams, ApplicationContext &ctx):

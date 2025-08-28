@@ -42,6 +42,10 @@ void EmuApp::saveConfigFile(FileIO &io)
 	}
 	writeConfigHeader(io);
 	recentContent.writeConfig(io);
+	if(!handlesRecentContent)
+	{
+		recentContent.writeContent(io);
+	}
 	writeOptionValueIfNotDefault(io, imageEffectPixelFormat);
 	writeOptionValueIfNotDefault(io, menuScale);
 	writeOptionValueIfNotDefault(io, fontSize);
@@ -161,13 +165,15 @@ EmuApp::ConfigParams EmuApp::loadConfigFile(IG::ApplicationContext ctx)
 						return true;
 					if(audio.readConfig(io, key))
 						return true;
-					if(recentContent.readConfig(io, key, system()))
+					if(recentContent.readConfig(io, key))
 						return true;
 					if(videoLayer.readConfig(io, key))
 						return true;
 					log.info("skipping key:{}", key);
 					return false;
 				}
+				case CFGKEY_RECENT_CONTENT_V2:
+					return handlesRecentContent ? system().readConfig(ConfigType::MAIN, io, key) : recentContent.readContent(io, system());
 				case CFGKEY_FRAME_INTERVAL: return readOptionValue(io, frameInterval);
 				case CFGKEY_FRAME_RATE: return readOptionValue<FrameDuration>(io, [&](auto &&val){outputTimingManager.setFrameRateOption(VideoSystem::NATIVE_NTSC, val);});
 				case CFGKEY_FRAME_RATE_PAL: return readOptionValue<FrameDuration>(io, [&](auto &&val){outputTimingManager.setFrameRateOption(VideoSystem::PAL, val);});
