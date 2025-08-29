@@ -114,6 +114,7 @@ public:
 	// Static app configuration
 	static bool hasIcon;
 	static bool needsGlobalInstance;
+	static bool handlesRecentContent;
 
 	EmuApp(IG::ApplicationInitParams, IG::ApplicationContext &);
 
