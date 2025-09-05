@@ -114,6 +114,7 @@ void EmuApp::saveConfigFile(FileIO &io)
 	inputManager.writeCustomKeyConfigs(io);
 	inputManager.writeSavedInputDevices(appContext(), io);
 	writeOptionValueIfNotDefault(io, showFrameTimingStats);
+	writeOptionValueIfNotDefault(io, lowLatencyVideo);
 }
 
 EmuApp::ConfigParams EmuApp::loadConfigFile(IG::ApplicationContext ctx)
@@ -238,6 +239,7 @@ EmuApp::ConfigParams EmuApp::loadConfigFile(IG::ApplicationContext ctx)
 				case CFGKEY_INPUT_KEY_CONFIGS_V2: return inputManager.readCustomKeyConfig(io);
 				case CFGKEY_INPUT_DEVICE_CONFIGS: return inputManager.readSavedInputDevices(io);
 				case CFGKEY_SHOW_FRAME_TIMING_STATS: return readOptionValue(io, showFrameTimingStats);
+				case CFGKEY_LOW_LATENCY_VIDEO: return readOptionValue(io, lowLatencyVideo);
 			}
 			return false;
 		});
