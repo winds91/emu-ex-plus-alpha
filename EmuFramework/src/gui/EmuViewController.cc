@@ -189,7 +189,7 @@ void EmuViewController::moveEmuViewToWindow(IG::Window &win)
 		return;
 	if(showingEmulation)
 	{
-		win.setDrawEventPriority(origWin.setDrawEventPriority());
+		win.setDrawEventEnabled(origWin.setDrawEventEnabled(true));
 	}
 	auto &origWinData = windowData(origWin);
 	origWinData.hasEmuView = false;

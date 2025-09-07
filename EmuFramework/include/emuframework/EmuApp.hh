@@ -278,6 +278,7 @@ public:
 	void setShowsBluetoothScanItems(bool on);
 	void setLayoutBehindSystemUI(bool);
 	bool doesLayoutBehindSystemUI() const { return layoutBehindSystemUI; };
+	void setLowLatencyVideo(bool);
 
 	void postMessage(UTF16Convertible auto &&msg)
 	{
@@ -393,6 +394,7 @@ public:
 	Property<bool, CFGKEY_SHOW_FRAME_TIMING_STATS> showFrameTimingStats;
 	Property<OutputFrameRateMode, CFGKEY_OUTPUT_FRAME_RATE_MODE,
 		{.defaultValue = OutputFrameRateMode::Auto, .isValid = enumIsValidUpToLast}> outputFrameRateMode;
+	Property<bool, CFGKEY_LOW_LATENCY_VIDEO, {.defaultValue = true}> lowLatencyVideo;
 
 protected:
 	struct ConfigParams

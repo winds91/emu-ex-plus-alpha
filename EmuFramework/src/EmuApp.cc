@@ -386,6 +386,7 @@ void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::Applicatio
 			videoLayer.setRendererTask(renderer.task());
 			applyRenderPixelFormat();
 			videoLayer.updateEffect(system(), videoEffectPixelFormat());
+			videoLayer.updateOverlay();
 			if((frameClockSource == FrameClockSource::Screen   && !emuWindow().supportsFrameClockSource(FrameClockSource::Screen)) ||
 				 (frameClockSource == FrameClockSource::Renderer && !emuWindow().supportsFrameClockSource(FrameClockSource::Renderer)))
 			{
@@ -1208,7 +1209,7 @@ void EmuApp::setEmuViewOnExtraWindow(bool on, IG::Screen &screen)
 				extraWinData.focused = true;
 				auto suspendCtx = systemTask.setWindow(win);
 				mainWindow().setFrameEventsOnThisThread();
-				mainWindow().setDrawEventPriority(); // allow UI to post draws again
+				mainWindow().setDrawEventEnabled(true);
 				extraWinData.updateWindowViewport(win, makeViewport(win), renderer);
 				viewController().moveEmuViewToWindow(win);
 
@@ -1357,6 +1358,12 @@ void EmuApp::setCPUAffinity(int cpuNumber, bool on)
 bool EmuApp::cpuAffinity(int cpuNumber) const
 {
 	return doIfUsed(cpuAffinityMask, [&](auto &cpuAffinityMask) { return cpuAffinityMask & bit(cpuNumber); }, false);
+}
+
+void EmuApp::setLowLatencyVideo(bool on)
+{
+	lowLatencyVideo = on;
+	video.resetImage();
 }
 
 std::unique_ptr<View> EmuApp::makeView(ViewAttachParams attach, ViewID id)
