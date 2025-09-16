@@ -385,7 +385,10 @@ bool EmuSystemTask::advanceFrames(FrameParams frameParams)
 	auto *audioPtr = app.audio ? &app.audio : nullptr;
 	auto frameInfo = sys.timing.advanceFrames(frameParams);
 	int interval = app.frameInterval;
-	viewCtrl.presentTime = frameParams.presentTime(interval);
+	if(shouldWaitForPresent)
+	{
+		viewCtrl.presentTime = frameParams.presentTime(interval);
+	}
 	if(sys.shouldFastForward()) [[unlikely]]
 	{
 		// for skipping loading on disk-based computers
@@ -453,7 +456,7 @@ bool EmuSystemTask::advanceFrames(FrameParams frameParams)
 	auto endFrameTime = SteadyClock::now();
 	app.reportFrameWorkDuration(endFrameTime - frameParams.time);
 	app.record(FrameTimingStatEvent::endOfFrame, endFrameTime);
-	app.viewController().emuView.setFrameTimingStats({.stats{app.frameTimingStats}, .lastFrameTime{frameParams.lastTime},
+	viewCtrl.emuView.setFrameTimingStats({.stats{app.frameTimingStats}, .lastFrameTime{frameParams.lastTime},
 		.inputRate{sys.frameRate()}, .outputRate{frameRateConfig.rate}});
 	return true;
 }

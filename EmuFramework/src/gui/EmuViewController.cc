@@ -231,7 +231,6 @@ void EmuViewController::showMenuView(bool updateTopView)
 		return;
 	showingEmulation = false;
 	emuView.window().configureFrameClock();
-	presentTime = {};
 	inputView.setSystemGestureExclusion(false);
 	configureWindowForEmulation(emuView.window(), false);
 	emuView.postDraw();
@@ -369,7 +368,7 @@ bool EmuViewController::drawMainWindow(IG::Window &win, IG::WindowDrawParams par
 			emuView.drawStatsText(cmds);
 			if(winData.hasPopup)
 				popup.draw(cmds);
-			cmds.present(presentTime);
+			cmds.present(std::exchange(presentTime, {}));
 			app().systemTask.notifyWindowPresented();
 		}
 		else
@@ -398,7 +397,7 @@ bool EmuViewController::drawExtraWindow(IG::Window &win, IG::WindowDrawParams pa
 		{
 			popup.draw(cmds);
 		}
-		cmds.present(presentTime);
+		cmds.present(std::exchange(presentTime, {}));
 		app().systemTask.notifyWindowPresented();
 		cmds.clear();
 	});
