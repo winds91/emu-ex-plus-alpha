@@ -26,7 +26,7 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends autoconf automake autopoint bash binutils-arm-linux-gnueabi cmake file gawk gettext git libtool libtool-bin make nasm pkg-config unzip wget
+        sudo apt-get install -y --no-install-recommends autoconf automake autopoint bash binutils-arm-linux-gnueabi cmake file gawk gettext git libtool libtool-bin make nasm ninja-build pkg-config unzip wget
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -35,7 +35,7 @@ jobs:
     - name: Set up environment
       run: |
         mkdir imagine-sdk
-        NDK_VERSION='r29-beta3'
+        NDK_VERSION='r29'
         wget "https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
         unzip android-ndk-${NDK_VERSION}-linux.zip
         rm android-ndk-${NDK_VERSION}-linux.zip
@@ -55,9 +55,10 @@ jobs:
       shell: bash
     - name: Build environment
       run: |
-        make -f $IMAGINE_PATH/android-release.mk install V=1 -j`nproc`
-        make -f $EMUFRAMEWORK_PATH/android-release.mk config -j`nproc`
-        make -f $EMUFRAMEWORK_PATH/android-release.mk install V=1 -j`nproc`
+        $IMAGINE_PATH/android.sh config
+        $IMAGINE_PATH/android.sh installLinks --config Release
+        $EMUFRAMEWORK_PATH/android.sh config
+        $EMUFRAMEWORK_PATH/android.sh installLinks --config Release
     - name: Keep cache small
       run: rm -rf .git
     - name: Save cache

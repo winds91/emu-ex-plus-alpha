@@ -23,6 +23,8 @@
 #include <imagine/base/android/AndroidApplicationContext.hh>
 #elif defined CONFIG_OS_IOS
 #include <imagine/base/iphone/IOSApplicationContext.hh>
+#else
+#error Missing application configuration macro
 #endif
 
 #include <imagine/base/baseDefs.hh>

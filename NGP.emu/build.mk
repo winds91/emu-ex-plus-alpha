@@ -15,7 +15,6 @@ SRC += main/Main.cc \
 main/options.cc \
 main/input.cc \
 main/EmuMenuViews.cc \
-$(MDFN_COMMON_SRC) \
 ngp/bios.cpp \
 ngp/biosHLE.cpp \
 ngp/dma.cpp \

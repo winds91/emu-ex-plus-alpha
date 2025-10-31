@@ -18,8 +18,6 @@ SRC += main/Main.cc \
 main/options.cc \
 main/input.cc \
 main/EmuMenuViews.cc \
-$(MDFN_COMMON_SRC) \
-$(MDFN_CDROM_SRC) \
 pce_fast/input.cpp \
 pce_fast/vdc.cpp \
 pce_fast/huc6280.cpp \

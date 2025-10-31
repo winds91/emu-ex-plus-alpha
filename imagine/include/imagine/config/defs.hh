@@ -20,14 +20,8 @@
 #include IMAGINE_CONFIG_H_INCLUDE
 #undef IMAGINE_CONFIG_H_INCLUDE
 #else
-	#ifdef NDEBUG
-		#if __has_include (<imagine-config.h>)
-		#include <imagine-config.h>
-		#endif
-	#else
-		#if __has_include (<imagine-debug-config.h>)
-		#include <imagine-debug-config.h>
-		#endif
+	#if __has_include (<imagine-config.h>)
+	#include <imagine-config.h>
 	#endif
 #endif
 

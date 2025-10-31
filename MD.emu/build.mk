@@ -87,8 +87,7 @@ ifdef hasSCD
  scd/pcm.cc \
  scd/cd_file.cc \
  scd/memMain.cc \
- scd/memSub.cc \
- $(MDFN_CDROM_STANDALONE_SRC)
+ scd/memSub.cc
 
  VPATH += $(EMUFRAMEWORK_PATH)/src/shared
 

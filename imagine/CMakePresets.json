@@ -1,0 +1,51 @@
+{
+	"version": 10,
+	"configurePresets": [
+		{
+			"name": "ninja-multi",
+			"hidden": true,
+			"generator": "Ninja Multi-Config",
+			"binaryDir": "${sourceDir}/build/${presetName}"
+		},
+		{
+			"name": "android-arm64",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/android-arm64.cmake"
+		},
+		{
+			"name": "android-armv7",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/android-armv7.cmake"
+		},
+		{
+			"name": "android-x86_64",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/android-x86_64.cmake"
+		},
+		{
+			"name": "android-x86",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/android-x86.cmake"
+		},
+		{
+			"name": "linux-x86_64",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/linux-x86_64.cmake"
+		},
+		{
+			"name": "linux-armv7-pandora",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/linux-armv7-pandora.cmake"
+		},
+		{
+			"name": "ios-arm64",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/ios-arm64.cmake"
+		},
+		{
+			"name": "ios-armv7",
+			"inherits": "ninja-multi",
+			"toolchainFile": "$env{IMAGINE_PATH}/cmake/ios-armv7.cmake"
+		}
+	]
+}

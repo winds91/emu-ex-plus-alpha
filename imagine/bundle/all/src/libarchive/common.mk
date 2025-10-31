@@ -4,7 +4,7 @@ endif
 
 include $(buildSysPath)/imagineSDKPath.mk
 
-libarchiveVer := 3.8.1
+libarchiveVer := 3.8.2
 libarchiveSrcDir := $(tempDir)/libarchive-$(libarchiveVer)
 libarchiveSrcArchive := libarchive-$(libarchiveVer).tar.xz
 

@@ -18,8 +18,6 @@ main/input.cc \
 main/EmuMenuViews.cc \
 mednafen/hash/sha256.cpp \
 mednafen/resampler/resample.c \
-$(MDFN_COMMON_SRC) \
-$(MDFN_CDROM_SRC) \
 ss/ak93c45.cpp \
 ss/cdb.cpp \
 ss/scu_dsp_gen.cpp \

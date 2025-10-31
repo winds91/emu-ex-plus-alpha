@@ -15,7 +15,6 @@ SRC += main/Main.cc \
 main/options.cc \
 main/input.cc \
 main/EmuMenuViews.cc \
-$(MDFN_COMMON_SRC) \
 wswan/comm.cpp \
 wswan/gfx.cpp \
 wswan/memory.cpp \
