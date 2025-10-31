@@ -1,10 +1,11 @@
 # common utility functions and variable setup included by all toolchain files
 
 function(setFromEnv var defaultVal)
-	if(NOT ENV{${var}})
+	set(envValue "$ENV{${var}}")
+	if(NOT envValue)
 		set(${var} "${defaultVal}" PARENT_SCOPE)
 	else()
-		set(${var} "$ENV{${var}}" PARENT_SCOPE)
+		set(${var} "${envValue}" PARENT_SCOPE)
 	endif()
 endFunction()
 
