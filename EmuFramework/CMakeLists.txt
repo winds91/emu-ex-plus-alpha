@@ -29,6 +29,7 @@ target_include_directories(mednafen_common PRIVATE
 	${PROJECT_SOURCE_DIR}/include/shared/mednafen
 	${PROJECT_SOURCE_DIR}/include/shared/lzma
 	${PROJECT_SOURCE_DIR}/include/shared
+	${PROJECT_SOURCE_DIR}/include
 	${PROJECT_SOURCE_DIR}/src/shared
 )
 target_compile_options(mednafen_common PRIVATE -Wno-missing-field-initializers -Wno-unused-parameter -Wno-unused-function)
