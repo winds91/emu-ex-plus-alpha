@@ -16,16 +16,22 @@ sdkPath=${IMAGINE_SDK_PATH:="${HOME}/imagine-sdk"}
 prefix="${sdkPath}/android-java"
 imagineV9InstallLibPath="${prefix}/imagine-v9.aar"
 
+buildImagineAAR () {
+	bash "${imagineV9SrcPath}/gradlew" --project-dir "${imagineV9SrcPath}" assembleRelease
+}
+
 case $action in
 	build)
-		bash "${imagineV9SrcPath}/gradlew" --project-dir "${imagineV9SrcPath}" assembleRelease
+		buildImagineAAR
 	;;
 	install)
+		buildImagineAAR
 		mkdir -p "${prefix}"
 		echo "Installing aar to ${prefix}"
 		cp "${imagineV9BuildLibBasePath}"/imagine-v9*.aar ${imagineV9InstallLibPath}
 	;;
 	installLinks)
+		buildImagineAAR
 		mkdir -p "${prefix}"
 		echo "Installing symlink aar to ${prefix}"
 		ln -srf "${imagineV9BuildLibBasePath}"/imagine-v9*.aar ${imagineV9InstallLibPath}
