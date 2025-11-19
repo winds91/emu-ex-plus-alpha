@@ -20,6 +20,7 @@
 #include <mach/mach.h>
 #include <utility>
 #include <cassert>
+#include <chrono>
 
 // TODO: remove when <semaphore> is fully supported by Apple Clang
 
@@ -56,6 +57,13 @@ public:
 	void acquire()
 	{
 		semaphore_wait(sem);
+	}
+
+	template<class Rep, class Period>
+	bool try_acquire_for(const std::chrono::duration<Rep, Period>&)
+	{
+		semaphore_wait(sem); // TODO
+		return true;
 	}
 
 	void release()

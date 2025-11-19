@@ -57,7 +57,7 @@ namespace EmuEx
 
 class EmuApp;
 
-enum
+enum PceConfigKey
 {
 	CFGKEY_SYSCARD_PATH = 275, CFGKEY_ARCADE_CARD = 276,
 	CFGKEY_6_BTN_PAD = 277, CFGKEY_VISIBLE_LINES = 278,

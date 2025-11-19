@@ -25,7 +25,7 @@ extern const Mednafen::MDFNGI EmulatedWSwan;
 namespace EmuEx
 {
 
-enum
+enum SwanConfigKey
 {
 	CFGKEY_USER_NAME = 256, CFGKEY_USER_PROFILE = 257,
 	CFGKEY_SHOW_VGAMEPAD_Y_HORIZ = 258, CFGKEY_SHOW_VGAMEPAD_AB_VERT = 259,

@@ -30,7 +30,7 @@ target_sources(
 	../../util/jni.cc
 )
 
-if(android_ndkSDK LESS_EQUAL 16)
+if(ANDROID_NDK_SDK LESS_EQUAL 16)
 	# add missing libc functions when compiling with newer NDK headers
 	target_sources(imagine PRIVATE compat.c)
 endif()

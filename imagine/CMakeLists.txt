@@ -9,7 +9,7 @@ project(
 
 set(CMAKE_INSTALL_PREFIX "${IMAGINE_SDK_PLATFORM_PATH}" CACHE PATH "Installation directory" FORCE)
 
-if(applePlatform)
+if(APPLE_PLATFORM)
 	enable_language(OBJCXX)
 endif()
 
@@ -17,7 +17,7 @@ printConfigInfo()
 add_library(imagine STATIC)
 set_target_properties(imagine PROPERTIES OUTPUT_NAME "imagine${GEN_TARGET_EXT}")
 set_property(TARGET imagine PROPERTY C_STANDARD 23)
-target_include_directories(imagine PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(imagine PRIVATE include)
 target_compile_options(imagine PRIVATE -Werror)
 install(TARGETS imagine DESTINATION lib)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/imagine" DESTINATION include)

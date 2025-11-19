@@ -74,7 +74,7 @@ struct InputConfig
 	constexpr bool operator ==(InputConfig const&) const = default;
 };
 
-enum
+enum SaturnConfigKey
 {
 	CFGKEY_NA_BIOS_PATH = 275, CFGKEY_JP_BIOS_PATH = 276,
 	CFGKEY_KOF_ROM_PATH = 277, CFGKEY_ULTRAMAN_ROM_PATH = 278,

@@ -15,8 +15,9 @@ set(PKG_CONFIG_PATH "${IMAGINE_SDK_PLATFORM_PATH}/lib/pkgconfig:${PKG_CONFIG_PAT
 include_directories("${IMAGINE_SDK_PLATFORM_PATH}/include")
 link_directories("${IMAGINE_SDK_PLATFORM_PATH}/lib")
 
-if(useExternalLibcxx)
-	string(APPEND LDFLAGS " -nostdlib++ -lc++ -lc++abi -lc++experimental ${cxxSupportLibs}")
+if(USE_EXTERNAL_LIBCXX)
+	set(CXX_STD_LINK_OPTS -nostdlib++)
+	set(CXX_STD_LINK_LIBS -lc++ -lc++abi -lc++experimental ${LIBCXX_SUPPORT_LIBS})
 	string(APPEND CFLAGS_COMMON " -nostdinc++")
 	foreach(LANG CXX OBJCXX)
 		list(APPEND CMAKE_${LANG}_STANDARD_INCLUDE_DIRECTORIES "${IMAGINE_SDK_PLATFORM_PATH}/include/c++/v1")
@@ -26,37 +27,31 @@ endif()
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-set(CFLAGS_DEBUG "-Og -gz=zstd -ffunction-sections -fdata-sections")
-set(CFLAGS_OPTIMIZE "-O3 -ffast-math -flto -fomit-frame-pointer -fno-stack-protector -fno-asynchronous-unwind-tables")
-string(APPEND CFLAGS_CODEGEN " -fvisibility=hidden -fno-semantic-interposition")
-string(APPEND CFLAGS_COMMON " -pipe")
-
-if(NOT cxxThreadSafeStatics)
-	string(APPEND CXXFLAGS " -fno-threadsafe-statics")
+set(CFLAGS_DEBUG "-Og")
+set(CFLAGS_OPTIMIZE "-ffast-math -flto -fno-stack-protector -fno-asynchronous-unwind-tables")
+string(APPEND CFLAGS_CODEGEN " -fvisibility=hidden -fno-semantic-interposition -gz=zstd -ffunction-sections -fdata-sections")
+string(APPEND CFLAGS_COMMON " -pipe -Wall -Wextra")
+string(APPEND CFLAGS_COMMON_RELEASE " -Wdisabled-optimization")
+string(APPEND CXXFLAGS " -fno-threadsafe-statics")
+if(NOT LDFLAGS_STRIP)
+	set(LDFLAGS_STRIP "-s")
 endif()
 
-# Disable some undefined sanitizers that greatly increase compile time or are not needed
-
-if(NOT compiler_noSanitizeMode)
-	set(compiler_noSanitizeMode "unreachable,return,vptr,enum,nonnull-attribute")
+if(NOT USE_FRAME_POINTERS)
+	string(APPEND CFLAGS_OPTIMIZE " -fomit-frame-pointer")
 endif()
 
-# setup optimizations
+if(NOT NO_SANITIZE_MODE)
+	# Disable some -fsanitize=undefined options that greatly increase compile time or are not needed
+	set(NO_SANITIZE_MODE "unreachable,return,vptr,enum,nonnull-attribute")
+endif()
 
-if(compiler_sanitizeMode)
-	string(APPEND CFLAGS_DEBUG " -fsanitize=${compiler_sanitizeMode} -fno-omit-frame-pointer")
-	if(compiler_noSanitizeMode)
-		string(APPEND CFLAGS_DEBUG " -fno-sanitize=${compiler_noSanitizeMode}")
+if(SANITIZE_MODE)
+	string(APPEND CFLAGS_DEBUG " -fsanitize=${SANITIZE_MODE} -fno-omit-frame-pointer")
+	if(NO_SANITIZE_MODE)
+		string(APPEND CFLAGS_DEBUG " -fno-sanitize=${NO_SANITIZE_MODE}")
 	endif()
 endif()
-
-string(APPEND CFLAGS_COMMON_RELEASE " -DNDEBUG -Wdisabled-optimization")
-
-string(APPEND LDFLAGS_STRIP " -s")
-
-# setup warnings
-
-string(APPEND CFLAGS_COMMON " -Wall -Wextra -Werror=return-type -Wno-comment")
 
 # assign all the flags
 
@@ -70,12 +65,10 @@ set(CMAKE_CXX_FLAGS_DEBUG_INIT "${CFLAGS_DEBUG}")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "${CFLAGS_COMMON_RELEASE} ${CFLAGS_OPTIMIZE}")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO_INIT "${CMAKE_CXX_FLAGS_RELEASE_INIT}")
 
-set(CMAKE_EXE_LINKER_FLAGS_INIT "${LDFLAGS} ${CFLAGS_CODEGEN}")
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG_INIT "${CFLAGS_DEBUG}")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT "${CFLAGS_OPTIMIZE} ${LDFLAGS_STRIP}")
-set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO_INIT "${CFLAGS_OPTIMIZE}")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "${LDFLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG_INIT "-flto") # Ensure LTO files are processed properly even when not compiling with LTO
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT "${LDFLAGS_STRIP}")
 
-set(CMAKE_SHARED_LINKER_INIT "${CMAKE_EXE_LINKER_FLAGS_INIT}")
-set(CMAKE_SHARED_LINKER_DEBUG_INIT "${CMAKE_EXE_LINKER_FLAGS_DEBUG_INIT}")
-set(CMAKE_SHARED_LINKER_RELEASE_INIT "${CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT}")
-set(CMAKE_SHARED_LINKER_RELWITHDEBINFO_INIT "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO_INIT}")
+set(CMAKE_SHARED_LINKER_FLAGS_INIT "${CMAKE_EXE_LINKER_FLAGS_INIT} ${LDFLAGS_SHARED}")
+set(CMAKE_SHARED_LINKER_FLAGS_DEBUG_INIT "${CMAKE_EXE_LINKER_FLAGS_DEBUG_INIT}")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE_INIT "${CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT}")

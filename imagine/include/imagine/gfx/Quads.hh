@@ -142,6 +142,7 @@ public:
 
 	constexpr BaseQuad(InitParams params)
 	{
+		v = {};
 		setPos(params.bounds);
 		if constexpr(requires {V::color;})
 		{

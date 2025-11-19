@@ -86,7 +86,7 @@ FrameRateTestApplication::FrameRateTestApplication(IG::ApplicationInitParams ini
 			setPickerHandlers(win);
 
 			ctx.addOnResume(
-				[this, &win](IG::ApplicationContext, [[maybe_unused]] bool focused)
+				[&win](IG::ApplicationContext, [[maybe_unused]] bool focused)
 				{
 					windowData(win).picker.prepareDraw();
 					return true;

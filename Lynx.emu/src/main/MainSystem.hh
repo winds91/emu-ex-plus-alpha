@@ -24,7 +24,7 @@ extern const Mednafen::MDFNGI EmulatedLynx;
 namespace EmuEx
 {
 
-enum
+enum LynxConfigKey
 {
 	CFGKEY_BIOS = 256, CFGKEY_LYNX_ROTATION = 257,
 	CFGKEY_LOWPASS_FILTER = 258, CFGKEY_NO_MD5_FILENAMES = 259,

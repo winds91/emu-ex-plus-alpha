@@ -5,7 +5,8 @@
 			"name": "ninja-multi",
 			"hidden": true,
 			"generator": "Ninja Multi-Config",
-			"binaryDir": "${sourceDir}/build/${presetName}"
+			"binaryDir": "${sourceDir}/build/${presetName}",
+			"cacheVariables": { "CMAKE_DEFAULT_BUILD_TYPE": "Release" }
 		},
 		{
 			"name": "android-arm64",

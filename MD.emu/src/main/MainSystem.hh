@@ -30,7 +30,7 @@ namespace EmuEx
 
 class EmuApp;
 
-enum
+enum MdConfigKey
 {
 	CFGKEY_BIG_ENDIAN_SRAM = 278, CFGKEY_SMS_FM = 279,
 	CFGKEY_6_BTN_PAD = 280, CFGKEY_MD_CD_BIOS_USA_PATH = 281,

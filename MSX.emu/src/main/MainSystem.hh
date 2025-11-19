@@ -28,7 +28,7 @@ extern "C"
 	#include <blueMSX/Language/Language.h>
 }
 
-enum
+enum MsxConfigKey
 {
 	CFGKEY_DEFAULT_MACHINE_NAME = 256, CFGKEY_SKIP_FDC_ACCESS = 257,
 	CFGKEY_MACHINE_FILE_PATH = 258, CFGKEY_SESSION_MACHINE_NAME = 259,

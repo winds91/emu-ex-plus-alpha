@@ -26,14 +26,16 @@ writePkgConfigFiles(emuframework)
 add_library(mednafen_common STATIC)
 set_target_properties(mednafen_common PROPERTIES OUTPUT_NAME "mednafen_common${GEN_TARGET_EXT}")
 target_include_directories(mednafen_common PRIVATE
-	${PROJECT_SOURCE_DIR}/include/shared/mednafen
-	${PROJECT_SOURCE_DIR}/include/shared/lzma
-	${PROJECT_SOURCE_DIR}/include/shared
-	${PROJECT_SOURCE_DIR}/include
-	${PROJECT_SOURCE_DIR}/src/shared
+	include/shared/mednafen
+	include/shared/lzma
+	include/shared
+	include
+	src/shared
 )
 target_compile_options(mednafen_common PRIVATE -Wno-missing-field-initializers -Wno-unused-parameter -Wno-unused-function)
 target_compile_definitions(mednafen_common PRIVATE HAVE_CONFIG_H)
 install(TARGETS mednafen_common DESTINATION lib)
 
 add_subdirectory(src/shared)
+set_source_files_properties(src/shared/mednafen/sound/DSPUtility.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
+set_source_files_properties(src/shared/mednafen/hw_cpu/m68k/m68k.cpp PROPERTIES COMPILE_OPTIONS "-fno-sanitize=address,undefined")

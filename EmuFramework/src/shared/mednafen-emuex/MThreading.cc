@@ -35,7 +35,7 @@ struct Mutex : public std::mutex {};
 struct Cond : public std::condition_variable {};
 struct Sem : public std::counting_semaphore<0x80000>
 {
-	using counting_semaphore<0x80000>::counting_semaphore;
+	using std::counting_semaphore<0x80000>::counting_semaphore;
 };
 
 Thread* Thread_Create(int (*fn)(void *), void *data, const char* debug_name)

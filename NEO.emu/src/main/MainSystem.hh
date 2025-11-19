@@ -32,7 +32,7 @@ static const unsigned joystickKeys = 19;
 namespace EmuEx
 {
 
-enum
+enum NeoConfigKey
 {
 	CFGKEY_LIST_ALL_GAMES = 275, CFGKEY_BIOS_TYPE = 276,
 	CFGKEY_MVS_COUNTRY = 277, CFGKEY_TIMER_INT = 278,

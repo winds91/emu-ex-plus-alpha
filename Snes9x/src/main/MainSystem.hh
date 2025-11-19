@@ -18,7 +18,7 @@ namespace EmuEx
 
 class VController;
 
-enum
+enum Snes9xConfigKey
 {
 	CFGKEY_MULTITAP = 276, CFGKEY_BLOCK_INVALID_VRAM_ACCESS = 277,
 	CFGKEY_VIDEO_SYSTEM = 278, CFGKEY_INPUT_PORT = 279,

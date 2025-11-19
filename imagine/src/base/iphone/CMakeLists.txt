@@ -1,8 +1,8 @@
-addPkgConfigLibs(imagine "-framework UIKit -framework QuartzCore -framework Foundation -framework CoreFoundation -framework CoreGraphics")
+addPkgConfigLibs(imagine "-framework=UIKit -framework=QuartzCore -framework=Foundation -framework=CoreFoundation -framework=CoreGraphics")
 
 if(iosMsgUI)
 	addConfigEnable(imagine IPHONE_MSG_COMPOSE)
-	addPkgConfigLibs(imagine "-framework MessageUI")
+	addPkgConfigLibs(imagine "-framework=MessageUI")
 endif()
 
 target_sources(

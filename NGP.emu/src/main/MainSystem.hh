@@ -24,7 +24,7 @@ extern const Mednafen::MDFNGI EmulatedNGP;
 namespace EmuEx
 {
 
-enum
+enum NgpConfigKey
 {
 	CFGKEY_NGPKEY_LANGUAGE = 269, CFGKEY_NO_MD5_FILENAMES = 270,
 };

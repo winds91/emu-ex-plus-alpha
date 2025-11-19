@@ -33,6 +33,9 @@ function(printConfigInfo)
 	message("C++ Flags (Debug): ${CMAKE_CXX_FLAGS_DEBUG}")
 	message("C++ Flags (Release): ${CMAKE_CXX_FLAGS_RELEASE}")
 	message("C++ Flags (Release + Debug Info): ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+	if(CMAKE_ASM_COMPILER_LOADED)
+		message("ASM Flags (Common): ${CMAKE_ASM_FLAGS}")
+	endif()
 	message("Linker Flags (Common): ${CMAKE_EXE_LINKER_FLAGS}")
 	message("Linker Flags (Debug): ${CMAKE_EXE_LINKER_FLAGS_DEBUG}")
 	message("Linker Flags (Release): ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
@@ -86,13 +89,16 @@ function(addPkgConfigLibs target lib)
 	set_property(TARGET ${target} APPEND PROPERTY PKG_CONFIG_TARGET_LIBS "${lib}")
 endFunction()
 
-function(evalPkgConfigCFlags target)
+function(evalPkgConfigFlags target mode)
 	getJoinedProp(pkgConfigDeps ${target} PKG_CONFIG_TARGET_DEPS)
-	getJoinedProp(pkgConfigDepsRelease ${target} PKG_CONFIG_TARGET_DEPS_Release)
-	string(APPEND pkgConfigDeps " ${pkgConfigDepsRelease}")
+	foreach(config IN LISTS CMAKE_CONFIGURATION_TYPES)
+		getJoinedProp(pkgConfigDeps${config} ${target} PKG_CONFIG_TARGET_DEPS_${config})
+	endforeach()
+	set(pkgConfigDepsAll "${pkgConfigDeps}")
+	string(APPEND pkgConfigDepsAll " ${pkgConfigDepsRelease}")
 
-	if(pkgConfigDeps)
-		message("Config Packages: ${pkgConfigDeps}")
+	if(pkgConfigDepsAll)
+		message("Config Packages: ${pkgConfigDepsAll}")
 	else()
 		message("No config packages")
 		return()
@@ -102,18 +108,45 @@ function(evalPkgConfigCFlags target)
 	set(ENV{PKG_CONFIG_SYSTEM_INCLUDE_PATH} "${PKG_CONFIG_SYSTEM_INCLUDE_PATH}")
 	set(ENV{PKG_CONFIG_SYSTEM_LIBRARY_PATH} "${PKG_CONFIG_SYSTEM_LIBRARY_PATH}")
 
-	execute_process(
-		COMMAND pkg-config ${pkgConfigDeps} --cflags ${pkgConfigOpts} ${pkgConfigDepsRelease}
-		OUTPUT_VARIABLE pkgConfigCFlagsOutput
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-		COMMAND_ERROR_IS_FATAL ANY
-	)
+	if(mode STREQUAL all OR mode STREQUAL cflags)
+		execute_process(
+			COMMAND pkg-config --cflags ${pkgConfigOpts} ${pkgConfigDeps} ${pkgConfigDepsRelease}
+			OUTPUT_VARIABLE pkgConfigCFlagsOutput
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+			COMMAND_ERROR_IS_FATAL ANY
+		)
+		message("Package Flags: ${pkgConfigCFlagsOutput}")
+		string(REPLACE " " ";" pkgConfigCFlagsOutput "${pkgConfigCFlagsOutput}")
+		target_compile_options(${target} PRIVATE ${pkgConfigCFlagsOutput})
+	endif()
 
-	string(REPLACE " " ";" pkgConfigCFlagsOutput "${pkgConfigCFlagsOutput}")
-	target_compile_options(${target} PUBLIC ${pkgConfigCFlagsOutput})
-	get_target_property(targetCompileOptions ${target} COMPILE_OPTIONS)
-	list(JOIN targetCompileOptions " " targetCompileOptions)
-	message("Target Compile Flags: ${targetCompileOptions}")
+	if(mode STREQUAL all OR mode STREQUAL libs)
+		foreach(config IN LISTS CMAKE_CONFIGURATION_TYPES)
+			execute_process(
+				COMMAND pkg-config --libs ${pkgConfigOpts} ${pkgConfigDeps} ${pkgConfigDeps${config}}
+				OUTPUT_VARIABLE pkgConfigLibsOutput
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+				RESULT_VARIABLE resultCode
+			)
+			if(resultCode)
+				message("Package Libs (${config}): not configured")
+			else()
+				message("Package Libs (${config}): ${pkgConfigLibsOutput}")
+				string(REPLACE " " ";" pkgConfigLibsOutput "${pkgConfigLibsOutput}")
+				if(ENV STREQUAL ios)
+					list(TRANSFORM pkgConfigLibsOutput PREPEND "SHELL:")
+					string(REPLACE "=" " " pkgConfigLibsOutput "${pkgConfigLibsOutput}")
+					target_link_options(${target} PRIVATE $<$<CONFIG:${config}>:${pkgConfigLibsOutput}>)
+				else()
+					target_link_libraries(${target} PRIVATE $<$<CONFIG:${config}>:${pkgConfigLibsOutput}>)
+				endif()
+			endif()
+		endforeach()
+	endif()
+endFunction()
+
+function(evalPkgConfigCFlags target)
+	evalPkgConfigFlags(${target} cflags)
 endFunction()
 
 function(writePkgConfigFiles target)
@@ -161,6 +194,7 @@ endfunction()
 
 function(addPkgFlac target)
 	addPkgConfigDeps(${target} flac)
+	addPkgConfigDeps(${target} ogg)
 endFunction()
 
 function(addPkgFontconfig target)
@@ -212,13 +246,15 @@ endFunction()
 function(addPkgLibvorbis target)
 	addConfigEnable(${target} CONFIG_PACKAGE_LIBVORBIS)
 	addPkgConfigDeps(${target} vorbisfile)
+	addPkgConfigDeps(${target} vorbis)
+	addPkgConfigDeps(${target} ogg)
 endFunction()
 
 function(addPkgOpenGL target)
 	if(SUBENV STREQUAL pandora)
 		addPkgConfigLibs(${target} "-lGLESv2 -lm")
 	elseif(ENV STREQUAL linux)
-		if(openGLAPI STREQUAL gles)
+		if(OPENGL_API STREQUAL gles)
 			addPkgConfigDeps(${target} glesv2)
 		else()
 			addPkgConfigDeps(${target} gl)
@@ -226,9 +262,9 @@ function(addPkgOpenGL target)
 	elseif(ENV STREQUAL android)
 		addPkgConfigLibs(${target} -lGLESv2)
 	elseif(ENV STREQUAL ios)
-		addPkgConfigLibs(${target} "-framework OpenGLES")
+		addPkgConfigLibs(${target} "-framework=OpenGLES")
 	elseif(ENV STREQUAL macosx)
-		addPkgConfigLibs(${target} "-framework OpenGL" "-framework CoreVideo")
+		addPkgConfigLibs(${target} "-framework=OpenGL" "-framework=CoreVideo")
 	endif()
 endFunction()
 
@@ -244,6 +280,90 @@ endfunction()
 
 function(addPkgXRandr target)
 	addPkgConfigDeps(${target} xcb-randr)
+endfunction()
+
+# app target support
+
+function(setAllVarsFromFile filePath)
+	file(STRINGS "${filePath}" fileLines)
+	foreach(line IN LISTS fileLines)
+	string(FIND "${line}" "=" equalPos)
+		if(equalPos GREATER -1)
+			math(EXPR varNameLen "${equalPos}")
+			string(SUBSTRING "${line}" 0 "${varNameLen}" varName)
+			math(EXPR valueStart "${equalPos} + 1")
+			string(SUBSTRING "${line}" "${valueStart}" -1 value)
+			string(STRIP "${varName}" varName)
+			string(STRIP "${value}" value)
+			set(${varName} "${value}" PARENT_SCOPE)
+			#message(STATUS "Read variable ${varName} = ${value}")
+		endif()
+	endforeach()
+endfunction()
+
+function(configureAppTarget target)
+	setAllVarsFromFile(metadata/conf.mk)
+	set(configFilename "meta.h")
+	set(genDir "${CMAKE_BINARY_DIR}/gen")
+	set(configFilePath "${genDir}/${configFilename}")
+	message("Metadata Header: ${configFilePath}")
+	file(WRITE ${configFilePath}
+		"#pragma once\n"
+		"#define CONFIG_APP_NAME \"${PROJECT_NAME}\"\n"
+		"#define CONFIG_APP_ID \"${metadata_id}\"\n"
+	)
+	if(ENV STREQUAL android)
+		add_library(${target} SHARED ${ARGN})
+		set_target_properties(${target} PROPERTIES OUTPUT_NAME "main")
+		set(libOutputDir "${CMAKE_BINARY_DIR}/../android${GEN_TARGET_EXT}/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI}")
+		set(LIBRARY_OUTPUT_DIR ${libOutputDir} PARENT_SCOPE)
+		set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${libOutputDir})
+		file(WRITE "${CMAKE_BINARY_DIR}/${target}_retainedSymbols.txt" "ANativeActivity_onCreate\n")
+		target_link_options(${target} PRIVATE
+			"-Wl,--no-undefined,--retain-symbols-file=${CMAKE_BINARY_DIR}/${target}_retainedSymbols.txt")
+		if(ENV{ANDROID_GOOGLE_PLAY_STORE_BUILD})
+			file(APPEND ${configFilePath} "#define CONFIG_GOOGLE_PLAY_STORE\n")
+		endif()
+	else()
+		add_executable(${target} ${ARGN})
+		if(ENV STREQUAL linux)
+			set(LIBRARY_OUTPUT_DIR "${CMAKE_BINARY_DIR}/../linux${GEN_TARGET_EXT}" PARENT_SCOPE)
+			set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+				"${CMAKE_BINARY_DIR}/../linux${GEN_TARGET_EXT}")
+		elseif(ENV STREQUAL ios)
+			add_custom_command(
+				TARGET ${target}
+				POST_BUILD
+				COMMAND ldid -S $<TARGET_FILE:${target}>
+				COMMENT "Signing executable"
+			)
+		elseif(SUBENV STREQUAL pandora)
+			set(LIBRARY_OUTPUT_DIR "${CMAKE_BINARY_DIR}/../pandora${GEN_TARGET_EXT}/${metadata_pkgName}" PARENT_SCOPE)
+			set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+				"${CMAKE_BINARY_DIR}/../pandora${GEN_TARGET_EXT}/${metadata_pkgName}")
+		endif()
+	endif()
+	target_include_directories(${target} PRIVATE ${genDir} ${PROJECT_SOURCE_DIR}/src)
+	target_link_options(${target} PRIVATE ${CXX_STD_LINK_OPTS})
+	target_link_libraries(${target} PRIVATE ${CXX_STD_LINK_LIBS})
+endfunction()
+
+function(configureAppLibraryTarget target)
+	add_library(${target} SHARED ${ARGN})
+	target_link_options(${target} PRIVATE ${CXX_STD_LINK_OPTS})
+	if(LIBRARY_OUTPUT_DIR)
+		set_target_properties(${target} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_DIR})
+	endif()
+endfunction()
+
+function(setExportedSymbols target)
+	if(ENV STREQUAL linux)
+		target_link_options(${target} PRIVATE -Wl,--export-dynamic)
+	elseif(ENV STREQUAL android)
+		foreach(arg IN LISTS ARGN)
+			file(APPEND "${CMAKE_BINARY_DIR}/${target}_retainedSymbols.txt" "${arg}\n")
+		endforeach()
+	endif()
 endfunction()
 
 # set imagine path
@@ -265,6 +385,7 @@ set(CFLAGS_CODEGEN) # common C/C++ flags that do affect generated code
 set(OBJCFLAGS)
 set(LDFLAGS)
 set(LDFLAGS_STRIP)
+set(LDFLAGS_SHARED)
 set(TARGET_EXT_Debug -debug)
 set(TARGET_EXT_RelWithDebInfo -rdebug)
 set(GEN_TARGET_EXT)

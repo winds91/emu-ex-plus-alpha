@@ -40,6 +40,13 @@ parseCMakeActionArgs () {
 	done
 }
 
+configBuildIfNeeded () {
+	if [ -f "build/android-$1/CMakeCache.txt" ]; then
+		return
+	fi
+	cmake --preset android-$1 --fresh ${cmakeArgs[@]}
+}
+
 executeCMakeActions () {
 	case $action in
 		config)
@@ -51,6 +58,7 @@ executeCMakeActions () {
 		build)
 			for a in $presets
 			do
+				configBuildIfNeeded $a
 				cmake --build build/android-$a --config $config ${cmakeArgs[@]} &
 			done
 			wait
@@ -58,12 +66,14 @@ executeCMakeActions () {
 		install)
 			for a in $presets
 			do
+				configBuildIfNeeded $a
 				cmake --build build/android-$a --target install --config $config ${cmakeArgs[@]}
 			done
 		;;
 		installLinks)
 			for a in $presets
 			do
+				configBuildIfNeeded $a
 				CMAKE_INSTALL_MODE=REL_SYMLINK cmake --build build/android-$a --target install --config $config ${cmakeArgs[@]}
 			done
 		;;

@@ -40,6 +40,7 @@ public:
 
 	constexpr BaseFanQuad(InitParams params)
 	{
+		centerV = {};
 		setPos(params.bounds);
 		if constexpr(requires {V::color;})
 		{

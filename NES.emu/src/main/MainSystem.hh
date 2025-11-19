@@ -40,7 +40,7 @@ public:
 		CHEATCODE{.addr = addr, .val = val, .compare = compare, .type = type} {}
 };
 
-enum
+enum NesConfigKey
 {
 	CFGKEY_FDS_BIOS_PATH = 270, CFGKEY_FOUR_SCORE = 271,
 	CFGKEY_VIDEO_SYSTEM = 272, CFGKEY_SPRITE_LIMIT = 273,

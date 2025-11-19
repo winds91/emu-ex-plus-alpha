@@ -35,7 +35,7 @@ namespace EmuEx
 
 enum class RtcMode : uint8_t {AUTO, OFF, ON};
 
-enum
+enum GbaConfigKey
 {
 	CFGKEY_RTC_EMULATION = 256, CFGKEY_SAVE_TYPE_OVERRIDE = 257,
 	CFGKEY_PCM_VOLUME = 258, CFGKEY_GB_APU_VOLUME = 259,

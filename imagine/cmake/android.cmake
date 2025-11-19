@@ -1,6 +1,7 @@
 # Included by arch-specific Android makefiles
 
-set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(ENV android)
 set(ENV_KERNEL linux)
 
@@ -29,10 +30,11 @@ if(NOT IS_DIRECTORY ${ANDROID_CLANG_SYSROOT_PATH})
 	message(FATAL_ERROR "ANDROID_CLANG_SYSROOT_PATH not found in NDK or in ANDROID_CLANG_TOOLCHAIN_PATH: ${ANDROID_CLANG_TOOLCHAIN_PATH}")
 endif()
 
-if(android_ndkSDK LESS_EQUAL 16)
+if(ANDROID_NDK_SDK LESS_EQUAL 16)
 	# SDK 9 no longer supported since NDK r16 & SDK 16 since NDK r24, use bundled system lib stubs
-	string(APPEND CFLAGS_COMMON " -DANDROID_COMPAT_API=${android_ndkSDK}")
-	set(android_ndkLinkSysroot "${IMAGINE_PATH}/bundle/android/${CHOST}/${android_ndkSDK}")
+	string(APPEND CFLAGS_COMMON " -DANDROID_COMPAT_API=${ANDROID_NDK_SDK}")
+	set(android_ndkLinkSysroot "${IMAGINE_PATH}/bundle/android/${CTARGET}/${ANDROID_NDK_SDK}")
+	set(ANDROID_COMPAT_API 1)
 endif()
 
 set(CMAKE_C_COMPILER "${ANDROID_CLANG_TOOLCHAIN_BIN_PATH}/clang")
@@ -42,16 +44,16 @@ set(CMAKE_RANLIB "${ANDROID_CLANG_TOOLCHAIN_BIN_PATH}/llvm-ranlib")
 set(CMAKE_STRIP "${ANDROID_CLANG_TOOLCHAIN_BIN_PATH}/llvm-strip")
 set(CMAKE_OBJDUMP "${ANDROID_CLANG_TOOLCHAIN_BIN_PATH}/llvm-objdump")
 
-string(APPEND CFLAGS_CODEGEN " -target ${clangTarget} -no-canonical-prefixes")
+string(APPEND CFLAGS_CODEGEN " -target ${ANDROID_CTARGET} -no-canonical-prefixes")
 
 # libc++
-set(useExternalLibcxx 1)
-if(NOT useExternalLibcxx)
-	string(APPEND LDFLAGS " -static-libstdc++")
+set(USE_EXTERNAL_LIBCXX 1)
+if(NOT USE_EXTERNAL_LIBCXX)
+	set(CXX_STD_LINK_OPTS -static-libstdc++)
 endif()
 
 if(NOT CMAKE_ASM_FLAGS_INIT)
-	set(CMAKE_ASM_FLAGS_INIT "-target ${clangTarget} -Wa,--noexecstack")
+	set(CMAKE_ASM_FLAGS_INIT "-target ${ANDROID_CTARGET} -Wa,--noexecstack")
 endif()
 if(android_ndkLinkSysroot)
 	string(APPEND LDFLAGS " --sysroot=${android_ndkLinkSysroot}")
@@ -64,8 +66,7 @@ string(APPEND CFLAGS_COMMON " -DANDROID")
 if(NOT android_implicitSysroot)
 	string(APPEND CFLAGS_COMMON " --sysroot=${ANDROID_CLANG_SYSROOT_PATH}")
 endif()
-string(APPEND LDFLAGS " -Wl,--no-undefined,-z,noexecstack,-z,relro,-z,now \
--Wl,-O3,--gc-sections,--icf=all,--as-needed,--warn-shared-textrel,--fatal-warnings \
--Wl,--exclude-libs,ALL,--lto-whole-program-visibility")
+string(APPEND LDFLAGS " -Wl,-z,noexecstack,-z,relro,-z,now,--warn-shared-textrel,--fatal-warnings \
+-Wl,-O3,--gc-sections,--icf=all,--as-needed,--lto-whole-program-visibility,--exclude-libs=ALL")
 
 include("${CMAKE_CURRENT_LIST_DIR}/clang.cmake")

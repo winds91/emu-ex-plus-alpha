@@ -16,14 +16,26 @@ target_sources(
 	mednafen/Stream.cpp
 	mednafen/memory.cpp
 	mednafen/git.cpp
+	mednafen/resampler/resample.c
 	mednafen/sound/Blip_Buffer.cpp
 	mednafen/sound/Stereo_Buffer.cpp
+	mednafen/sound/DSPUtility.cpp
+	mednafen/sound/okiadpcm.cpp
+	mednafen/sound/OwlResampler.cpp
 	mednafen/video/resize.cpp
 	mednafen/video/surface.cpp
 	mednafen/compress/GZFileStream.cpp
 	mednafen/string/string.cpp
 	mednafen/hash/crc.cpp
 	mednafen/hash/md5.cpp
+	mednafen/hash/sha256.cpp
+	mednafen/cputest/cputest.c
+	mednafen/hw_misc/arcade_card/arcade_card.cpp
+	mednafen/hw_sound/pce_psg/pce_psg.cpp
+	mednafen/hw_video/huc6270/vdc.cpp
+	mednafen/hw_cpu/z80-fuse/z80.cpp
+	mednafen/hw_cpu/z80-fuse/z80_ops.cpp
+	mednafen/hw_cpu/m68k/m68k.cpp
 	mednafen-emuex/CDImpl.cc
 	mednafen-emuex/ArchiveVFS.cc
 	mednafen/cdrom/CDAFReader.cpp
