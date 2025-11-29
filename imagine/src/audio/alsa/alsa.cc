@@ -13,16 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/alsa/ALSAOutputStream.hh>
-#include <imagine/audio/OutputStream.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/thread/Thread.hh>
+#include <imagine/util/macros.h>
 #include "alsautils.h"
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <memory>
+import imagine.audio;
 
 namespace IG::Audio
 {
@@ -267,7 +260,7 @@ void ALSAOutputStream::close()
 {
 	if(!isOpen()) [[unlikely]]
 		return;
-	logDMsg("closing pcm");
+	log.debug("closing pcm");
 	quitFlag = true;
 	snd_pcm_drop(pcmHnd);
 	snd_pcm_close(pcmHnd);

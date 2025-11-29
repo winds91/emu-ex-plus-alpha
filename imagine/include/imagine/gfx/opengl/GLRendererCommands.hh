@@ -36,8 +36,8 @@ class GLRendererCommands
 {
 public:
 	constexpr GLRendererCommands() = default;
-	GLRendererCommands(RendererTask &rTask, Window *winPtr, Drawable drawable, Rect2<int> viewport,
-		GLDisplay glDpy, const GLContext &glCtx, std::binary_semaphore *drawCompleteSemPtr);
+	GLRendererCommands(RendererTask&, Window*, Drawable, Rect2<int> viewport,
+		GLDisplay, const GLContext&, binary_semaphore* drawCompleteSemPtr);
 	void bindGLVertexArray(GLuint vao);
 	void bindGLArrayBuffer(GLuint vbo);
 	void bindGLIndexBuffer(GLuint ibo);
@@ -94,12 +94,12 @@ protected:
 		bindGLArrayBuffer(verts.name());
 	}
 
-	RendererTask *rTask{};
-	Renderer *r{};
-	std::binary_semaphore *drawCompleteSemPtr{};
+	RendererTask* rTask{};
+	Renderer* r{};
+	binary_semaphore* drawCompleteSemPtr{};
 	Window *winPtr{};
 	[[no_unique_address]] GLDisplay glDpy{};
-	const GLContext *glContextPtr{};
+	const GLContext* glContextPtr{};
 	Drawable drawable{};
 	Rect2<int> winViewport{};
 	GLuint currSamplerName{};

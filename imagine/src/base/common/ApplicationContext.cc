@@ -13,29 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/base/VibrationManager.hh>
-#include <imagine/base/Sensor.hh>
-#include <imagine/base/PerformanceHintManager.hh>
-#include <imagine/input/Event.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/FSUtils.hh>
-#include <imagine/fs/AssetFS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#ifdef __ANDROID__
-#include <imagine/fs/AAssetFS.hh>
-#endif
-#include <imagine/io/FileIO.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/ranges.hh>
-#include <imagine/util/container/ArrayList.hh>
-#include <imagine/util/memory/UniqueFileStream.hh>
-#include <imagine/util/bit.hh>
-#include <imagine/logger/logger.h>
-#include <cstring>
+#include <imagine/util/macros.h>
+#include <unistd.h>
+#include <time.h>
+import imagine;
 
 namespace IG
 {
@@ -404,11 +385,11 @@ void ApplicationContext::setSwappedConfirmKeys(std::optional<bool> opt)
 [[gnu::weak]] int ApplicationContext::maxCPUFrequencyKHz([[maybe_unused]] int cpuIdx) const
 {
 	#ifdef __linux__
-	auto maxFreqFile = UniqueFileStream{fopen(std::format("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_max_freq", cpuIdx).c_str(), "r")};
+	auto maxFreqFile = UniqueFileStream{std::fopen(std::format("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_max_freq", cpuIdx).c_str(), "r")};
 	if(!maxFreqFile)
 		return 0;
 	int freq{};
-	[[maybe_unused]] auto items = fscanf(maxFreqFile.get(), "%d", &freq);
+	[[maybe_unused]] auto items = std::fscanf(maxFreqFile.get(), "%d", &freq);
 	return freq;
 	#else
 	return 0;
@@ -459,7 +440,7 @@ void ApplicationContext::setSwappedConfirmKeys(std::optional<bool> opt)
 		return {};
 	std::tm localTime;
 	time_t secs = duration_cast<Seconds>(time.time_since_epoch()).count();
-	if(!localtime_r(&secs, &localTime)) [[unlikely]]
+	if(!::localtime_r(&secs, &localTime)) [[unlikely]]
 	{
 		log.error("localtime_r failed");
 		return {};
@@ -605,7 +586,7 @@ IOBuffer rwBufferFromUri(ApplicationContext ctx, CStringView uri, OpenFlags extr
 	return buff;
 }
 
-FILE *fopenUri(ApplicationContext ctx, CStringView path, CStringView mode)
+std::FILE *fopenUri(ApplicationContext ctx, CStringView path, CStringView mode)
 {
 	if(isUri(path))
 	{
@@ -621,7 +602,7 @@ FILE *fopenUri(ApplicationContext ctx, CStringView path, CStringView mode)
 	}
 	else
 	{
-		return ::fopen(path, mode);
+		return std::fopen(path, mode);
 	}
 }
 

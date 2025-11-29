@@ -171,6 +171,8 @@ public:
 	BasicEffect basicEffect_{};
 	Gfx::QuadIndexArray<uint8_t> quadIndices;
 	CustomEvent releaseShaderCompilerEvent;
+	static bool checkGLErrors;
+	static bool checkGLErrorsVerbose;
 
 	GLRenderer(ApplicationContext);
 	GLDisplay glDisplay() const;

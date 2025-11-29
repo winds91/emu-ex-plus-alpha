@@ -15,9 +15,7 @@
 
 #include <emuframework/VideoImageOverlay.hh>
 #include <emuframework/EmuSystem.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/Vec3.hh>
+import imagine.gfx;
 
 namespace EmuEx
 {

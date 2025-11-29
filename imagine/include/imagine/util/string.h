@@ -17,7 +17,7 @@
 
 #include <imagine/util/utility.h>
 #include <imagine/util/ctype.hh>
-#include <imagine/util/algorithm.h>
+#include <algorithm>
 #include <string_view>
 #include <concepts>
 
@@ -41,7 +41,7 @@ constexpr bool equalsToLower(char lhs, char rhs)
 [[nodiscard]]
 constexpr bool endsWithAnyCaseless(std::string_view s, std::convertible_to<std::string_view> auto &&...endings)
 {
-	return (ends_with(s, std::string_view{IG_forward(endings)}, equalsToLower) || ...);
+	return (std::ranges::ends_with(s, std::string_view{IG_forward(endings)}, equalsToLower) || ...);
 }
 
 [[nodiscard]]

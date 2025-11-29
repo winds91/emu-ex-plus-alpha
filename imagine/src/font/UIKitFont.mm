@@ -24,7 +24,7 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 #import <UIKit/UIKit.h>
 #include <cstdlib>
 
-namespace IG
+namespace IG::Data
 {
 
 struct GlyphRenderData

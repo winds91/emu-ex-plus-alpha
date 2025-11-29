@@ -48,7 +48,7 @@ enum class DefaultKey : uint8_t
 	PAGE_DOWN,
 };
 
-static constexpr bool SWAPPED_CONFIRM_KEYS_DEFAULT = Config::MACHINE_IS_PANDORA ? true : false;
+inline constexpr bool SWAPPED_CONFIRM_KEYS_DEFAULT = Config::MACHINE_IS_PANDORA ? true : false;
 
 class BaseEvent
 {

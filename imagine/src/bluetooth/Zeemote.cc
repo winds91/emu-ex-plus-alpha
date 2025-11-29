@@ -13,18 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "Zeemote"
-#include <imagine/bluetooth/Zeemote.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/input/bluetoothInputDefs.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/time/Time.hh>
-#include <imagine/util/ranges.hh>
-#include <algorithm>
+#include <imagine/bluetooth/defs.hh>
+#include <imagine/util/macros.h>
 #include "../input/PackedInputAccess.hh"
+import imagine;
 
 namespace IG
 {
+
+constexpr SystemLogger log{"Zeemote"};
 
 constexpr Input::Key sysKeyMap[4]
 {
@@ -63,7 +60,7 @@ const char *Zeemote::keyName(Input::Key k) const
 
 bool Zeemote::open(BluetoothAdapter& adapter, Input::Device& dev)
 {
-	logMsg("connecting to Zeemote");
+	log.info("connecting to Zeemote");
 	sock.onData =
 		[&dev](const char *packet, size_t size)
 		{
@@ -80,7 +77,7 @@ bool Zeemote::open(BluetoothAdapter& adapter, Input::Device& dev)
 	if(auto err = sock.openRfcomm(adapter, addr, 1);
 		err.code())
 	{
-		logErr("error opening socket");
+		log.error("error opening socket");
 		return false;
 	}
 	return true;
@@ -95,18 +92,18 @@ uint32_t Zeemote::statusHandler(Input::Device& dev, BluetoothSocket&, BluetoothS
 {
 	if(status == BluetoothSocketState::Opened)
 	{
-		logMsg("Zeemote opened successfully");
+		log.info("Zeemote opened successfully");
 		ctx.application().bluetoothInputDeviceStatus(ctx, dev, status);
 		return 1;
 	}
 	else if(status == BluetoothSocketState::ConnectError)
 	{
-		logErr("Zeemote connection error");
+		log.error("Zeemote connection error");
 		ctx.application().bluetoothInputDeviceStatus(ctx, dev, status);
 	}
 	else if(status == BluetoothSocketState::ReadError)
 	{
-		logErr("Zeemote read error, disconnecting");
+		log.error("Zeemote read error, disconnecting");
 		ctx.application().bluetoothInputDeviceStatus(ctx, dev, status);
 	}
 	return 0;
@@ -119,7 +116,7 @@ bool Zeemote::dataHandler(Input::Device &dev, const char *packet, size_t size)
 	do
 	{
 		uint32_t processBytes = std::min(bytesLeft, packetSize - inputBufferPos);
-		memcpy(&inputBuffer[inputBufferPos], &packet[size-bytesLeft], processBytes);
+		std::memcpy(&inputBuffer[inputBufferPos], &packet[size-bytesLeft], processBytes);
 		if(inputBufferPos == 0) // get data size
 		{
 			packetSize = inputBuffer[0] + 1;
@@ -129,7 +126,7 @@ bool Zeemote::dataHandler(Input::Device &dev, const char *packet, size_t size)
 
 		if(packetSize > sizeof(inputBuffer))
 		{
-			logErr("can't handle packet, closing Zeemote");
+			log.error("can't handle packet, closing Zeemote");
 			ctx.application().bluetoothInputDeviceStatus(ctx, dev, BluetoothSocketState::ReadError);
 			return 0;
 		}
@@ -142,7 +139,7 @@ bool Zeemote::dataHandler(Input::Device &dev, const char *packet, size_t size)
 		{
 			auto time = SteadyClock::now();
 			uint32_t rID = inputBuffer[2];
-			logMsg("report id 0x%X, %s", rID, reportIDToStr(rID));
+			log.info("report id:{:X}, {}", rID, reportIDToStr(rID));
 			switch(rID)
 			{
 				case RID_BTN_REPORT:
@@ -203,7 +200,7 @@ void Zeemote::processBtnReport(Input::Device &dev, const uint8_t *btnData, Stead
 			ctx.application().dispatchRepeatableKeyInputEvent( event);
 		}
 	}
-	memcpy(prevBtnPush, btnPush, sizeof(prevBtnPush));
+	std::memcpy(prevBtnPush, btnPush, sizeof(prevBtnPush));
 }
 
 bool Zeemote::isSupportedClass(std::array<uint8_t, 3> devClass)

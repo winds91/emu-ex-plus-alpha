@@ -13,22 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "LibPNG"
-
-#include <imagine/data-type/image/PixmapReader.hh>
-#include <imagine/data-type/image/PixmapWriter.hh>
-#include <imagine/data-type/image/PixmapSource.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/pixmap/Pixmap.hh>
-#include <imagine/pixmap/MemPixmap.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/logger/logger.h>
-
+#include <imagine/util/macros.h>
 #define PNG_SKIP_SETJMP_CHECK
 #include <png.h>
+import imagine.data;
 
 // this must be in the range 1 to 8
 #define INITIAL_HEADER_READ_BYTES 8
@@ -68,6 +56,7 @@ CLINK void PNGAPI png_chunk_warning(png_const_structrp png_ptr, png_const_charp 
 namespace IG::Data
 {
 
+constexpr SystemLogger log{"PngData"};
 bool PngImage::supportUncommonConv = 0;
 
 static void png_ioReader(png_structp pngPtr, png_bytep data, png_size_t length)
@@ -75,7 +64,7 @@ static void png_ioReader(png_structp pngPtr, png_bytep data, png_size_t length)
 	auto &io = *(IO*)png_get_io_ptr(pngPtr);
 	if(io.read(data, length) != (ssize_t)length)
 	{
-		logErr("error reading png file");
+		log.error("error reading png file");
 		png_error(pngPtr, "Read Error");
 	}
 }
@@ -133,7 +122,7 @@ PngImage::PngImage(IO io, PixmapReaderParams params):
 	int isPng = !png_sig_cmp(header.data(), 0, INITIAL_HEADER_READ_BYTES);
 	if (!isPng)
 	{
-		logErr("error - not a png file");
+		log.error("error - not a png file");
 		return;
 	}
 
@@ -142,7 +131,7 @@ PngImage::PngImage(IO io, PixmapReaderParams params):
 		0, png_memAlloc, png_memFree);
 	if (png == NULL)
 	{
-		logErr("error allocating png struct");
+		log.error("error allocating png struct");
 		return;
 	}
 
@@ -150,7 +139,7 @@ PngImage::PngImage(IO io, PixmapReaderParams params):
 	info = png_create_info_struct(png);
 	if (info == NULL)
 	{
-		logErr("error allocating png info");
+		log.error("error allocating png info");
 		png_structpp pngStructpAddr = &png;
 		png_destroy_read_struct(pngStructpAddr, (png_infopp)NULL, (png_infopp)NULL);
 		return;
@@ -158,7 +147,7 @@ PngImage::PngImage(IO io, PixmapReaderParams params):
 
 	if (setjmp(png_jmpbuf(png)))
 	{
-		logErr("error occurred, jumped to setjmp");
+		log.error("error occurred, jumped to setjmp");
 		freeImageData();
 		return;
 	}
@@ -178,7 +167,7 @@ void PngImage::freeImageData()
 {
 	if(png)
 	{
-		logMsg("deallocating libpng data");
+		log.info("deallocating libpng data");
 		delete (IO*)png_get_io_ptr(png);
 		png_structpp pngStructpAddr = &png;
 		png_infopp pngInfopAddr = &info;
@@ -214,7 +203,7 @@ void PngImage::setTransforms(PixelFormat outFormat)
 
 	if(png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY && png_get_bit_depth(png, info) < 8)
 	{
-		logMsg("expanding gray-scale to 8-bits");
+		log.info("expanding gray-scale to 8-bits");
 		png_set_expand_gray_1_2_4_to_8(png);
 	}
 	
@@ -222,7 +211,7 @@ void PngImage::setTransforms(PixelFormat outFormat)
 	#ifndef PNG_NO_READ_16_TO_8
 	if(png_get_bit_depth(png, info) == 16)
 	{
-		logMsg("converting 16-bits per channel to 8-bits per channel");
+		log.info("converting 16-bits per channel to 8-bits per channel");
 		png_set_strip_16(png);
 	}
 	#endif
@@ -230,7 +219,7 @@ void PngImage::setTransforms(PixelFormat outFormat)
 	if((!hasAlphaChannel() && png_get_color_type(png, info) == PNG_COLOR_TYPE_RGB)
 			|| (!hasAlphaChannel() && outFormat.desc().aBits ))
 	{
-		logMsg("adding alpha channel");
+		log.info("adding alpha channel");
 			png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
 	}
 
@@ -244,7 +233,7 @@ void PngImage::setTransforms(PixelFormat outFormat)
 		if((png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY || png_get_color_type(png, info) == PNG_COLOR_TYPE_GRAY_ALPHA) &&
 				!(outFormat.isGrayscale()))
 		{
-			logMsg("converting gray-scale to RGB");
+			log.info("converting gray-scale to RGB");
 			png_set_gray_to_rgb(png);
 		}
 
@@ -252,14 +241,14 @@ void PngImage::setTransforms(PixelFormat outFormat)
 		{
 			if(png_get_color_type(png, info) & PNG_COLOR_MASK_ALPHA || addingAlphaChannel)
 			{
-				logMsg("removing alpha channel");
+				log.info("removing alpha channel");
 				png_set_strip_alpha(png);
 			}
 		}
 
 		if(outFormat.desc().aBits && outFormat.desc().aShift != 0)
 		{
-			logMsg("swapping RGBA to ARGB");
+			log.info("swapping RGBA to ARGB");
 			png_set_swap_alpha(png);
 		}
 	}
@@ -281,7 +270,7 @@ std::errc PngImage::readImage(MutablePixmapView dest)
 	png_infop transInfo = png_create_info_struct(png);
 	if (!transInfo)
 	{
-		logErr("error allocating png transform info");
+		log.error("error allocating png transform info");
 		return std::errc::not_enough_memory;
 	}
 	scopeGuard(
@@ -301,7 +290,7 @@ std::errc PngImage::readImage(MutablePixmapView dest)
 		//logMsg("reading row at a time");
 		if (setjmp(png_jmpbuf((png_structp)png)))
 		{
-			logErr("error reading image, jumped to setjmp");
+			log.error("error reading image, jumped to setjmp");
 			return std::errc::io_error;
 		}
 
@@ -312,7 +301,7 @@ std::errc PngImage::readImage(MutablePixmapView dest)
 	}
 	else // read the whole image in 1 call with interlace handling, but needs array of row pointers allocated
 	{
-		logMsg("is interlaced");
+		log.info("is interlaced");
 		png_bytep rowPtr[height];
 		for (int i = 0; i < height; i++)
 		{
@@ -323,7 +312,7 @@ std::errc PngImage::readImage(MutablePixmapView dest)
 
 		if (setjmp(png_jmpbuf((png_structp)png)))
 		{
-			logErr("error reading image, jumped to setjmp");
+			log.error("error reading image, jumped to setjmp");
 			return std::errc::io_error;
 		}
 
@@ -384,7 +373,7 @@ PixmapImage PixmapReader::load(const char *name, PixmapReaderParams params) cons
 {
 	if(!std::string_view{name}.ends_with(".png"))
 	{
-		logErr("suffix doesn't match PNG image");
+		log.error("suffix doesn't match PNG image");
 		return {};
 	}
 	return load(FileIO{name, {.test = true, .accessHint = IOAccessHint::All}}, params);
@@ -427,13 +416,13 @@ bool PixmapWriter::writeToFile(PixmapView pix, const char *path) const
 			auto &io = *(FileIO*)png_get_io_ptr(pngPtr);
 			if(io.write(data, length) != (ssize_t)length)
 			{
-				logErr("error writing png file");
+				log.error("error writing png file");
 				//png_error(pngPtr, "Write Error");
 			}
 		},
 		[](png_structp)
 		{
-			logMsg("called png_ioFlush");
+			log.info("called png_ioFlush");
 		});
 	png_set_IHDR(pngPtr, infoPtr, pix.w(), pix.h(), 8,
 		PNG_COLOR_TYPE_RGB,

@@ -13,15 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/Texture.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/thread/Thread.hh>
-#include "internalDefs.hh"
 #include "utils.hh"
+#include <imagine/util/macros.h>
+import imagine.internal.gfxOpengl;
 
 namespace IG::Gfx
 {
@@ -192,10 +186,10 @@ void GLRendererTask::runInitialCommandsInGL(TaskContext ctx, DrawContextSupport 
 	}
 	if(!support.hasVAOFuncs())
 	{
-		runGLCheckedVerbose([&]()
+		runGLChecked([&]()
 		{
 			glEnableVertexAttribArray(VATTR_POS);
-		}, "glEnableVertexAttribArray(VATTR_POS)");
+		}, log, Renderer::checkGLErrorsVerbose, "glEnableVertexAttribArray(VATTR_POS)");
 	}
 	glClearColor(0., 0., 0., 1.);
 	if constexpr((bool)Config::Gfx::OPENGL_ES)

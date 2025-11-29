@@ -13,20 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/FSPicker.hh>
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/gui/NavView.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/BasicEffect.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/math.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <string>
-#include <system_error>
+#include <imagine/util/macros.h>
+import imagine.gui;
 
 namespace IG
 {
@@ -230,7 +218,7 @@ void FSPicker::setEmptyPath()
 
 void FSPicker::setPath(CStringView path, FS::RootPathInfo rootInfo, const Input::Event &e)
 {
-	if(!strlen(path))
+	if(!std::strlen(path))
 	{
 		setEmptyPath();
 		return;
@@ -325,7 +313,7 @@ bool FSPicker::isAtRoot() const
 	}
 	else
 	{
-		return root.path.empty() || root.path == "/";
+		return root.path.empty() || root.path == "/"sv;
 	}
 }
 
@@ -404,7 +392,7 @@ void FSPicker::pushFileLocationsView(const Input::Event &e)
 				"Input a directory path", root.path, Gfx::TextureSpan{},
 				[this](CollectTextInputView &view, const char *str)
 				{
-					if(!str || !strlen(str))
+					if(!str || !std::strlen(str))
 					{
 						view.dismiss();
 						return false;
@@ -545,7 +533,7 @@ void FSPicker::listDirectory(CStringView path, ThreadStop &stop)
 							assert(!isSingleDirectoryMode());
 							auto path = std::move(dirPath);
 							log.info("entering dir:{}", path);
-							changeDirByInput(path, root.info, e);
+							changeDirByInput(path, root.info, e, DepthMode::increment);
 						};
 				}
 				else

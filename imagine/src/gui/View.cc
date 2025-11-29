@@ -13,15 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/View.hh>
-#include <imagine/gui/ViewManager.hh>
-#include <imagine/gui/MenuItem.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/input/Event.hh>
-#include <imagine/util/math.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
+import imagine.gui;
 
 namespace IG
 {

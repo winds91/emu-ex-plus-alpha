@@ -307,9 +307,18 @@ function(configureAppTarget target)
 	set(genDir "${CMAKE_BINARY_DIR}/gen")
 	set(configFilePath "${genDir}/${configFilename}")
 	message("Metadata Header: ${configFilePath}")
+	if(ENV STREQUAL android AND android_metadata_id)
+		set(metadata_id ${android_metadata_id})
+	endif()
+	if(NOT metadata_name)
+		message(FATAL_ERROR "metadata_name not defined in metadata/conf.mk")
+	endif()
+	if(NOT metadata_id)
+		message(FATAL_ERROR "metadata_id not defined in metadata/conf.mk")
+	endif()
 	file(WRITE ${configFilePath}
 		"#pragma once\n"
-		"#define CONFIG_APP_NAME \"${PROJECT_NAME}\"\n"
+		"#define CONFIG_APP_NAME \"${metadata_name}\"\n"
 		"#define CONFIG_APP_ID \"${metadata_id}\"\n"
 	)
 	if(ENV STREQUAL android)
@@ -346,6 +355,7 @@ function(configureAppTarget target)
 	target_include_directories(${target} PRIVATE ${genDir} ${PROJECT_SOURCE_DIR}/src)
 	target_link_options(${target} PRIVATE ${CXX_STD_LINK_OPTS})
 	target_link_libraries(${target} PRIVATE ${CXX_STD_LINK_LIBS})
+	set_target_properties(${target} PROPERTIES CXX_MODULE_STD ON)
 endfunction()
 
 function(configureAppLibraryTarget target)
@@ -364,6 +374,17 @@ function(setExportedSymbols target)
 			file(APPEND "${CMAKE_BINARY_DIR}/${target}_retainedSymbols.txt" "${arg}\n")
 		endforeach()
 	endif()
+endfunction()
+
+# C++ modules
+
+function(addCxxModules target mainModule)
+	set(moduleDir "${IMAGINE_SDK_PLATFORM_PATH}/share/${mainModule}")
+	set(mainModulePrefix "${moduleDir}/${mainModule}")
+	target_sources(${target} PRIVATE FILE_SET CXX_MODULES BASE_DIRS ${moduleDir} FILES "${mainModulePrefix}.ccm")
+	foreach(subModule ${ARGN})
+		target_sources(${target} PRIVATE FILE_SET CXX_MODULES BASE_DIRS ${moduleDir} FILES "${mainModulePrefix}.${subModule}.ccm")
+	endforeach()
 endfunction()
 
 # set imagine path

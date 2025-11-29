@@ -38,7 +38,7 @@ off_t IOUtils<IO>::tell()
 	return static_cast<IO*>(this)->seek(0, IOSeekMode::Cur);
 }
 
-static IOBuffer makeBufferCopy(auto &io)
+inline IOBuffer makeBufferCopy(auto &io)
 {
 	auto size = io.size();
 	auto buff = std::make_unique<uint8_t[]>(size);

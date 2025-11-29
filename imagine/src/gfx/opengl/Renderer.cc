@@ -13,20 +13,29 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "GLRenderer"
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/gfx/Texture.hh>
-#include <imagine/gfx/PixmapBufferTexture.hh>
-#include <imagine/gfx/TextureSampler.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/base/Window.hh>
-#include <imagine/base/GLContext.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Viewport.hh>
-#include <imagine/data-type/image/PixmapSource.hh>
+#include <imagine/gfx/opengl/defs.hh>
 #include <imagine/util/opengl/glUtils.hh>
-#include "internalDefs.hh"
+#include <imagine/util/macros.h>
+#ifdef __ANDROID__
+#include <imagine/gfx/opengl/android/egl.hh>
+#endif
+import imagine.internal.gfxOpengl;
+
+#ifndef GL_R8
+#define GL_R8 0x8229
+#endif
+
+#ifndef GL_RG
+#define GL_RG 0x8227
+#endif
+
+#ifndef GL_RG8
+#define GL_RG8 0x822B
+#endif
+
+#ifndef GL_RED
+#define GL_RED 0x1903
+#endif
 
 namespace IG::Gfx
 {
@@ -35,9 +44,9 @@ static_assert(!Config::Gfx::OPENGL_ES || Config::Gfx::OPENGL_ES >= 2);
 static_assert((uint8_t)TextureBufferMode::DEFAULT == 0, "TextureBufferMode::DEFAULT != 0");
 
 constexpr SystemLogger log{"GLRenderer"};
-bool checkGLErrors = Config::DEBUG_BUILD;
-bool checkGLErrorsVerbose = false;
 [[gnu::weak]] const bool Renderer::enableSamplerObjects = false;
+bool GLRenderer::checkGLErrors = Config::DEBUG_BUILD;
+bool GLRenderer::checkGLErrorsVerbose = false;
 
 Renderer::Renderer(ApplicationContext ctx):
 	GLRenderer{ctx} {}
@@ -61,7 +70,7 @@ GLRenderer::GLRenderer(ApplicationContext ctx):
 		{
 			if(!ctx.isRunning())
 				return;
-			logMsg("automatically releasing shader compiler");
+			log.info("automatically releasing shader compiler");
 			task.releaseShaderCompiler();
 		}
 	}
@@ -135,10 +144,10 @@ bool GLRenderer::attachWindow(Window &win, GLBufferConfig bufferConfig, GLColorS
 {
 	if(!win.hasSurface()) [[unlikely]]
 	{
-		logMsg("can't attach uninitialized window");
+		log.info("can't attach uninitialized window");
 		return false;
 	}
-	logMsg("attaching window:%p", &win);
+	log.info("attaching window:{}", (void*)&win);
 	auto &rData = win.makeRendererData<GLRendererWindowData>();
 	if(!makeWindowDrawable(mainTask, win, bufferConfig, colorSpace)) [[unlikely]]
 	{
@@ -172,7 +181,7 @@ bool GLRenderer::attachWindow(Window &win, GLBufferConfig bufferConfig, GLColorS
 						{radians(90.), radians(-180.), radians(-90.), 0},
 					};
 					auto rotAngle = orientationDiffTable[std::to_underlying(oldO)][std::to_underlying(newO)];
-					logMsg("animating from %d degrees", (int)degrees(rotAngle));
+					log.info("animating from {} degrees", degrees(rotAngle));
 					static_cast<Renderer*>(this)->animateWindowRotation(win, rotAngle, 0.);
 				});
 		}
@@ -382,18 +391,6 @@ ApplicationContext Renderer::appContext() const
 	return task().appContext();
 }
 
-GLRendererWindowData &winData(Window &win)
-{
-	assumeExpr(win.rendererData<GLRendererWindowData>());
-	return *win.rendererData<GLRendererWindowData>();
-}
-
-const GLRendererWindowData &winData(const Window &win)
-{
-	assumeExpr(win.rendererData<GLRendererWindowData>());
-	return *win.rendererData<GLRendererWindowData>();
-}
-
 GLDisplay GLRenderer::glDisplay() const
 {
 	return glManager.display();
@@ -536,7 +533,7 @@ TextureSampler Renderer::makeTextureSampler(TextureSamplerConfig config)
 
 void destroyGLBuffer(RendererTask &task, NativeBuffer buff)
 {
-	logMsg("deleting GL buffer:%u", buff);
+	log.info("deleting GL buffer:{}", buff);
 	task.run(
 		[buff]()
 		{
@@ -635,7 +632,7 @@ static void printFeatures(DrawContextSupport support)
 	featuresStr.append((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 	featuresStr.append("]");
 
-	logMsg("features:%s", featuresStr.c_str());
+	log.info("features:{}", featuresStr);
 }
 
 #ifdef __ANDROID__
@@ -962,7 +959,7 @@ void Renderer::configureRenderer()
 			auto version = (const char*)glGetString(GL_VERSION);
 			assert(version);
 			auto rendererName = (const char*)glGetString(GL_RENDERER);
-			logMsg("version: %s (%s)", version, rendererName);
+			log.info("version: {} ({})", version, rendererName);
 
 			int glVer = glVersionFromStr(version);
 
@@ -995,7 +992,7 @@ void Renderer::configureRenderer()
 				setupRGFormats();
 				setupSamplerObjects();
 				support.hasPBOFuncs = true;
-				setupVAOFuncs();
+				setupVAOFuncs(false);
 				if(!Config::GL_PLATFORM_EGL)
 					setupFenceSync();
 				if(!Config::envIsIOS)

@@ -13,21 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "GLShader"
-#include <imagine/gfx/Program.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/util/container/ArrayList.hh>
-#include "internalDefs.hh"
 #include "utils.hh"
-#include <cstring>
-#include <format>
+#include <imagine/util/macros.h>
+import imagine.internal.gfxOpengl;
 
 namespace IG::Gfx
 {
 
-static constexpr size_t maxSourceStrings = 16;
+constexpr SystemLogger log{"GLProgram"};
+constexpr size_t maxSourceStrings = 16;
 
 using namespace std::literals;
 
@@ -41,19 +35,18 @@ static GLuint makeGLProgram(GLuint vShader, GLuint fShader)
 
 static bool linkGLProgram(GLuint program)
 {
-	runGLChecked(
-		[&]()
-		{
-			glLinkProgram(program);
-		}, "glLinkProgram()");
+	runGLChecked([&]()
+	{
+		glLinkProgram(program);
+	}, log, Renderer::checkGLErrors, "glLinkProgram()");
 	GLint success;
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if(Config::DEBUG_BUILD)
 	{
 		GLchar messages[4096];
 		glGetProgramInfoLog(program, sizeof(messages), nullptr, messages);
-		if(strlen(messages))
-			logDMsg("linker info log: %s", messages);
+		if(std::strlen(messages))
+			log.debug("linker info log:{}", messages);
 	}
 	if(success == GL_FALSE)
 		return false;
@@ -64,15 +57,14 @@ void destroyGLShader(RendererTask &rTask, NativeShader s)
 {
 	if(!s)
 		return;
-	logMsg("deleting shader:%d", (int)s);
+	log.info("deleting shader:{}", s);
 	rTask.run(
 		[shader = s]()
 		{
-			runGLChecked(
-				[&]()
-				{
-					glDeleteShader(shader);
-				}, "glDeleteShader()");
+			runGLChecked([&]()
+			{
+				glDeleteShader(shader);
+			}, log, Renderer::checkGLErrors, "glDeleteShader()");
 		});
 }
 
@@ -85,15 +77,14 @@ void destroyGLProgram(RendererTask &rTask, NativeProgram p)
 {
 	if(!p)
 		return;
-	logMsg("deleting program:%d", (int)p);
+	log.info("deleting program:{}", p);
 	rTask.run(
 		[program = p]()
 		{
-			runGLChecked(
-				[&]()
-				{
-					glDeleteProgram(program);
-				}, "glDeleteProgram()");
+			runGLChecked([&]()
+			{
+				glDeleteProgram(program);
+			}, log, Renderer::checkGLErrors, "glDeleteProgram()");
 		});
 }
 
@@ -107,33 +98,30 @@ Program::Program(RendererTask &rTask, NativeShader vShader, NativeShader fShader
 			auto program = makeGLProgram(vShader, fShader);
 			if(!program) [[unlikely]]
 				return;
-			runGLChecked(
-				[&]()
-				{
-					glBindAttribLocation(program, VATTR_POS, "pos");
-				}, "glBindAttribLocation(..., pos)");
+			runGLChecked([&]()
+			{
+				glBindAttribLocation(program, VATTR_POS, "pos");
+			}, log, Renderer::checkGLErrors, "glBindAttribLocation(..., pos)");
 			if(flags.hasColor)
 			{
-				runGLChecked(
-					[&]()
-					{
-						glBindAttribLocation(program, VATTR_COLOR, "color");
-					}, "glBindAttribLocation(..., color)");
+				runGLChecked([&]()
+				{
+					glBindAttribLocation(program, VATTR_COLOR, "color");
+				}, log, Renderer::checkGLErrors, "glBindAttribLocation(..., color)");
 			}
 			if(flags.hasTexture)
 			{
-				runGLChecked(
-					[&]()
-					{
-						glBindAttribLocation(program, VATTR_TEX_UV, "texUV");
-					}, "glBindAttribLocation(..., texUV)");
+				runGLChecked([&]()
+				{
+					glBindAttribLocation(program, VATTR_TEX_UV, "texUV");
+				}, log, Renderer::checkGLErrors, "glBindAttribLocation(..., texUV)");
 			}
 			if(!linkGLProgram(program))
 			{
 				glDeleteProgram(program);
 				return;
 			}
-			logMsg("made program:%d", program);
+			log.info("made program:{}", program);
 			glDetachShader(program, vShader);
 			glDetachShader(program, fShader);
 			for(auto desc : uniformDescs)
@@ -141,8 +129,8 @@ Program::Program(RendererTask &rTask, NativeShader vShader, NativeShader fShader
 				runGLChecked([&]()
 				{
 					*desc.locationPtr = glGetUniformLocation(program, desc.name);
-				}, "glGetUniformLocation()");
-				logMsg("uniform:%s location:%d", desc.name, *desc.locationPtr);
+				}, log, Renderer::checkGLErrors, "glGetUniformLocation()");
+				log.info("uniform:{} location:{}", desc.name, *desc.locationPtr);
 			}
 			programOut = program;
 		});
@@ -163,14 +151,14 @@ int Program::uniformLocation(const char *uniformName)
 			runGLChecked([&]()
 			{
 				loc = glGetUniformLocation(program, uniformName);
-			}, "glGetUniformLocation()");
+			}, log, Renderer::checkGLErrors, "glGetUniformLocation()");
 		});
 	return loc;
 }
 
 static void setGLProgram(GLuint program)
 {
-	runGLCheckedVerbose([&]() { glUseProgram(program); }, "glUseProgram()");
+	runGLChecked([&]() { glUseProgram(program); }, log, Renderer::checkGLErrorsVerbose, "glUseProgram()");
 }
 
 void Program::uniform(int loc, float v1)
@@ -178,7 +166,7 @@ void Program::uniform(int loc, float v1)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform1f(loc, v1); }, "glUniform1f()");
+		runGLChecked([&]() { glUniform1f(loc, v1); }, log, Renderer::checkGLErrorsVerbose, "glUniform1f()");
 	});
 }
 
@@ -187,7 +175,7 @@ void Program::uniform(int loc, float v1, float v2)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform2f(loc, v1, v2); }, "glUniform2f()");
+		runGLChecked([&]() { glUniform2f(loc, v1, v2); }, log, Renderer::checkGLErrorsVerbose, "glUniform2f()");
 	});
 }
 
@@ -196,7 +184,7 @@ void Program::uniform(int loc, float v1, float v2, float v3)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform3f(loc, v1, v2, v3); }, "glUniform3f()");
+		runGLChecked([&]() { glUniform3f(loc, v1, v2, v3); }, log, Renderer::checkGLErrorsVerbose, "glUniform3f()");
 	});
 }
 
@@ -205,7 +193,7 @@ void Program::uniform(int loc, float v1, float v2, float v3, float v4)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform4f(loc, v1, v2, v3, v4); }, "glUniform4f()");
+		runGLChecked([&]() { glUniform4f(loc, v1, v2, v3, v4); }, log, Renderer::checkGLErrorsVerbose, "glUniform4f()");
 	});
 }
 
@@ -214,7 +202,7 @@ void Program::uniform(int loc, int v1)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform1i(loc, v1); }, "glUniform1i()");
+		runGLChecked([&]() { glUniform1i(loc, v1); }, log, Renderer::checkGLErrorsVerbose, "glUniform1i()");
 	});
 }
 
@@ -223,7 +211,7 @@ void Program::uniform(int loc, int v1, int v2)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform2i(loc, v1, v2); }, "glUniform2i()");
+		runGLChecked([&]() { glUniform2i(loc, v1, v2); }, log, Renderer::checkGLErrorsVerbose, "glUniform2i()");
 	});
 }
 
@@ -232,7 +220,7 @@ void Program::uniform(int loc, int v1, int v2, int v3)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform3i(loc, v1, v2, v3); }, "glUniform3i()");
+		runGLChecked([&]() { glUniform3i(loc, v1, v2, v3); }, log, Renderer::checkGLErrorsVerbose, "glUniform3i()");
 	});
 }
 
@@ -241,7 +229,7 @@ void Program::uniform(int loc, int v1, int v2, int v3, int v4)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniform4i(loc, v1, v2, v3, v4); }, "glUniform4i()");
+		runGLChecked([&]() { glUniform4i(loc, v1, v2, v3, v4); }, log, Renderer::checkGLErrorsVerbose, "glUniform4i()");
 	});
 }
 
@@ -250,7 +238,7 @@ void Program::uniform(int loc, Mat4 mat)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLCheckedVerbose([&]() { glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]); }, "glUniformMatrix4fv()");
+		runGLChecked([&]() { glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]); }, log, Renderer::checkGLErrorsVerbose, "glUniformMatrix4fv()");
 	});
 }
 
@@ -258,7 +246,7 @@ static GLuint makeGLShader(RendererTask &rTask, std::span<std::string_view> srcs
 {
 	if(srcs.size() > maxSourceStrings) [[unlikely]]
 	{
-		logErr("%zu source strings is over %zu limit", srcs.size(), maxSourceStrings);
+		log.error("{} source strings is over {} limit", srcs.size(), maxSourceStrings);
 		return 0;
 	}
 	GLuint shaderOut{};
@@ -281,18 +269,18 @@ static GLuint makeGLShader(RendererTask &rTask, std::span<std::string_view> srcs
 			{
 				GLchar messages[4096];
 				glGetShaderInfoLog(shader, sizeof(messages), nullptr, messages);
-				if(strlen(messages))
-					logDMsg("shader info log: %s", messages);
+				if(std::strlen(messages))
+					log.debug("shader info log:{}", messages);
 			}
 			if(success == GL_FALSE)
 			{
 				if constexpr(Config::DEBUG_BUILD)
 				{
-					logErr("failed shader source:");
+					log.error("failed shader source:");
 					for(auto &s : srcs)
 					{
-						logger_printfn(LOG_E, "[part %zu]", (size_t)std::distance(srcs.data(), &s));
-						logger_printfn(LOG_E, "%s", std::format("{}", s).c_str());
+						log.error("[part {}]", std::distance(srcs.data(), &s));
+						log.error("{}", std::format("{}", s));
 					}
 				}
 			}
@@ -302,7 +290,7 @@ static GLuint makeGLShader(RendererTask &rTask, std::span<std::string_view> srcs
 			}
 		});
 	if(shaderOut)
-		logMsg("made %s shader:%d", type == ShaderType::FRAGMENT ? "fragment" : "vertex", shaderOut);
+		log.info("made {} shader:{}", type == ShaderType::FRAGMENT ? "fragment" : "vertex", shaderOut);
 	return shaderOut;
 }
 
@@ -311,7 +299,7 @@ static GLuint makeCompatGLShader(RendererTask &rTask, std::span<std::string_view
 	if(auto srcCount = srcs.size() + 2;
 		srcCount > maxSourceStrings) [[unlikely]]
 	{
-		logErr("%zu source strings is over %zu limit", srcCount, maxSourceStrings);
+		log.error("{} source strings is over {} limit", srcCount, maxSourceStrings);
 		return 0;
 	}
 	StaticArrayList<std::string_view, maxSourceStrings> compatSrcs;
@@ -361,12 +349,12 @@ Shader::Shader(RendererTask &rTask, std::string_view src, ShaderType type, Compi
 
 Shader Renderer::makeShader(std::span<std::string_view> srcs, ShaderType type)
 {
-	return {task(), srcs, type};
+	return {task(), srcs, type, Shader::CompileMode::NORMAL};
 }
 
 Shader Renderer::makeShader(std::string_view src, ShaderType type)
 {
-	return {task(), {&src, 1}, type};
+	return {task(), {&src, 1}, type, Shader::CompileMode::NORMAL};
 }
 
 Shader Renderer::makeCompatShader(std::span<std::string_view> srcs, ShaderType type)

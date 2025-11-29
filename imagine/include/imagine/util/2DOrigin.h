@@ -214,14 +214,14 @@ public:
 };
 
 // cartesian origin shortcuts sorted clockwise
-constexpr _2DOrigin CT2DO(Origin::center, Origin::max);
-constexpr _2DOrigin RT2DO(Origin::max, Origin::max);
-constexpr _2DOrigin RC2DO(Origin::max, Origin::center);
-constexpr _2DOrigin RB2DO(Origin::max, Origin::min);
-constexpr _2DOrigin CB2DO(Origin::center, Origin::min);
-constexpr _2DOrigin LB2DO(Origin::min, Origin::min);
-constexpr _2DOrigin LC2DO(Origin::min, Origin::center);
-constexpr _2DOrigin LT2DO(Origin::min, Origin::max);
-constexpr _2DOrigin C2DO(Origin::center, Origin::center);
+inline constexpr _2DOrigin CT2DO(Origin::center, Origin::max);
+inline constexpr _2DOrigin RT2DO(Origin::max, Origin::max);
+inline constexpr _2DOrigin RC2DO(Origin::max, Origin::center);
+inline constexpr _2DOrigin RB2DO(Origin::max, Origin::min);
+inline constexpr _2DOrigin CB2DO(Origin::center, Origin::min);
+inline constexpr _2DOrigin LB2DO(Origin::min, Origin::min);
+inline constexpr _2DOrigin LC2DO(Origin::min, Origin::center);
+inline constexpr _2DOrigin LT2DO(Origin::min, Origin::max);
+inline constexpr _2DOrigin C2DO(Origin::center, Origin::center);
 
 }

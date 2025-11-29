@@ -16,8 +16,8 @@
 #include "InputDeviceConfig.hh"
 #include "InputDeviceData.hh"
 #include <emuframework/EmuApp.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace EmuEx
 {

@@ -22,9 +22,7 @@
 
 #include "shared.h"
 #include <imagine/logger/logger.h>
-#include <system_error>
-#include <memory>
-#include <format>
+import std;
 
 static unsigned oldStateSizeAfterZ80Regs()
 {

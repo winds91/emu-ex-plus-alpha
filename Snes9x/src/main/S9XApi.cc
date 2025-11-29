@@ -43,7 +43,7 @@ void S9xMessage(int, int, const char *msg)
 
 void S9xPrintf(const char* msg, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return;
 	va_list args;
 	va_start(args, msg);
@@ -53,7 +53,7 @@ void S9xPrintf(const char* msg, ...)
 
 void S9xPrintfError(const char* msg, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return;
 	va_list args;
 	va_start(args, msg);

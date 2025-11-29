@@ -19,21 +19,9 @@
 #include <emuframework/EmuAudio.hh>
 #include <emuframework/EmuVideo.hh>
 #include <emuframework/EmuViewController.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/fs/FSUtils.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/input/DragTracker.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/math.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/zlib.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
-#include <algorithm>
-#include <cstring>
+#include <imagine/util/macros.h>
 #include "pathUtils.hh"
+import imagine;
 
 namespace EmuEx
 {

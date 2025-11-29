@@ -18,18 +18,24 @@
 #include <imagine/config/defs.hh>
 #include <imagine/util/utility.h>
 #include <imagine/util/string/StaticString.hh>
+#include <imagine/util/string/CStringView.hh>
+#include <imagine/util/string/uri.hh>
 #include <chrono>
 #include <array>
 #include <algorithm>
+#include <string_view>
 #include <unistd.h>
 #include <limits.h>
 
 namespace IG::FS
 {
 
+class directory_entry;
+class AssetDirectoryIterator;
+
 using file_time_type = std::chrono::system_clock::time_point;
 
-static constexpr size_t FILE_STRING_SIZE = std::max(512, NAME_MAX + 1);
+inline constexpr size_t FILE_STRING_SIZE = std::max(512, NAME_MAX + 1);
 using FileStringImpl = StaticString<FILE_STRING_SIZE - 1>;
 class FileString : public FileStringImpl
 {
@@ -38,7 +44,7 @@ public:
 	using FileStringImpl::operator=;
 };
 
-static constexpr size_t PATH_STRING_SIZE = std::max(1024, PATH_MAX);
+inline constexpr size_t PATH_STRING_SIZE = std::max(1024, PATH_MAX);
 using PathStringImpl = StaticString<PATH_STRING_SIZE - 1>;
 class PathString : public PathStringImpl
 {
@@ -49,6 +55,9 @@ public:
 
 using FileStringArray = std::array<char, FILE_STRING_SIZE>;
 using PathStringArray = std::array<char, PATH_STRING_SIZE>;
+
+template <class T>
+concept ConvertibleToPathString = std::convertible_to<T, PathStringImpl> || std::convertible_to<T, std::string_view>;
 
 struct RootPathInfo
 {
@@ -139,7 +148,40 @@ struct DirOpenFlags
 	constexpr bool operator ==(DirOpenFlags const &) const = default;
 };
 
-class directory_entry;
-class AssetDirectoryIterator;
+PathString makeAppPathFromLaunchCommand(CStringView launchPath);
+FileString basename(CStringView path);
+PathString dirname(CStringView path);
+FileString displayName(CStringView path);
+
+inline constexpr PathString pathString(ConvertibleToPathString auto &&base, auto &&...components)
+{
+	PathString path{IG_forward(base)};
+	([&]()
+	{
+		path += '/';
+		path += IG_forward(components);
+	}(), ...);
+	return path;
+}
+
+// URI path functions
+inline constexpr std::string_view uriPathSegmentTreeName{"/tree/"};
+inline constexpr std::string_view uriPathSegmentDocumentName{"/document/"};
+PathString dirnameUri(CStringView pathOrUri);
+std::pair<std::string_view, size_t> uriPathSegment(std::string_view uri, std::string_view segmentName);
+
+inline constexpr PathString uriString(ConvertibleToPathString auto &&base, auto &&...components)
+{
+	if(!isUri(base))
+		return pathString(IG_forward(base), IG_forward(components)...);
+	// assumes base is already encoded and encodes the components
+	PathString uri{IG_forward(base)};
+	([&]()
+	{
+		uri += "%2F";
+		uri += encodeUri<PathString>(IG_forward(components));
+	}(), ...);
+	return uri;
+}
 
 }

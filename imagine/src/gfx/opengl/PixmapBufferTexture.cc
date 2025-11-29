@@ -13,18 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/PixmapBufferTexture.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/math.hh>
-#ifdef __ANDROID__
-#include <imagine/gfx/opengl/android/HardwareBufferStorage.hh>
-#include <imagine/gfx/opengl/android/SurfaceTextureStorage.hh>
-#endif
-#include <imagine/logger/logger.h>
-#include <cstdlib>
-#include <algorithm>
+#include <imagine/gfx/opengl/defs.hh>
+#include <imagine/util/macros.h>
+import imagine.internal.gfxOpengl;
 
 #ifndef GL_MAP_WRITE_BIT
 #define GL_MAP_WRITE_BIT 0x0002
@@ -459,12 +450,12 @@ TextureBufferMode Renderer::evalTextureBufferMode(TextureBufferMode mode)
 		case TextureBufferMode::SYSTEM_MEMORY:
 			return TextureBufferMode::SYSTEM_MEMORY;
 		case TextureBufferMode::PBO:
-			return hasPersistentBufferMapping(*this) ? TextureBufferMode::PBO : evalTextureBufferMode();
+			return hasPersistentBufferMapping(*this) ? TextureBufferMode::PBO : evalTextureBufferMode({});
 		#ifdef __ANDROID__
 		case TextureBufferMode::ANDROID_HARDWARE_BUFFER:
-			return hasHardwareBuffer(*this) ? TextureBufferMode::ANDROID_HARDWARE_BUFFER : evalTextureBufferMode();
+			return hasHardwareBuffer(*this) ? TextureBufferMode::ANDROID_HARDWARE_BUFFER : evalTextureBufferMode({});
 		case TextureBufferMode::ANDROID_SURFACE_TEXTURE:
-			return hasSurfaceTexture(*this) ? TextureBufferMode::ANDROID_SURFACE_TEXTURE : evalTextureBufferMode();
+			return hasSurfaceTexture(*this) ? TextureBufferMode::ANDROID_SURFACE_TEXTURE : evalTextureBufferMode({});
 		#endif
 	}
 }

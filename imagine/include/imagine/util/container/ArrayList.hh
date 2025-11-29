@@ -170,7 +170,7 @@ private:
 };
 
 template<class T, size_t SIZE>
-static constexpr typename StaticArrayList<T,SIZE>::size_type
+inline constexpr typename StaticArrayList<T,SIZE>::size_type
 	erase(StaticArrayList<T,SIZE>& c, const auto &val)
 {
 	auto it = std::remove(c.begin(), c.end(), val);
@@ -180,7 +180,7 @@ static constexpr typename StaticArrayList<T,SIZE>::size_type
 }
 
 template<class T, size_t SIZE>
-static constexpr typename StaticArrayList<T,SIZE>::size_type
+inline constexpr typename StaticArrayList<T,SIZE>::size_type
 	erase_if(StaticArrayList<T,SIZE>& c, auto pred)
 {
 	auto it = std::remove_if(c.begin(), c.end(), pred);

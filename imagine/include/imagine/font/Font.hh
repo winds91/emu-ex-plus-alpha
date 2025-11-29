@@ -32,13 +32,13 @@
 
 namespace IG
 {
-
 class IO;
-
-namespace Data
-{
-class PixmapSource;
 }
+
+namespace IG::Data
+{
+
+class PixmapSource;
 
 class GlyphImage: public GlyphImageImpl
 {

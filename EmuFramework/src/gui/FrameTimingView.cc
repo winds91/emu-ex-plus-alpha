@@ -22,7 +22,7 @@
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/gfx/Renderer.hh>
 #include <imagine/gfx/RendererCommands.hh>
-#include <format>
+import std;
 
 namespace EmuEx
 {

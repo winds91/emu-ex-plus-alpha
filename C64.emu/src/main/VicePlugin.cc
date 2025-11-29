@@ -13,13 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <cstring>
 #include <imagine/logger/logger.h>
 #include <imagine/fs/FS.hh>
 #include <imagine/util/utility.h>
 #include <imagine/util/format.hh>
 #include <emuframework/EmuApp.hh>
 #include "VicePlugin.hh"
+import std;
 
 extern "C"
 {

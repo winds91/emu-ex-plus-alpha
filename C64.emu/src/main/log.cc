@@ -25,7 +25,7 @@ extern "C"
 
 int log_message(log_t, const char *format, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return 0;
 	va_list ap;
 	va_start(ap, format);
@@ -37,7 +37,7 @@ int log_message(log_t, const char *format, ...)
 
 int log_warning(log_t, const char *format, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return 0;
 	va_list ap;
 	va_start(ap, format);
@@ -49,7 +49,7 @@ int log_warning(log_t, const char *format, ...)
 
 int log_error(log_t, const char *format, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return 0;
 	va_list ap;
 	va_start(ap, format);
@@ -61,7 +61,7 @@ int log_error(log_t, const char *format, ...)
 
 int log_debug(log_t, const char *format, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return 0;
 	va_list ap;
 	va_start(ap, format);
@@ -73,7 +73,7 @@ int log_debug(log_t, const char *format, ...)
 
 int log_verbose(log_t, const char *format, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return 0;
 	va_list ap;
 	va_start(ap, format);
@@ -85,7 +85,7 @@ int log_verbose(log_t, const char *format, ...)
 
 int log_printf(const char *format, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return 0;
 	va_list ap;
 	va_start(ap, format);
@@ -97,7 +97,7 @@ int log_printf(const char *format, ...)
 
 CLINK void archdep_startup_log_error(const char *format, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return;
 	va_list ap;
 	va_start(ap, format);
@@ -107,7 +107,7 @@ CLINK void archdep_startup_log_error(const char *format, ...)
 
 CLINK void ui_error(const char *format,...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return;
   va_list ap;
   va_start(ap, format);

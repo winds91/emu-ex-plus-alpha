@@ -13,14 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "EventLoop"
-#include <imagine/base/EventLoop.hh>
-#include <imagine/thread/Thread.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/format.hh>
-#include <imagine/util/ScopeGuard.hh>
 #include <glib.h>
 #include <glib-unix.h>
+import imagine;
 
 namespace IG
 {

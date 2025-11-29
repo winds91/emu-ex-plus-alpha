@@ -13,16 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <cerrno>
-#include <cassert>
-#include <cstring>
-#include <algorithm>
+#include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+import imagine;
 
 namespace IG
 {
@@ -48,7 +45,7 @@ CLINK off_t fd_size(int fd)
 	if(fstat(fd, &stats) == -1)
 	{
 		if(Config::DEBUG_BUILD)
-			IG::log.error("fstat({}) failed:{}", fd, strerror(errno));
+			IG::log.error("fstat({}) failed:{}", fd, std::strerror(errno));
 		return 0;
 	}
 	return stats.st_size;

@@ -13,18 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/io/FileIO.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/bit.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/logger/logger.h>
 #include <mednafen/types.h>
 #include <mednafen/git.h>
 #include <mednafen/file.h>
 #include <mednafen/memory.h>
 #include <mednafen/MemoryStream.h>
 #include <fcntl.h>
+import imagine;
 
 namespace EmuEx
 {

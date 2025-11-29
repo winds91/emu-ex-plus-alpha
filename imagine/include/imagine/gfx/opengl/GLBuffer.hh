@@ -17,6 +17,7 @@
 
 #include <imagine/gfx/defs.hh>
 #include <imagine/gfx/BufferConfig.hh>
+#include <imagine/gfx/Vertex.hh>
 #include <imagine/util/memory/UniqueResource.hh>
 #include <imagine/util/memory/Buffer.hh>
 #include <span>

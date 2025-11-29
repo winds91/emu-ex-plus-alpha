@@ -26,8 +26,11 @@
 
 namespace IG
 {
-
 class ApplicationContext;
+}
+
+namespace IG::Data
+{
 
 class UIKitGlyphImage
 {

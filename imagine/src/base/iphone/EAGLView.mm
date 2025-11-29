@@ -20,7 +20,7 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 #import <QuartzCore/CAEAGLLayer.h>
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/time/Time.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/input/Event.hh>
 #include <imagine/base/GLContext.hh>
 #include <imagine/util/algorithm.h>
@@ -37,12 +37,14 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 namespace IG
 {
 
+constexpr SystemLogger log{"EAGLView"};
 EAGLViewMakeRenderbufferDelegate makeRenderbuffer{};
 EAGLViewDeleteRenderbufferDelegate deleteRenderbuffer{};
 
 }
 
 using namespace IG;
+constexpr bool checkGLErrors = Config::DEBUG_BUILD;
 
 static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffer)
 {
@@ -51,14 +53,14 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 	runGLChecked([&]()
 	{
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
-	}, "glFramebufferRenderbuffer(colorRenderbuffer)");
+	}, IG::log, checkGLErrors, "glFramebufferRenderbuffer(colorRenderbuffer)");
 	runGLChecked([&]()
 	{
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
-	}, "glFramebufferRenderbuffer(depthRenderbuffer)");
+	}, IG::log, checkGLErrors, "glFramebufferRenderbuffer(depthRenderbuffer)");
 	if(Config::DEBUG_BUILD && glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		logErr("failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+		IG::log.error("failed to make complete framebuffer object {}", glCheckFramebufferStatus(GL_FRAMEBUFFER));
 	}
 }
 
@@ -75,7 +77,7 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 
 - (id)initWithFrame:(CGRect)frame
 {
-	logMsg("entered initWithFrame");
+	IG::log.info("entered initWithFrame");
 	self = [super initWithFrame:frame];
 	if(self)
 	{
@@ -84,9 +86,9 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 	}
 	else
 	{
-		logErr("error calling super initWithFrame");
+		IG::log.error("error calling super initWithFrame");
 	}
-	logMsg("exiting initWithFrame");
+	IG::log.info("exiting initWithFrame");
 	return self;
 }
 	
@@ -95,12 +97,12 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 	auto eaglLayer = (CAEAGLLayer*)self.layer;
 	if(format == kEAGLColorFormatRGB565)
 	{
-		logMsg("using RGB565 surface");
+		IG::log.info("using RGB565 surface");
 		eaglLayer.drawableProperties = @{ kEAGLDrawablePropertyColorFormat : kEAGLColorFormatRGB565 };
 	}
 	else
 	{
-		logMsg("using RGBA8 surface");
+		IG::log.info("using RGBA8 surface");
 		eaglLayer.drawableProperties = @{};
 	}
 }
@@ -109,7 +111,7 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 {
 	if(!_colorRenderbuffer)
 	{
-		logErr("trying to bind view without renderbuffer");
+		IG::log.error("trying to bind view without renderbuffer");
 		return;
 	}
 	bindGLRenderbuffer(_colorRenderbuffer, _depthRenderbuffer);
@@ -121,7 +123,7 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 	{
 		return; // already deinit
 	}
-	logMsg("deleting layer renderbuffer: %u", _colorRenderbuffer);
+	IG::log.info("deleting layer renderbuffer:{}", _colorRenderbuffer);
 	assumeExpr(deleteRenderbuffer);
 	deleteRenderbuffer(_colorRenderbuffer, _depthRenderbuffer);
 	_colorRenderbuffer = 0;
@@ -138,18 +140,18 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 	if(newWindow)
 	{
 		auto scale = hasAtLeastIOS8() ? [newWindow.screen nativeScale] : [newWindow.screen scale];
-		logMsg("view %p moving to window %p with scale %f", self, newWindow, (double)scale);
+		IG::log.info("view {} moving to window {} with scale {}", (__bridge void*)self, (__bridge void*)newWindow, scale);
 		self.contentScaleFactor = scale;
 	}
 	else
 	{
-		logMsg("view %p removed from window", self);
+		IG::log.info("view {} removed from window", (__bridge void*)self);
 	}
 }
 
 - (void)layoutSubviews
 {
-	logMsg("in layoutSubviews");
+	IG::log.info("in layoutSubviews");
 	[self deleteDrawable];
 	assumeExpr(makeRenderbuffer);
 	auto size = makeRenderbuffer((__bridge void*)self.layer, _colorRenderbuffer, _depthRenderbuffer);

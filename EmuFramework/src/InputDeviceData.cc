@@ -15,7 +15,8 @@
 
 #include "InputDeviceData.hh"
 #include <emuframework/AppKeyCode.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace EmuEx
 {

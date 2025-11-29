@@ -29,8 +29,8 @@
 #include <core/gba/gba.h>
 #include <core/gba/gbaRtc.h>
 #include <core/gba/gbaSound.h>
-#include <format>
 #include <imagine/logger/logger.h>
+import std;
 
 namespace EmuEx
 {

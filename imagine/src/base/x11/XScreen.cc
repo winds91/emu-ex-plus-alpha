@@ -13,16 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "Screen"
-#include <imagine/base/Screen.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 #include "xlibutils.h"
 #include <xcb/randr.h>
-#include <cmath>
-#include <format>
+import imagine;
 
 namespace IG
 {

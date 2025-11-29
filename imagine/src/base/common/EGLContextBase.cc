@@ -13,15 +13,11 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/GLContext.hh>
-#include <imagine/base/EGLContextBase.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/thread/Thread.hh>
+#include <imagine/util/macros.h>
+#include <imagine/util/egl.hh>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <imagine/util/egl.hh>
-#include <imagine/util/container/ArrayList.hh>
-#include <imagine/util/string.h>
+import imagine;
 
 #ifndef EGL_OPENGL_ES3_BIT
 #define EGL_OPENGL_ES3_BIT 0x0040
@@ -324,7 +320,7 @@ std::optional<EGLConfig> EGLManager::chooseConfig(GLDisplay display, int rendera
 		return {};
 	}
 	if(Config::DEBUG_BUILD)
-		printEGLConf(display, config);
+		printEGLConf(display, config, log);
 	return config;
 }
 

@@ -29,7 +29,7 @@ namespace IG
 
 template <class MsgType>
 concept ReplySemaphoreSettableMessage =
-	requires (MsgType msg, std::binary_semaphore *sem){ msg.setReplySemaphore(sem); };
+	requires (MsgType msg, binary_semaphore* sem){ msg.setReplySemaphore(sem); };
 
 enum class MessageReplyMode
 {
@@ -150,7 +150,7 @@ public:
 	{
 		if(mode == MessageReplyMode::wait)
 		{
-			std::binary_semaphore replySemaphore{0};
+			binary_semaphore replySemaphore{0};
 			return send(msg, &replySemaphore);
 		}
 		else
@@ -159,7 +159,7 @@ public:
 		}
 	}
 
-	bool send(ReplySemaphoreSettableMessage auto msg, std::binary_semaphore *semPtr)
+	bool send(ReplySemaphoreSettableMessage auto msg, binary_semaphore* semPtr)
 	{
 		if(semPtr)
 		{

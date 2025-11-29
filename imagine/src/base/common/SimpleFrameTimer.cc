@@ -13,10 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/SimpleFrameTimer.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/time/Time.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace IG
 {

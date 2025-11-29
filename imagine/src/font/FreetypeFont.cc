@@ -13,34 +13,28 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "FreetypeFont"
-#include <imagine/font/Font.hh>
-#include <imagine/pixmap/Pixmap.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/io/IO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/fs/FSDefs.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/config/defs.hh>
+#include <imagine/util/macros.h>
 #ifdef CONFIG_PACKAGE_FONTCONFIG
 #include <fontconfig/fontconfig.h>
 #endif
+#include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_BITMAP_H
 #include FT_SIZES_H
+import imagine.data;
 
-namespace IG
+namespace IG::Data
 {
 
-constexpr SystemLogger log{"Freetype"};
+constexpr SystemLogger log{"Font"};
 
 #ifdef CONFIG_PACKAGE_FONTCONFIG
 static FS::PathString fontPathWithPattern(FcPattern *pat)
 {
 	if(!FcConfigSubstitute(nullptr, pat, FcMatchPattern))
 	{
-		logErr("error applying font substitutions");
+		log.error("error applying font substitutions");
 		return {};
 	}
 	FcDefaultSubstitute(pat);
@@ -56,13 +50,13 @@ static FS::PathString fontPathWithPattern(FcPattern *pat)
 		});
 	if(!matchPat || result == FcResultNoMatch)
 	{
-		logErr("fontconfig couldn't find a valid font");
+		log.error("fontconfig couldn't find a valid font");
 		return {};
 	}
 	FcChar8 *patternStr;
 	if(FcPatternGetString(matchPat, FC_FILE, 0, &patternStr) != FcResultMatch)
 	{
-		logErr("fontconfig font missing file path");
+		log.error("fontconfig font missing file path");
 		return {};
 	}
 	return (char*)patternStr;
@@ -70,18 +64,18 @@ static FS::PathString fontPathWithPattern(FcPattern *pat)
 
 static FS::PathString fontPathContainingChar(int c, int weight)
 {
-	logMsg("looking for font with char: %c", c);
+	log.info("looking for font with char:{}", c);
 	auto pat = FcPatternCreate();
 	if(!pat)
 	{
-		logErr("error allocating fontconfig pattern");
+		log.error("error allocating fontconfig pattern");
 		return {};
 	}
 	auto destroyPattern = IG::scopeGuard([&](){ FcPatternDestroy(pat); });
 	auto charSet = FcCharSetCreate();
 	if(!charSet)
 	{
-		logErr("error allocating fontconfig char set");
+		log.error("error allocating fontconfig char set");
 		return {};
 	}
 	auto destroyCharSet = IG::scopeGuard([&](){ FcCharSetDestroy(charSet); });
@@ -99,18 +93,18 @@ FreetypeFontManager::FreetypeFontManager(ApplicationContext ctx):
 	auto error = FT_Init_FreeType(&ftLib);
 	if(error)
 	{
-		logErr("error in FT_Init_FreeType");
+		log.error("error in FT_Init_FreeType");
 		return;
 	}
 	library.reset(ftLib);
 	/*FT_Int major, minor, patch;
 	FT_Library_Version(library, &major, &minor, &patch);
-	logMsg("init freetype version %d.%d.%d", (int)major, (int)minor, (int)patch);*/
+	log.debug("init freetype version {}.{}.{}", major, minor, patch);*/
 	#ifdef CONFIG_PACKAGE_FONTCONFIG
 	auto fontConfig = FcInitLoadConfigAndFonts();
 	if(!fontConfig)
 	{
-		logErr("error in FcInitLoadConfigAndFonts");
+		log.error("error in FcInitLoadConfigAndFonts");
 		return;
 	}
 	fcConf.reset(fontConfig);
@@ -130,28 +124,28 @@ void FreetypeFontManager::freeFcConfig(_FcConfig *confPtr)
 
 static FT_Size makeFTSize(FT_Face face, int x, int y)
 {
-	logMsg("creating new size object, %dx%d pixels", x, y);
+	log.info("creating new size object, {}x{} pixels", x, y);
 	FT_Size size{};
 	auto error = FT_New_Size(face, &size);
 	if(error)
 	{
-		logErr("error creating new size object");
+		log.error("error creating new size object");
 		return {};
 	}
 	error = FT_Activate_Size(size);
 	if(error)
 	{
-		logErr("error activating size object");
+		log.error("error activating size object");
 		return {};
 	}
 	error = FT_Set_Pixel_Sizes(face, x, y);
 	if(error)
 	{
-		logErr("error occurred setting character pixel size");
+		log.error("error occurred setting character pixel size");
 		return {};
 	}
-	//logMsg("Face max bounds %dx%d,%dx%d, units per EM %d", face->bbox.xMin, face->bbox.xMax, face->bbox.yMin, face->bbox.yMax, face->units_per_EM);
-	//logMsg("scaled ascender x descender %dx%d", (int)size->metrics.ascender >> 6, (int)size->metrics.descender >> 6);
+	//log.info("Face max bounds {}x{},{}x{}, units per EM {}", face->bbox.xMin, face->bbox.xMax, face->bbox.yMin, face->bbox.yMax, face->units_per_EM);
+	//log.info("scaled ascender x descender {}x{}", size->metrics.ascender >> 6, size->metrics.descender >> 6);
 	return size;
 }
 
@@ -165,7 +159,7 @@ static FreetypeFont::GlyphRenderData makeGlyphRenderDataWithFace(FT_Library libr
 	auto error = FT_Load_Glyph(face, idx, FT_LOAD_RENDER);
 	if(error)
 	{
-		logErr("error occurred loading/rendering character 0x%X", c);
+		log.error("error occurred loading/rendering character {:X}", c);
 		return {};
 	}
 	auto &glyph = face->glyph;
@@ -173,15 +167,15 @@ static FreetypeFont::GlyphRenderData makeGlyphRenderDataWithFace(FT_Library libr
 	if(glyph->bitmap.pixel_mode != FT_PIXEL_MODE_GRAY)
 	{
 		// rendered glyph is not in 8-bit gray-scale
-		logMsg("converting mode %d bitmap", glyph->bitmap.pixel_mode);
+		log.info("converting mode {} bitmap", glyph->bitmap.pixel_mode);
 		auto error = FT_Bitmap_Convert(library, &glyph->bitmap, &bitmap, 1);
 		if(error)
 		{
-			logErr("error occurred converting character 0x%X", c);
+			log.error("error occurred converting character {:X}", c);
 			return {};
 		}
 		assert(bitmap.num_grays == 2); // only handle 2 gray levels for now
-		//logMsg("new bitmap has %d gray levels", convBitmap.num_grays);
+		//log.info("new bitmap has {} gray levels", convBitmap.num_grays);
 		// scale 1-bit values to 8-bit range
 		for(auto y : iotaCount(bitmap.rows))
 		{
@@ -227,7 +221,7 @@ FreetypeFaceData::FreetypeFaceData(FT_Library library, IO file):
 			auto bytesRead = io.read(buffer, count, offset);
 			if(bytesRead == -1)
 			{
-				logErr("error reading bytes in IO func");
+				log.error("error reading bytes in IO func");
 				return 0;
 			}
 			return bytesRead;
@@ -238,12 +232,12 @@ FreetypeFaceData::FreetypeFaceData(FT_Library library, IO file):
 	auto error = FT_Open_Face(library, &openS, 0, &face);
 	if(error == FT_Err_Unknown_File_Format)
 	{
-		logErr("unknown font format");
+		log.error("unknown font format");
 		return;
 	}
 	else if(error)
 	{
-		logErr("error occurred opening the font");
+		log.error("error occurred opening the font");
 		return;
 	}
 }
@@ -273,7 +267,7 @@ Font FontManager::makeFromFile(const char *name) const
 Font FontManager::makeSystem() const
 {
 	#ifdef CONFIG_PACKAGE_FONTCONFIG
-	logMsg("locating system fonts with fontconfig");
+	log.info("locating system fonts with fontconfig");
 	// Let fontconfig handle loading specific fonts on-demand
 	return {library.get()};
 	#else
@@ -337,7 +331,7 @@ bool FreetypeFont::loadIntoNextSlot(IO io)
 	auto &data = f.emplace_back(library, std::move(io));
 	if(!data.face)
 	{
-		logErr("error reading font");
+		log.error("error reading font");
 		f.pop_back();
 		return false;
 	}
@@ -354,7 +348,7 @@ bool FreetypeFont::loadIntoNextSlot(CStringView name)
 	}
 	catch(...)
 	{
-		logMsg("unable to open file %s", name.data());
+		log.info("unable to open file:{}", name);
 		return false;
 	}
 }
@@ -369,13 +363,13 @@ FreetypeFont::GlyphRenderData FreetypeFont::makeGlyphRenderData(int idx, Freetyp
 		auto ftError = FT_Activate_Size(fontSize.sizeArray()[i]);
 		if(ftError)
 		{
-			logErr("error activating size object");
+			log.error("error activating size object");
 			return {};
 		}
 		auto data = makeGlyphRenderDataWithFace(library, font.face, idx, keepPixData);
 		if(!data)
 		{
-			logMsg("glyph 0x%X not found in slot %zu", idx, i);
+			log.info("glyph {:X} not found in slot {}", idx, i);
 			continue;
 		}
 		return data;
@@ -384,13 +378,13 @@ FreetypeFont::GlyphRenderData FreetypeFont::makeGlyphRenderData(int idx, Freetyp
 	// try to find a font with the missing char and load into next free slot
 	if(f.isFull())
 	{
-		logErr("no slots left");
+		log.error("no slots left");
 		return {};
 	}
 	auto fontPath = fontPathContainingChar(idx, weight == FontWeight::BOLD ? FC_WEIGHT_BOLD : FC_WEIGHT_MEDIUM);
 	if(fontPath.empty())
 	{
-		logErr("no font file found for char %c (0x%X)", idx, idx);
+		log.error("no font file found for char {} ({:X})", idx, idx);
 		return {};
 	}
 	auto newSlot = f.size();
@@ -400,13 +394,13 @@ FreetypeFont::GlyphRenderData FreetypeFont::makeGlyphRenderData(int idx, Freetyp
 	auto settings = fontSize.fontSettings();
 	if(!(fontSize.sizeArray()[newSlot] = makeFTSize(font.face, settings.pixelWidth(), settings.pixelHeight())))
 	{
-		logErr("couldn't allocate font size");
+		log.error("couldn't allocate font size");
 		return {};
 	}
 	auto data = makeGlyphRenderDataWithFace(library, font.face, idx, keepPixData);
 	if(!data)
 	{
-		logMsg("glyph 0x%X still not found", idx);
+		log.info("glyph {:X} still not found", idx);
 		return {};
 	}
 	return data;
@@ -485,7 +479,7 @@ void FreetypeFontSize::deinit()
 	{
 		if(s)
 		{
-			//logMsg("freeing size %p", ftSize[i]);
+			//log.info("freeing size {}", (void*)ftSize[i]);
 			if(auto error = FT_Done_Size(s); error)
 			{
 				log.error("error in FT_Done_Size()");
@@ -521,7 +515,7 @@ void FreetypeGlyphImage::deinit()
 	}
 }
 
-PixmapView IG::GlyphImage::pixmap()
+PixmapView GlyphImage::pixmap()
 {
 	return
 		{
@@ -531,7 +525,7 @@ PixmapView IG::GlyphImage::pixmap()
 		};
 }
 
-IG::GlyphImage::operator bool() const
+GlyphImage::operator bool() const
 {
 	return (bool)bitmap.buffer;
 }

@@ -22,7 +22,7 @@ static int bachk(const char *str)
 	if (!str)
 		return -1;
 
-	if (strlen(str) != 17)
+	if (std::strlen(str) != 17)
 		return -1;
 
 	while (*str) {

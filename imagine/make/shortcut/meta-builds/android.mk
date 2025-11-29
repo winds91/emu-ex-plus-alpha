@@ -308,19 +308,17 @@ ifndef android_noArmv7
 
 android_armv7CMakeCache := build/android-armv7/CMakeCache.txt
 android_armv7SO := $(android_jniLibsPath)/armeabi-v7a/libmain.so
-android_soFiles += $(android_armv7SO)
+android_soFiles += android-armv7
 android_cleanTargets += android-armv7-clean
 
 $(android_armv7CMakeCache) : CMakeLists.txt
 	@echo "Configuring ARMv7 Shared Object"
 	$(PRINT_CMD)cmake --preset android-armv7 --fresh
 
-$(android_armv7SO) : $(android_armv7CMakeCache)
+.PHONY: android-armv7
+android-armv7 : $(android_armv7CMakeCache)
 	@echo "Building ARMv7 Shared Object"
 	$(PRINT_CMD)cmake --build build/android-armv7 --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: android-armv7
-android-armv7 : $(android_armv7SO)
 
 .PHONY: android-armv7-clean
 android-armv7-clean :
@@ -333,19 +331,17 @@ ifndef android_noArm64
 
 android_arm64CMakeCache := build/android-arm64/CMakeCache.txt
 android_arm64SO := $(android_jniLibsPath)/arm64-v8a/libmain.so
-android_soFiles += $(android_arm64SO)
+android_soFiles += android-arm64
 android_cleanTargets += android-arm64-clean
 
 $(android_arm64CMakeCache) : CMakeLists.txt
 	@echo "Configuring ARM64 Shared Object"
 	$(PRINT_CMD)cmake --preset android-arm64 --fresh
 
-$(android_arm64SO) : $(android_arm64CMakeCache)
+.PHONY: android-arm64
+android-arm64 : $(android_arm64CMakeCache)
 	@echo "Building ARM64 Shared Object"
 	$(PRINT_CMD)cmake --build build/android-arm64 --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: android-arm64
-android-arm64 : $(android_arm64SO)
 
 .PHONY: android-arm64-clean
 android-arm64-clean :
@@ -358,19 +354,17 @@ ifndef android_noX86
 
 android_x86CMakeCache := build/android-x86/CMakeCache.txt
 android_x86SO := $(android_jniLibsPath)/x86/libmain.so
-android_soFiles += $(android_x86SO)
+android_soFiles += android-x86
 android_cleanTargets += android-x86-clean
 
 $(android_x86CMakeCache) : CMakeLists.txt
 	@echo "Configuring X86 Shared Object"
 	$(PRINT_CMD)cmake --preset android-x86 --fresh
 
-$(android_x86SO) : $(android_x86CMakeCache)
+.PHONY: android-x86
+android-x86 : $(android_x86CMakeCache)
 	@echo "Building X86 Shared Object"
 	$(PRINT_CMD)cmake --build build/android-x86 --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: android-x86
-android-x86 : $(android_x86SO)
 
 .PHONY: android-x86-clean
 android-x86-clean :
@@ -383,19 +377,17 @@ ifndef android_noX86_64
 
 android_x86_64CMakeCache := build/android-x86_64/CMakeCache.txt
 android_x86_64SO := $(android_jniLibsPath)/x86_64/libmain.so
-android_soFiles += $(android_x86_64SO)
+android_soFiles += android-x86_64
 android_cleanTargets += android-x86_64-clean
 
 $(android_x86_64CMakeCache) : CMakeLists.txt
 	@echo "Configuring X86_64 Shared Object"
 	$(PRINT_CMD)cmake --preset android-x86_64 --fresh
 
-$(android_x86_64SO) : $(android_x86_64CMakeCache)
+.PHONY: android-x86_64
+android-x86_64 : $(android_x86_64CMakeCache)
 	@echo "Building X86_64 Shared Object"
 	$(PRINT_CMD)cmake --build build/android-x86_64 --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: android-x86_64
-android-x86_64 : $(android_x86_64SO)
 
 .PHONY: android-x86_64-clean
 android-x86_64-clean :

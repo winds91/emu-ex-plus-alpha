@@ -19,4 +19,12 @@
 #include <imagine/thread/MachSemaphore.hh>
 #else
 #include <semaphore>
+
+namespace IG
+{
+template<unsigned LeastMaxValue>
+using counting_semaphore = std::counting_semaphore<LeastMaxValue>;
+using binary_semaphore = std::binary_semaphore;
+}
+
 #endif

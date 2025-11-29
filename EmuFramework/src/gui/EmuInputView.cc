@@ -25,7 +25,7 @@
 #include <imagine/gfx/RendererCommands.hh>
 #include <imagine/util/variant.hh>
 #include <imagine/logger/logger.h>
-#include <format>
+import std;
 
 namespace EmuEx
 {

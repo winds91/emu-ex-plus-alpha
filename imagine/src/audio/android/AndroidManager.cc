@@ -13,19 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/Manager.hh>
-#include <imagine/audio/defs.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/util/jni.hh>
-#include <imagine/util/utility.h>
-#include <imagine/logger/logger.h>
+#include <android/native_activity.h>
+import imagine.audio;
 
 namespace IG::Audio
 {
 
-static constexpr int defaultOutputBufferFrames = 192; // default used in Google Oboe library
-static constexpr int AUDIOFOCUS_GAIN = 1;
-static constexpr int STREAM_MUSIC = 3;
+constexpr SystemLogger log{"AudioManager"};
+constexpr int defaultOutputBufferFrames = 192; // default used in Google Oboe library
+constexpr int AUDIOFOCUS_GAIN = 1;
+constexpr int STREAM_MUSIC = 3;
 
 AndroidManager::AndroidManager(ApplicationContext ctx_):
 	ctx{ctx_}
@@ -56,12 +53,12 @@ int Manager::nativeRate() const
 		if(rate != 44100 && rate != 48000)
 		{
 			// only support 44KHz and 48KHz for now
-			logWarn("ignoring OUTPUT_SAMPLE_RATE value:%u", rate);
+			log.warn("ignoring OUTPUT_SAMPLE_RATE value:{}", rate);
 			rate = 44100;
 		}
 		else
 		{
-			logMsg("native sample rate: %u", rate);
+			log.info("native sample rate:{}", rate);
 		}
 	}
 	return rate;
@@ -76,7 +73,7 @@ void Manager::setSoloMix(std::optional<bool> opt)
 {
 	if(!opt || soloMix_ == *opt)
 		return;
-	logMsg("setting solo mix:%s", *opt ? "on" : "off");
+	log.info("setting solo mix:{}", *opt ? "on" : "off");
 	soloMix_ = *opt;
 	if(sessionActive)
 	{
@@ -162,7 +159,7 @@ int AndroidManager::nativeOutputFramesPerBuffer() const
 		//logMsg("native buffer frames: %d", outputBufferFrames);
 		if(outputBufferFrames <= 0 || outputBufferFrames > 4096)
 		{
-			logWarn("ignoring OUTPUT_FRAMES_PER_BUFFER value:%d", outputBufferFrames);
+			log.warn("ignoring OUTPUT_FRAMES_PER_BUFFER value:{}", outputBufferFrames);
 			return defaultOutputBufferFrames;
 		}
 		return outputBufferFrames;
@@ -179,7 +176,7 @@ int AndroidManager::audioManagerIntProperty(JNIEnv* env, const char *propStr) co
 	auto valJStr = (jstring)jGetProperty(env, audioManager, propJStr);
 	if(!valJStr)
 	{
-		logWarn("%s is null", propStr);
+		log.warn("{} is null", propStr);
 		return 0;
 	}
 	auto valStr = env->GetStringUTFChars(valJStr, nullptr);

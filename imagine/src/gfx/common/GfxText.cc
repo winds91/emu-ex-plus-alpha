@@ -13,15 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/GfxText.hh>
-#include <imagine/gfx/GlyphTextureSet.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/util/math.hh>
-#include <imagine/util/ctype.hh>
-#include <imagine/logger/logger.h>
-#include <algorithm>
-#include <bit>
+#include <imagine/util/macros.h>
+import imagine.gfx;
 
 namespace IG::Gfx
 {

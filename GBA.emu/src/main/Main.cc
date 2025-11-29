@@ -59,9 +59,9 @@ GbaApp::GbaApp(ApplicationInitParams initParams, ApplicationContext &ctx):
 
 const BundledGameInfo &EmuSystem::bundledGameInfo(int idx) const
 {
-	static const BundledGameInfo info[]
+	static constexpr BundledGameInfo info[]
 	{
-		{"Motocross Challenge", "Motocross Challenge.7z"}
+		{"Motocross Challenge", Config::envIsLinux ? "MotocrossChallenge.7z" : "Motocross Challenge.7z"}
 	};
 
 	return info[0];

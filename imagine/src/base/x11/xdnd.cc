@@ -13,14 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/Application.hh>
-#include <imagine/util/bit.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/utility.h>
+#include <imagine/util/macros.h>
 #include "xdnd.hh"
 #include "xlibutils.h"
-#include <ranges>
-#include <imagine/logger/logger.h>
+import imagine;
 
 enum
 {

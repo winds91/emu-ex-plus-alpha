@@ -20,7 +20,7 @@
 #include <emuframework/viewUtils.hh>
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/gfx/Renderer.hh>
-#include <format>
+import std;
 
 namespace EmuEx
 {

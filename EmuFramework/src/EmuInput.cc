@@ -22,7 +22,7 @@
 #include "InputDeviceData.hh"
 #include "gui/ResetAlertView.hh"
 #include <emuframework/EmuOptions.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {

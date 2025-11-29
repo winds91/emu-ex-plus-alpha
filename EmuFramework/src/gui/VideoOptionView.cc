@@ -22,8 +22,8 @@
 #include <emuframework/viewUtils.hh>
 #include "PlaceVideoView.hh"
 #include <imagine/base/ApplicationContext.hh>
-#include <format>
 #include <imagine/logger/logger.h>
+import std;
 
 namespace EmuEx
 {

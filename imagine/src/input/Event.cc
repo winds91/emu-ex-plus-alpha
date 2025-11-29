@@ -13,9 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/input/Event.hh>
-#include <imagine/input/bluetoothInputDefs.hh>
-#include <imagine/base/Application.hh>
+#include <imagine/input/inputDefs.hh>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace IG::Input
 {
@@ -167,9 +167,9 @@ bool KeyEvent::isDefaultPageUpButton() const
 {
 	switch(map())
 	{
-		#ifdef CONFIG_INPUT_BLUETOOTH
-		case Map::WIIMOTE: return key() == Input::WiimoteKey::PLUS;
-		#endif
+		case Map::WIIMOTE:
+			if(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			return key() == Input::WiimoteKey::PLUS;
 		default:
 			switch(device()->subtype())
 			{
@@ -188,9 +188,9 @@ bool KeyEvent::isDefaultPageDownButton() const
 {
 	switch(map())
 	{
-		#ifdef CONFIG_INPUT_BLUETOOTH
-		case Map::WIIMOTE: return key() == Input::WiimoteKey::MINUS;
-		#endif
+		case Map::WIIMOTE:
+			if(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			return key() == Input::WiimoteKey::MINUS;
 		default:
 			switch(device()->subtype())
 			{

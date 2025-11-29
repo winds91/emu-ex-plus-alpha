@@ -60,7 +60,7 @@ const BundledGameInfo &EmuSystem::bundledGameInfo(int) const
 {
 	static constexpr BundledGameInfo info[]
 	{
-		{"Bio Worm", "Bio Worm.7z"}
+		{"Bio Worm", Config::envIsLinux ? "BioWorm.7z" : "Bio Worm.7z"}
 	};
 
 	return info[0];

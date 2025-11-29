@@ -120,7 +120,7 @@ class C64System final: public EmuSystem
 {
 public:
 	double systemFrameRate{60.};
-	std::binary_semaphore execSem{0}, execDoneSem{0};
+	binary_semaphore execSem{0}, execDoneSem{0};
 	EmuAudio *audioPtr{};
 	struct video_canvas_s *activeCanvas{};
 	const char *sysFileDir{};

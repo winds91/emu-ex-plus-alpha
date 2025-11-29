@@ -13,18 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/TableView.hh>
-#include <imagine/gui/ViewManager.hh>
-#include <imagine/gui/MenuItem.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/input/Event.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/variant.hh>
-#include <imagine/util/math.hh>
-#include <imagine/logger/logger.h>
+import imagine.gui;
 
 namespace IG
 {
@@ -93,7 +82,7 @@ void TableView::draw(Gfx::RendererCommands &__restrict__ cmds, ViewDrawParams) c
 	// draw separators
 	int yStart = y;
 	cmds.basicEffect().disableTexture(cmds);
-	int selectedCellY = selected == 0 ? y : INT_MAX;
+	int selectedCellY = selected == 0 ? y : std::numeric_limits<int>::max();
 	if(cells_ > 1)
 	{
 		cmds.basicEffect().setModelView(cmds, Gfx::Mat4::ident());
@@ -146,7 +135,7 @@ void TableView::draw(Gfx::RendererCommands &__restrict__ cmds, ViewDrawParams) c
 	ScrollView::drawScrollContent(cmds);
 
 	// draw selected rectangle
-	if(selectedCellY != INT_MAX)
+	if(selectedCellY != std::numeric_limits<int>::max())
 	{
 		cmds.set(BlendMode::ALPHA);
 		if(hasFocus)
@@ -380,7 +369,7 @@ bool TableView::handleTableInput(const Input::Event &e, bool &movedSelected)
 			{
 				if(!hasFocus)
 				{
-					logMsg("gained focus from key input");
+					log.info("gained focus from key input");
 					hasFocus = true;
 					if(selected != -1)
 					{

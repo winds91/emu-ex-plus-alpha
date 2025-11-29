@@ -13,15 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "SurfaceTex"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/util/jni.hh>
-#include <imagine/logger/logger.h>
-#include "android.hh"
+module;
+#include <imagine/util/macros.h>
+#include <jni.h>
+
+module imagine.internal.android:surface;
+import imagine;
 
 namespace IG
 {
 
+constexpr SystemLogger log{"SurfaceTexture"};
 static jclass jSurfaceCls{}, jSurfaceTextureCls{};
 static JNI::InstMethod<void(jobject)> jSurface{};
 static JNI::InstMethod<void()> jSurfaceRelease{};
@@ -56,6 +58,11 @@ static void initSurfaceJNI(JNIEnv *env)
 	jSurfaceRelease = {env, jSurfaceCls, "release", "()V"};
 }
 
+}
+
+export namespace IG
+{
+
 jobject makeSurfaceTexture(ApplicationContext ctx, JNIEnv *env, jint texName)
 {
 	if(ctx.androidSDK() < 14)
@@ -80,7 +87,7 @@ bool releaseSurfaceTextureImage(JNIEnv *env, jobject surfaceTexture)
 	jReleaseTexImage(env, surfaceTexture);
 	if(env->ExceptionCheck()) [[unlikely]]
 	{
-		logErr("exception in releaseTexImage()");
+		log.error("exception in releaseTexImage()");
 		env->ExceptionClear();
 		return false;
 	}

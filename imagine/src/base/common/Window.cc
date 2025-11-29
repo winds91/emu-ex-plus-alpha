@@ -13,15 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/input/Event.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/variant.hh>
-#include <imagine/util/bit.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/base/baseDefs.hh>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace IG
 {
@@ -422,8 +416,7 @@ bool Window::updatePhysicalSizeWithCurrentSize()
 	#endif
 }
 
-#ifdef CONFIG_GFX_SOFT_ORIENTATION
-bool Window::setValidOrientations(Orientations o)
+[[gnu::weak]] bool Window::setValidOrientations(Orientations o)
 {
 	if(o.portrait)
 		return requestOrientationChange(Rotation::UP);
@@ -437,11 +430,11 @@ bool Window::setValidOrientations(Orientations o)
 		return requestOrientationChange(Rotation::UP);
 }
 
-bool Window::requestOrientationChange(Rotation o)
+[[gnu::weak]] bool Window::requestOrientationChange(Rotation o)
 {
 	if(softOrientation_ != o)
 	{
-		log.info("setting orientation %s", wise_enum::to_string(o).data());
+		log.info("setting orientation:{}", wise_enum::to_string(o));
 		int savedRealWidth = realWidth();
 		int savedRealHeight = realHeight();
 		softOrientation_ = o;
@@ -453,7 +446,6 @@ bool Window::requestOrientationChange(Rotation o)
 	}
 	return false;
 }
-#endif
 
 Rotation Window::softOrientation() const
 {

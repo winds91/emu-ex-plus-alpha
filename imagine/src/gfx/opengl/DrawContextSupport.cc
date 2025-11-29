@@ -13,10 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/logger/logger.h>
-#include "internalDefs.hh"
+#include <imagine/gfx/opengl/defs.hh>
+#include <imagine/util/macros.h>
+import imagine.internal.gfxOpengl;
 
 #ifndef GL_DEBUG_TYPE_ERROR
 #define GL_DEBUG_TYPE_ERROR 0x824C
@@ -221,14 +220,14 @@ static const char *debugTypeToStr(GLenum type)
 	}
 }
 
-static LoggerSeverity severityToLogger(GLenum severity)
+constexpr IG::Log::Level severityToLogger(GLenum severity)
 {
 	switch(severity)
 	{
 		default: [[fallthrough]];
-		case GL_DEBUG_SEVERITY_LOW: return LOGGER_DEBUG_MESSAGE;
-		case GL_DEBUG_SEVERITY_MEDIUM: return LOGGER_WARNING;
-		case GL_DEBUG_SEVERITY_HIGH: return LOGGER_ERROR;
+		case GL_DEBUG_SEVERITY_LOW: return IG::Log::Level::I;
+		case GL_DEBUG_SEVERITY_MEDIUM: return IG::Log::Level::W;
+		case GL_DEBUG_SEVERITY_HIGH: return IG::Log::Level::E;
 	}
 }
 
@@ -261,7 +260,7 @@ void DrawContextSupport::setGLDebugOutput(bool on)
 				{
 					return;
 				}
-				logger_modulePrintfn(severityToLogger(severity), "%s: %s", debugTypeToStr(type), message);
+				log.print(severityToLogger(severity), "{}: {}", debugTypeToStr(type), message);
 				if(severity == GL_DEBUG_SEVERITY_HIGH && type != GL_DEBUG_TYPE_PERFORMANCE)
 					abort();
 			}, nullptr);

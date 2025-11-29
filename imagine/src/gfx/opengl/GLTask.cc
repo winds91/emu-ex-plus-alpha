@@ -13,12 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/opengl/GLRendererTask.hh>
-#include <imagine/thread/Thread.hh>
-#include <imagine/logger/logger.h>
-#include "internalDefs.hh"
-#include <cassert>
+#include <imagine/util/opengl/glUtils.hh>
+#include <imagine/util/macros.h>
+import imagine.internal.gfxOpengl;
 
 namespace IG::Gfx
 {

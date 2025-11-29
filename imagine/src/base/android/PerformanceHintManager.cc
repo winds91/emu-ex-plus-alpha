@@ -13,11 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/PerformanceHintManager.hh>
-#include <imagine/base/sharedLibrary.hh>
 #include <android/performance_hint.h>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace IG
 {
@@ -66,7 +63,7 @@ void PerformanceHintSession::updateTargetWorkDuration(Nanoseconds targetTime)
 	if(!sessionPtr)
 		return;
 	if(APerformanceHint_updateTargetWorkDuration(sessionPtr.get(), targetTime.count()))
-		logErr("error in APerformanceHint_updateTargetWorkDuration(%p, %lld)", sessionPtr.get(), (long long)targetTime.count());
+		log.error("error in APerformanceHint_updateTargetWorkDuration({}, {})", (void*)sessionPtr.get(), targetTime.count());
 }
 
 void PerformanceHintSession::reportActualWorkDuration(Nanoseconds actualTime)
@@ -74,7 +71,7 @@ void PerformanceHintSession::reportActualWorkDuration(Nanoseconds actualTime)
 	if(!sessionPtr)
 		return;
 	if(APerformanceHint_reportActualWorkDuration(sessionPtr.get(), actualTime.count()))
-		logErr("error in APerformanceHint_reportActualWorkDuration(%p, %lld)", sessionPtr.get(), (long long)actualTime.count());
+		log.error("error in APerformanceHint_reportActualWorkDuration({}, {})", (void*)sessionPtr.get(), actualTime.count());
 }
 
 PerformanceHintSession::operator bool() const { return bool(sessionPtr); }

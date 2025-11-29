@@ -19,6 +19,8 @@
 #include <imagine/base/GLContext.hh>
 #include <imagine/util/memory/UniqueResource.hh>
 #include <imagine/util/used.hh>
+#include <imagine/util/rectangle2.h>
+#include <imagine/util/math.hh>
 #include <variant>
 #include <span>
 
@@ -33,22 +35,22 @@ namespace Config
 	#endif
 
 	#ifdef CONFIG_GFX_OPENGL_ES
-	static constexpr int OPENGL_ES = CONFIG_GFX_OPENGL_ES;
+	inline constexpr int OPENGL_ES = CONFIG_GFX_OPENGL_ES;
 	#else
-	static constexpr int OPENGL_ES = 0;
+	inline constexpr int OPENGL_ES = 0;
 	#endif
 
 	#ifdef CONFIG_GFX_ANDROID_SURFACE_TEXTURE
 	#define CONFIG_GFX_OPENGL_TEXTURE_TARGET_EXTERNAL
-	static constexpr bool OPENGL_TEXTURE_TARGET_EXTERNAL = true;
+	inline constexpr bool OPENGL_TEXTURE_TARGET_EXTERNAL = true;
 	#else
-	static constexpr bool OPENGL_TEXTURE_TARGET_EXTERNAL = false;
+	inline constexpr bool OPENGL_TEXTURE_TARGET_EXTERNAL = false;
 	#endif
 
 	#if defined CONFIG_OS_IOS
-	static constexpr bool GLDRAWABLE_NEEDS_FRAMEBUFFER = true;
+	inline constexpr bool GLDRAWABLE_NEEDS_FRAMEBUFFER = true;
 	#else
-	static constexpr bool GLDRAWABLE_NEEDS_FRAMEBUFFER = false;
+	inline constexpr bool GLDRAWABLE_NEEDS_FRAMEBUFFER = false;
 	#endif
 	}
 }

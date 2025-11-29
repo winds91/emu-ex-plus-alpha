@@ -13,17 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/Timer.hh>
-#include <imagine/base/sharedLibrary.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/bit.hh>
-#include <imagine/base/android/AndroidInputDevice.hh>
+#include <imagine/config/defs.hh>
+#include <imagine/util/macros.h>
 #include <android/configuration.h>
 #include <android/input.h>
+#include <android/native_activity.h>
 #include <sys/inotify.h>
-#include <optional>
+#include <unistd.h>
+import imagine;
 
 [[maybe_unused]] static float (*AMotionEvent_getAxisValueFunc)(const AInputEvent* motion_event, int32_t axis, size_t pointer_index){};
 [[maybe_unused]] static float (*AMotionEvent_getButtonStateFunc)(const AInputEvent *motion_event){};

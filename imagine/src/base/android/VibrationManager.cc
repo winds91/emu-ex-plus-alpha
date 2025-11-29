@@ -13,13 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "Vibration"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/VibrationManager.hh>
-#include <imagine/logger/logger.h>
+#include <android/native_activity.h>
+import imagine;
 
 namespace IG
 {
+
+constexpr SystemLogger log{"VibrationMgr"};
 
 AndroidVibrationManager::AndroidVibrationManager(ApplicationContext ctx)
 {
@@ -29,7 +29,7 @@ AndroidVibrationManager::AndroidVibrationManager(ApplicationContext ctx)
 	auto sysVibrator = jSysVibrator(env, baseActivity);
 	if(!sysVibrator)
 		return;
-	logMsg("vibrator present");
+	log.info("vibrator present");
 	vibrator = {env, sysVibrator};
 	jVibrate = {env, env->FindClass("android/os/Vibrator"), "vibrate", "(J)V"};
 }

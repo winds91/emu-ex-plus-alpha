@@ -13,8 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/input/Axis.hh>
-#include <imagine/input/Device.hh>
+import imagine;
 
 namespace IG::Input
 {

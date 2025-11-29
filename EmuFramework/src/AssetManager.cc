@@ -14,10 +14,7 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/AssetManager.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gui/View.hh>
-#include <imagine/data-type/image/PixmapSource.hh>
-#include <imagine/logger/logger.h>
+import imagine.gui;
 
 namespace EmuEx
 {

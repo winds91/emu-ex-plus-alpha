@@ -20,7 +20,7 @@
 #include "MainApp.hh"
 #include <core/gba/gba.h>
 #include <core/gba/gbaGlobals.h>
-#include <format>
+import std;
 
 namespace EmuEx
 {

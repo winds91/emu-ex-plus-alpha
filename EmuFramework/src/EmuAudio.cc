@@ -17,9 +17,7 @@
 #include <emuframework/EmuAudio.hh>
 #include <emuframework/EmuSystem.hh>
 #include <emuframework/Option.hh>
-#include <imagine/audio/Manager.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/logger/logger.h>
+import imagine.audio;
 
 namespace EmuEx
 {

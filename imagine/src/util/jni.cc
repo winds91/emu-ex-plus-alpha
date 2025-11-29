@@ -13,24 +13,26 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/jni.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/utility.h>
+#include <imagine/util/macros.h>
 #include <android/bitmap.h>
+#include <jni.h>
+import imagine;
 
 namespace JNI
 {
+
+constexpr IG::SystemLogger log{"JNI"};
 
 jmethodID getJNIStaticMethodID(JNIEnv *env, jclass cls, const char *fName, const char *sig)
 {
 	if(!cls)
 	{
-		bug_unreachable("class missing for java static method: %s (%s)", fName, sig);
+		bug_unreachable("class missing for java static method:%s (%s)", fName, sig);
 	}
 	auto method = env->GetStaticMethodID(cls, fName, sig);
 	if(!method)
 	{
-		logErr("java static method not found: %s (%s)", fName, sig);
+		log.error("java static method not found:{} ({})", fName, sig);
 	}
 	return method;
 }
@@ -39,12 +41,12 @@ jmethodID getJNIMethodID(JNIEnv *env, jclass cls, const char *fName, const char 
 {
 	if(!cls)
 	{
-		bug_unreachable("class missing for java method: %s (%s)", fName, sig);
+		bug_unreachable("class missing for java method:%s (%s)", fName, sig);
 	}
 	auto method = env->GetMethodID(cls, fName, sig);
 	if(!method)
 	{
-		logErr("java method not found: %s (%s)", fName, sig);
+		log.error("java method not found:{} (%s)", fName, sig);
 	}
 	//logDMsg("%s = %p", fName, method);
 	return method;

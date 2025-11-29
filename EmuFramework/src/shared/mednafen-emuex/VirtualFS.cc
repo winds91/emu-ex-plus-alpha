@@ -15,9 +15,7 @@
 
 #include <mednafen/mednafen.h>
 #include <mednafen/VirtualFS.h>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/FileIO.hh>
+import imagine;
 
 namespace EmuEx
 {

@@ -15,12 +15,7 @@
 
 #include <emuframework/VController.hh>
 #include <emuframework/EmuInput.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/BasicEffect.hh>
-#include <imagine/gui/View.hh>
-#include <imagine/util/math.hh>
+import imagine.gfx;
 
 namespace EmuEx
 {

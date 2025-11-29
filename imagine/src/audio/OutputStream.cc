@@ -13,12 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/defs.hh>
-#include <imagine/audio/Manager.hh>
-#include <imagine/audio/OutputStream.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/variant.hh>
+#include <imagine/config/defs.hh>
+#include <imagine/util/macros.h>
+import imagine.audio;
 
 namespace IG::Audio
 {

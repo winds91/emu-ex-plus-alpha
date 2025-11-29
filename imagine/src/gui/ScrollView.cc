@@ -13,21 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "ScrollView"
-
-#include <imagine/gui/ScrollView.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/input/DragTracker.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/BasicEffect.hh>
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/util/math.hh>
-#include <imagine/logger/logger.h>
-#include <algorithm>
-#include <cmath>
+import imagine.gui;
 
 namespace IG
 {
@@ -200,7 +186,7 @@ bool ScrollView::scrollInputEvent(const Input::MotionEvent &e)
 			const auto viewFrame = viewRect();
 			if(allowScrollWholeArea_ && (e.pos().x > viewFrame.xSize() - window().widthMMInPixels(7.5)))
 			{
-				logMsg("will scroll all content");
+				log.info("will scroll all content");
 				scrollWholeArea_ = true;
 			}
 			else

@@ -19,12 +19,8 @@
 #include <emuframework/EmuOptions.hh>
 #include "../WindowData.hh"
 #include <emuframework/Option.hh>
-#include <imagine/util/math.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/config/defs.hh>
+import imagine.gfx;
 
 namespace EmuEx
 {

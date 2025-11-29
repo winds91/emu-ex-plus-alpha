@@ -13,14 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/logger/logger.h>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/base/Window.hh>
 #include "xdnd.hh"
 #include "xlibutils.h"
-#include <imagine/util/ranges.hh>
 #include <xcb/xfixes.h>
+import imagine;
 
 constexpr char ASCII_LF = 0xA;
 constexpr char ASCII_CR = 0xD;

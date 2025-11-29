@@ -17,7 +17,7 @@
 #include <emuframework/viewUtils.hh>
 #include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuAudio.hh>
-#include <format>
+import std;
 
 namespace EmuEx
 {

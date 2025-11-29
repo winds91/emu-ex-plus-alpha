@@ -139,7 +139,7 @@ struct MenuItemI
 	virtual bool inputEvent(const Input::Event&, ViewInputEventParams p = {});
 };
 
-constexpr MenuId defaultMenuId{std::numeric_limits<MenuId::Type>::min()};
+inline constexpr MenuId defaultMenuId{std::numeric_limits<MenuId::Type>::min()};
 
 class MenuItem: public MenuItemI
 {

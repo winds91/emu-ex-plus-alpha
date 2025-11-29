@@ -17,9 +17,8 @@
 #include <emuframework/EmuVideo.hh>
 #include <emuframework/EmuSystemTask.hh>
 #include <emuframework/EmuViewController.hh>
-#include <imagine/thread/Thread.hh>
-#include <imagine/util/math.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace EmuEx
 {

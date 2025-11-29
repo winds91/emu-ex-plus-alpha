@@ -15,17 +15,14 @@
 
 #include <mednafen/types.h>
 #include <mednafen/MThreading.h>
-#include <imagine/util/utility.h>
-#include <imagine/thread/Semaphore.hh>
-#include <imagine/logger/logger.h>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
+#include <imagine/util/macros.h>
+#include <sched.h>
+import imagine;
 
 namespace Mednafen::MThreading
 {
 
-constexpr IG::SystemLogger log{"MDFNThreading"};
+[[maybe_unused]] constexpr IG::SystemLogger log{"MDFNThreading"};
 
 struct Thread : public std::thread
 {
@@ -33,9 +30,9 @@ struct Thread : public std::thread
 };
 struct Mutex : public std::mutex {};
 struct Cond : public std::condition_variable {};
-struct Sem : public std::counting_semaphore<0x80000>
+struct Sem : public IG::counting_semaphore<0x80000>
 {
-	using std::counting_semaphore<0x80000>::counting_semaphore;
+	using IG::counting_semaphore<0x80000>::counting_semaphore;
 };
 
 Thread* Thread_Create(int (*fn)(void *), void *data, const char* debug_name)

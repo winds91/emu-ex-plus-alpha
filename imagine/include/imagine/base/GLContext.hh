@@ -43,9 +43,9 @@ struct Version
 };
 
 #if defined CONFIG_OS_IOS || defined __ANDROID__
-constexpr auto defaultApi = IG::GL::API::OpenGLES;
+inline constexpr auto defaultApi = IG::GL::API::OpenGLES;
 #else
-constexpr auto defaultApi = IG::GL::API::OpenGL;
+inline constexpr auto defaultApi = IG::GL::API::OpenGL;
 #endif
 
 }
@@ -53,9 +53,9 @@ constexpr auto defaultApi = IG::GL::API::OpenGL;
 namespace Config
 {
 #if !defined NDEBUG && !defined __APPLE__
-constexpr bool OpenGLDebugContext = true;
+inline constexpr bool OpenGLDebugContext = true;
 #else
-constexpr bool OpenGLDebugContext = false;
+inline constexpr bool OpenGLDebugContext = false;
 #endif
 }
 
@@ -66,7 +66,7 @@ class Window;
 class GLDisplay;
 class ApplicationContext;
 
-constexpr bool useEGLPlatformAPI = Config::envIsLinux && !Config::MACHINE_IS_PANDORA;
+inline constexpr bool useEGLPlatformAPI = Config::envIsLinux && !Config::MACHINE_IS_PANDORA;
 
 struct GLBufferConfigAttributes
 {

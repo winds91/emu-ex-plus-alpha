@@ -2,6 +2,12 @@
 
 #include <xcb/xproto.h>
 #include <xcb/xinput.h>
+#include <array>
+#include <string_view>
+#include <memory>
+#include <cstdlib>
+#include <cstring>
+#include <ranges>
 
 // EWMH (Extended Window Manager Hints) support
 // http://freedesktop.org/wiki/Specifications/wm-spec
@@ -231,7 +237,7 @@ inline auto internAtoms(xcb_connection_t& conn, const auto& names, bool onlyIfEx
 	std::array<xcb_intern_atom_cookie_t, size> cookies;
 	for(auto &&[n, c] : std::views::zip(names, cookies))
 	{
-		c = xcb_intern_atom(&conn, onlyIfExists, strlen(n), n);
+		c = xcb_intern_atom(&conn, onlyIfExists, std::strlen(n), n);
 	}
 	std::array<xcb_atom_t, size> atoms;
 	for(auto &&[a, c] : std::views::zip(atoms, cookies))

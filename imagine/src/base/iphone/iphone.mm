@@ -21,6 +21,7 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 #include <imagine/base/Application.hh>
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/base/Screen.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/logger/logger.h>
 #include <imagine/util/algorithm.h>
 #include "private.hh"
@@ -564,7 +565,7 @@ int main(int argc, char *argv[])
 		IG::log.info("launched as system app from:{}", argv[0]);
 		isRunningAsSystemApp = true;
 	}
-	logger_setLogDirectoryPrefix("/var/mobile");
+	Log::setLogDirectoryPrefix("/var/mobile");
 	appPath = FS::makeAppPathFromLaunchCommand(argv[0]);
 
 	@autoreleasepool

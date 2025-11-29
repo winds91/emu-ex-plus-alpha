@@ -266,7 +266,7 @@ public:
 	void setIdleDisplayPowerSave(bool on);
 	bool setFontSize(int size); // size in micro-meters
 	void applyFontSize(Window &win);
-	IG::FontSettings fontSettings(Window &win) const;
+	Data::FontSettings fontSettings(Window &win) const;
 	void setShowsTitleBar(bool on);
 	void setLowProfileOSNavMode(InEmuTristate mode);
 	void setHideOSNavMode(InEmuTristate mode);
@@ -326,7 +326,7 @@ public:
 	}
 
 public:
-	IG::FontManager fontManager;
+	Data::FontManager fontManager;
 	mutable Gfx::Renderer renderer;
 	ViewManager viewManager;
 	EmuAudio audio;

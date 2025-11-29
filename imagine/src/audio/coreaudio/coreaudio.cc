@@ -13,12 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/coreaudio/CAOutputStream.hh>
-#include <imagine/audio/OutputStream.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/utility.h>
-#include <imagine/util/algorithm.h>
+#include <imagine/util/macros.h>
 #include <TargetConditionals.h>
+#include <AudioUnit/AudioUnit.h>
+import imagine.audio;
 
 namespace IG::Audio
 {

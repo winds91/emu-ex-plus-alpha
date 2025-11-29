@@ -21,15 +21,9 @@
 #include <emuframework/VideoImageOverlay.hh>
 #include <emuframework/VController.hh>
 #include "WindowData.hh"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/io/MapIO.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/config/defs.hh>
+#include <imagine/util/macros.h>
+import imagine.gfx;
 
 namespace EmuEx
 {
@@ -68,7 +62,7 @@ void EmuApp::applyFontSize(Window &win)
 	viewManager.defaultBoldFace.setFontSettings(renderer, settings);
 }
 
-IG::FontSettings EmuApp::fontSettings(Window &win) const
+Data::FontSettings EmuApp::fontSettings(Window &win) const
 {
 	float size = fontSize / 1000.f;
 	return {win.heightScaledMMInPixels(size)};

@@ -13,15 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/BasicEffect.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/Program.hh>
-#include <imagine/gfx/Texture.hh>
-#include <imagine/gfx/Mat4.hh>
+#include <imagine/util/opengl/glUtils.hh>
+import imagine.gfx;
 
 namespace IG::Gfx
 {
+
+[[maybe_unused]] constexpr SystemLogger log{"GLBasicEffect"};
 
 bool GLBasicEffect::setShaders(RendererTask &task, std::span<std::string_view> vertSrcs, std::span<std::string_view> fragSrcs)
 {

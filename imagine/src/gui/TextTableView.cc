@@ -13,11 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/util/math.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/logger/logger.h>
-#include <algorithm>
+#include <imagine/util/macros.h>
+import imagine.gui;
 
 namespace IG
 {

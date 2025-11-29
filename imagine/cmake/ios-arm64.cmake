@@ -5,7 +5,7 @@ set(ARCH aarch64)
 set(SUBARCH arm64)
 set(MIN_IOS_VERSION 7.0)
 set(CMAKE_ASM_FLAGS_INIT "-arch arm64")
-# TODO: remove when min iOS target is above 11.0
-set(CFLAGS_CODEGEN "-faligned-allocation")
+# TODO: remove -faligned-allocation when min iOS target is above 11.0
+set(CFLAGS_CODEGEN "-arch arm64 -faligned-allocation")
 
 include("${CMAKE_CURRENT_LIST_DIR}/ios.cmake")

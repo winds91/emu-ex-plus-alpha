@@ -13,28 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "RendererCmds"
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/gfx/Program.hh>
-#include <imagine/gfx/Texture.hh>
-#include <imagine/gfx/TextureSampler.hh>
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/base/Viewport.hh>
-#include <imagine/logger/logger.h>
-#include "internalDefs.hh"
 #include "utils.hh"
+#include <imagine/util/macros.h>
+import imagine.internal.gfxOpengl;
 
 namespace IG::Gfx
 {
 
-static constexpr bool useGLCache = true;
+constexpr SystemLogger log{"RendererCmds"};
+constexpr bool useGLCache = true;
 
-GLRendererCommands::GLRendererCommands(RendererTask &rTask, Window *winPtr, Drawable drawable,
-	Rect2<int> viewport, GLDisplay glDpy, const GLContext &glCtx, std::binary_semaphore *drawCompleteSemPtr):
+GLRendererCommands::GLRendererCommands(RendererTask& rTask, Window* winPtr, Drawable drawable,
+	Rect2<int> viewport, GLDisplay glDpy, const GLContext& glCtx, binary_semaphore* drawCompleteSemPtr):
 	rTask{&rTask}, r{&rTask.renderer()}, drawCompleteSemPtr{drawCompleteSemPtr},
 	winPtr{winPtr}, glDpy{glDpy}, glContextPtr{&glCtx}, drawable{drawable},
 	winViewport{viewport}
@@ -92,7 +82,7 @@ void GLRendererCommands::present(Drawable win)
 	// check if buffer swap blocks even though triple-buffering is used
 	if(Config::DEBUG_BUILD && winPtr && r->maxSwapChainImages() > 2 && swapTime > winPtr->screen()->frameRate().duration())
 	{
-		logWarn("buffer swap took %lldns", (long long)swapTime.count());
+		log.warn("buffer swap took {}", swapTime);
 	}
 }
 
@@ -186,7 +176,7 @@ void RendererCommands::setRenderTarget(Texture &texture)
 	auto id = rTask->bindFramebuffer(texture);
 	if(Config::DEBUG_BUILD && glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		logErr("FBO:0x%X incomplete", id);
+		log.error("FBO:{:X} incomplete", id);
 	}
 }
 
@@ -361,7 +351,7 @@ void RendererCommands::set(TextureBinding binding)
 	rTask->verifyCurrentContext();
 	if(!binding.name) [[unlikely]]
 	{
-		logWarn("binding default texture");
+		log.warn("binding default texture");
 	}
 	glBindTexture(binding.target, binding.name);
 }
@@ -406,18 +396,18 @@ constexpr bool shouldNormalize(AttribType type, bool normalize) { return type !=
 
 void RendererCommands::drawPrimitives(Primitive mode, int start, int count)
 {
-	runGLCheckedVerbose([&]()
+	runGLChecked([&]()
 	{
 		glDrawArrays(GLenum(mode), start, count);
-	}, "glDrawArrays()");
+	}, log, Renderer::checkGLErrorsVerbose, "glDrawArrays()");
 }
 
 void RendererCommands::drawPrimitiveElements(Primitive mode, int start, int count, AttribType type)
 {
-	runGLCheckedVerbose([&]()
+	runGLChecked([&]()
 	{
 		glDrawElements(GLenum(mode), count, asGLType(type), (const void*)(intptr_t)start);
-	}, "glDrawElements()");
+	}, log, Renderer::checkGLErrorsVerbose, "glDrawElements()");
 }
 
 bool GLRendererCommands::hasVAOFuncs() const { return r->support.hasVAOFuncs(); }

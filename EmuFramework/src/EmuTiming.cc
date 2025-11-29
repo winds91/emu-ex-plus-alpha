@@ -14,10 +14,8 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuTiming.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/math.hh>
-#include <imagine/logger/logger.h>
-#include <cmath>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace EmuEx
 {

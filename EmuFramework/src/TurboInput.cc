@@ -15,7 +15,7 @@
 
 #include <emuframework/TurboInput.hh>
 #include <emuframework/EmuApp.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {

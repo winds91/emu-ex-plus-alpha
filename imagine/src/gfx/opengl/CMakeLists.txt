@@ -19,6 +19,8 @@ target_sources(
 	TextureSampler.cc
 )
 
+target_sources(imagine PRIVATE FILE_SET CXX_MODULES FILES internal.cc)
+
 if(ENV STREQUAL ios)
 	target_sources(imagine PRIVATE ios/drawable.mm)
 endif()

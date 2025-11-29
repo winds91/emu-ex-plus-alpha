@@ -39,8 +39,6 @@ constexpr bool server = false;
 #endif
 
 #if defined CONFIG_BLUETOOTH_BLUEZ || defined CONFIG_BLUETOOTH_BTSTACK
-#define CONFIG_BLUETOOTH_SCAN_CACHE_USAGE
-#define CONFIG_BLUETOOTH_SCAN_SECS
 constexpr bool scanCache = true;
 constexpr bool scanTime = true;
 #else

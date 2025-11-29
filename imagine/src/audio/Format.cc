@@ -13,11 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/Format.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/math.hh>
-#include <cmath>
+#include <imagine/util/macros.h>
+import imagine.audio;
 
 namespace IG::Audio
 {

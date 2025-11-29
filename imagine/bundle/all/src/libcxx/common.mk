@@ -1,4 +1,4 @@
-libcxxVersion := 21.1.0
+libcxxVersion := 21.1.6
 libcxxSrcDir := $(tempDir)/llvm-project-$(libcxxVersion).src/libcxx
 libcxxabiSrcDir := $(tempDir)/llvm-project-$(libcxxVersion).src/libcxxabi
 libcSrcDir := $(tempDir)/llvm-project-$(libcxxVersion).src/libc
@@ -9,6 +9,7 @@ makeFile := $(buildDir)/Makefile
 outputLibFile := $(buildDir)/lib/libc++.a
 outputLibcxxabiFile := $(buildDir)/lib/libc++abi.a
 installIncludeDir := $(installDir)/include/c++/v1
+installModulesSrcDir := $(installDir)/share/libc++/v1
 
 # Extract libc++ before setting VPATH
 ifeq ($(wildcard $(libcxxabiSrcDir)/src),)
@@ -42,10 +43,13 @@ all : $(outputLibFile) $(outputLibcxxabiFile)
 
 install : $(outputLibFile) $(outputLibcxxabiFile)
 	@echo "Installing libc++ to: $(installDir)"
-	@mkdir -p $(installIncludeDir) $(installDir)/lib
-	cp $(outputLibFile) $(outputLibcxxabiFile) $(buildDir)/lib/libc++experimental.a $(installDir)/lib/
+	@mkdir -p $(installIncludeDir) $(installModulesSrcDir) $(installDir)/lib
+	cp $(outputLibFile) $(outputLibcxxabiFile) $(buildDir)/lib/libc++experimental.a $(buildDir)/lib/libc++.modules.json $(installDir)/lib/
 	cp -r $(buildDir)/include/c++/v1/* $(installIncludeDir)/
+	cp -r $(buildDir)/modules/c++/v1/* $(installModulesSrcDir)/
 	cp -r $(libcxxabiSrcDir)/include/* $(installIncludeDir)/
+	cp -r std/* $(installModulesSrcDir)/std/
+	cp -r std.compat/* $(installModulesSrcDir)/std.compat/
 
 .PHONY : all install
 

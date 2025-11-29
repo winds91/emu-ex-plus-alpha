@@ -18,6 +18,9 @@
 #include <imagine/gfx/defs.hh>
 #include <array>
 
+namespace IG::Gfx
+{
+
 class GLStateCache
 {
 public:
@@ -50,3 +53,5 @@ public:
 	void disable(GLenum cap);
 	GLboolean isEnabled(GLenum cap);
 };
+
+}

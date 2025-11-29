@@ -13,17 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "AndroidFont"
-#include <imagine/font/Font.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/util/jni.hh>
-#include <imagine/logger/logger.h>
-#include "../base/android/android.hh"
+#include <imagine/util/macros.h>
 #include <android/bitmap.h>
+import imagine.internal.android;
+import imagine.data;
 
-namespace IG
+namespace IG::Data
 {
+
+constexpr SystemLogger log{"Font"};
 
 constexpr auto androidBitmapResultToStr(int result)
 {
@@ -138,7 +136,7 @@ FontSize Font::makeSize(FontSettings settings)
 	auto paint = mgr.makePaint(env, settings.pixelHeight(), weight);
 	if(!paint)
 		return {};
-	logMsg("allocated new size %dpx @ %p", settings.pixelHeight(), paint);
+	log.info("allocated new size {}px @ {}", settings.pixelHeight(), (void*)paint);
 	return {{env, paint}};
 }
 

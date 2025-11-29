@@ -1,0 +1,68 @@
+/*  This file is part of Imagine.
+
+	Imagine is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Imagine is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
+
+module;
+
+#include <imagine/gui/View.hh>
+#include <imagine/gui/ViewManager.hh>
+#include <imagine/gui/AlertView.hh>
+#include <imagine/gui/FSPicker.hh>
+#include <imagine/gui/TableView.hh>
+#include <imagine/gui/TextTableView.hh>
+#include <imagine/gui/TextEntry.hh>
+#include <imagine/gui/ToastView.hh>
+#include <imagine/gui/NavView.hh>
+
+export module imagine.gui;
+export import imagine.gfx;
+
+export namespace IG
+{
+	// view
+	using IG::View;
+	using IG::ViewI;
+	using IG::ViewManager;
+	using IG::ViewAttachParams;
+	using IG::ViewInputEventParams;
+	using IG::ViewDrawParams;
+	using IG::BasicViewController;
+	using IG::ViewController;
+	using IG::ViewStack;
+	using IG::BaseAlertView;
+	using IG::AlertView;
+	using IG::YesNoAlertView;
+	using IG::FSPicker;
+	using IG::ScrollView;
+	using IG::TableView;
+	using IG::TableUIState;
+	using IG::TextTableView;
+	using IG::TextEntry;
+	using IG::ToastView;
+	using IG::CollectTextInputView;
+	using IG::BasicNavView;
+	using IG::NavView;
+
+	// menu item
+	using IG::MenuItem;
+	using IG::TextMenuItem;
+	using IG::BoolMenuItem;
+	using IG::MultiChoiceMenuItem;
+	using IG::BaseDualTextMenuItem;
+	using IG::DualTextMenuItem;
+	using IG::MenuItemI;
+	using IG::MenuItemDrawAttrs;
+	using IG::MenuId;
+	using IG::defaultMenuId;
+}

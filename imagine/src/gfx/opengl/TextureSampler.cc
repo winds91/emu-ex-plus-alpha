@@ -13,13 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/gfx/TextureSampler.hh>
-#include <imagine/util/variant.hh>
-#include <imagine/util/format.hh>
 #include "utils.hh"
-#include <limits>
+import imagine.gfx;
 
 namespace IG::Gfx
 {
@@ -28,11 +23,10 @@ constexpr SystemLogger log{"GLTextureSampler"};
 
 static void setSamplerParameteri(const Renderer &r, GLuint sampler, GLenum pname, GLint param)
 {
-	runGLCheckedVerbose(
-		[&]()
-		{
-			r.support.glSamplerParameteri(sampler, pname, param);
-		}, "glSamplerParameteri()");
+	runGLChecked([&]()
+	{
+		r.support.glSamplerParameteri(sampler, pname, param);
+	}, log, Renderer::checkGLErrorsVerbose, "glSamplerParameteri()");
 }
 
 // make sure sampler-related enums can fit into a 16-bit int
@@ -100,7 +94,7 @@ GLTextureSampler::GLTextureSampler(RendererTask &rTask, TextureSamplerConfig con
 	auto xWrapMode = makeWrapMode(config.xWrapMode);
 	auto yWrapMode = makeWrapMode(config.yWrapMode);
 	rTask.runSync(
-		[=, this, &r = std::as_const(r)](GLTask::TaskContext ctx)
+		[=, this, &r = std::as_const(r)](RendererTask::TaskContext ctx)
 		{
 			GLuint name;
 			r.support.glGenSamplers(1, &name);

@@ -78,7 +78,7 @@ void (*dbgOutput)(const char *, uint32_t) = debuggerOutput;
 #ifndef NDEBUG
 void systemMessage(int num, const char *msg, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return;
 	va_list args;
 	va_start( args, msg );
@@ -89,7 +89,7 @@ void systemMessage(int num, const char *msg, ...)
 
 void log(const char *msg, ...)
 {
-	if(!logger_isEnabled())
+	if(!IG::Log::isEnabled())
 		return;
 	va_list args;
 	va_start( args, msg );

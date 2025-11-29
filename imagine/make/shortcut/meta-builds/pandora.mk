@@ -26,19 +26,17 @@ pandora_deviceExecInstallPath := $(pandora_sdcardPath)/$(pnd_metadata_pndName)
 pandora_deviceExecPath := $(pandora_deviceExecInstallPath)/$(pnd_metadata_exec)
 pandora_devicePNDInstallPath := $(pandora_sdcardPath)/apps
 pandora_execPath := $(pandora_targetPNDPath)/$(pnd_metadata_exec)
-pandora_pndDeps = $(pandora_exec)
+pandora_pndDeps = pandora-build
 pandora_cMakeCache := build/linux-armv7-pandora/CMakeCache.txt
 
 $(pandora_cMakeCache) : CMakeLists.txt
 	@echo "Configuring Build"
 	$(PRINT_CMD)cmake --preset linux-armv7-pandora --fresh
 
-$(pandora_execPath) : $(pandora_cMakeCache)
+.PHONY: pandora-build
+pandora-build : $(pandora_cMakeCache)
 	@echo "Building Executable"
 	$(PRINT_CMD)cmake --build build/linux-armv7-pandora --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: pandora-build
-pandora-build : $(pandora_execPath)
 
 .PHONY: pandora-exec-install
 pandora-exec-install : $(pandora_execPath)

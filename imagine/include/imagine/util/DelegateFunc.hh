@@ -25,7 +25,7 @@
 namespace IG
 {
 
-constexpr struct DelegateFuncDefaultInit{} delegateFuncDefaultInit;
+inline constexpr struct DelegateFuncDefaultInit{} delegateFuncDefaultInit;
 
 template <size_t, size_t, class, class ...> class DelegateFuncBase;
 

@@ -13,15 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/input/Event.hh>
-#include <imagine/input/Device.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/base/Timer.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/util/ranges.hh>
-#include <imagine/logger/logger.h>
-#include <optional>
+#include <imagine/input/inputDefs.hh>
+#include <imagine/bluetooth/defs.hh>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace IG::Input
 {
@@ -83,15 +78,21 @@ std::string_view BaseEvent::mapName(Map map)
 		case Map::SYSTEM: return "Key Input";
 		case Map::POINTER: return "Pointer";
 		case Map::REL_POINTER: return "Relative Pointer";
-		#ifdef CONFIG_INPUT_BLUETOOTH
-		case Map::WIIMOTE: return "Wiimote";
-		case Map::WII_CC: return "Classic / Wii U Pro Controller";
-		case Map::ICONTROLPAD: return "iControlPad";
-		case Map::ZEEMOTE: return "Zeemote JS1";
-		#endif
-		#ifdef CONFIG_BLUETOOTH_SERVER
-		case Map::PS3PAD: return "PS3 Gamepad";
-		#endif
+		case Map::WIIMOTE:
+			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			return "Wiimote";
+		case Map::WII_CC:
+			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			return "Classic / Wii U Pro Controller";
+		case Map::ICONTROLPAD:
+			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			return "iControlPad";
+		case Map::ZEEMOTE:
+			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			return "Zeemote JS1";
+		case Map::PS3PAD:
+			if constexpr(!Config::Bluetooth::server) { bug_unreachable("Bluetooth server support not enabled"); }
+			return "PS3 Gamepad";
 		#ifdef CONFIG_INPUT_APPLE_GAME_CONTROLLER
 		case Map::APPLE_GAME_CONTROLLER: return "Apple Game Controller";
 		#endif
@@ -141,20 +142,24 @@ Map validateMap(uint8_t mapValue)
 	switch(mapValue)
 	{
 		default: return Map::UNKNOWN;
-		case (uint8_t)Map::SYSTEM:
-		#ifdef CONFIG_INPUT_BLUETOOTH
 		case (uint8_t)Map::WIIMOTE:
 		case (uint8_t)Map::WII_CC:
 		case (uint8_t)Map::ICONTROLPAD:
 		case (uint8_t)Map::ZEEMOTE:
-		#endif
-		#ifdef CONFIG_BLUETOOTH_SERVER
+			if constexpr(!Config::Input::BLUETOOTH)
+				return Map::UNKNOWN;
+			else
+				return Map(mapValue);
 		case (uint8_t)Map::PS3PAD:
-		#endif
+			if constexpr(!Config::Bluetooth::server)
+				return Map::UNKNOWN;
+			else
+				return Map(mapValue);
 		#ifdef CONFIG_INPUT_APPLE_GAME_CONTROLLER
 		case (uint8_t)Map::APPLE_GAME_CONTROLLER:
 		#endif
-		return Map(mapValue);
+		case (uint8_t)Map::SYSTEM:
+			return Map(mapValue);
 	}
 }
 
@@ -167,6 +172,8 @@ DirectionKeys directionKeys()
 
 namespace IG
 {
+
+constexpr SystemLogger log{"Input"};
 
 void BaseApplication::startKeyRepeatTimer(Input::KeyEvent event)
 {
@@ -262,7 +269,7 @@ void BaseApplication::removeInputDevice(ApplicationContext ctx, InputDeviceConta
 		return;
 	auto removedDevPtr = std::move(*it);
 	inputDev.erase(it);
-	logMsg("removed input device:%s,%d", removedDevPtr->name().data(), removedDevPtr->enumId());
+	log.info("removed input device:{},{}", removedDevPtr->name().data(), removedDevPtr->enumId());
 	cancelKeyRepeatTimer();
 	if(notify)
 	{

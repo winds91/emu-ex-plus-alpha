@@ -20,16 +20,8 @@
 #include <emuframework/VController.hh>
 #include <emuframework/Option.hh>
 #include <emuframework/EmuOptions.hh>
-#include <imagine/util/math/Point2D.hh>
-#include <imagine/util/format.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/Vec3.hh>
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/glm/gtc/color_space.hpp>
-#include <imagine/logger/logger.h>
-#include <algorithm>
+#include <imagine/util/macros.h>
+import imagine.gfx;
 
 namespace EmuEx
 {

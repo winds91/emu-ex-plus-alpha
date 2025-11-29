@@ -13,12 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/EventLoop.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/jni.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <android/looper.h>
+#include <android/native_activity.h>
+import imagine;
 
 namespace IG
 {

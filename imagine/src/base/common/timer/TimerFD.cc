@@ -13,14 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/Timer.hh>
-#include <imagine/base/EventLoop.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/format.hh>
-#include <imagine/util/utility.h>
+#include <imagine/config/defs.hh>
+#include <imagine/util/macros.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstring>
+#include <errno.h>
 
 #if __has_include(<sys/timerfd.h>) && (!defined __ANDROID__ || ANDROID_MIN_API >= 19)
 #include <sys/timerfd.h>
@@ -61,6 +57,8 @@ static int timerfd_gettime(int ufd,
 }
 #endif
 
+import imagine;
+
 namespace IG
 {
 
@@ -100,7 +98,7 @@ bool TimerFD::arm(timespec time, timespec repeatInterval, int flags)
 	struct itimerspec newTime{repeatInterval, time};
 	if(timerfd_settime(fdSrc.fd(), flags, &newTime, nullptr) != 0)
 	{
-		log.error("error in timerfd_settime:{} ({})", strerror(errno), fdSrc.debugLabel());
+		log.error("error in timerfd_settime:{} ({})", std::strerror(errno), fdSrc.debugLabel());
 		return false;
 	}
 	return true;

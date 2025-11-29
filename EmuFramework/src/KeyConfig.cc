@@ -16,9 +16,8 @@
 #include <emuframework/EmuInput.hh>
 #include <emuframework/EmuOptions.hh>
 #include <emuframework/Option.hh>
-#include <imagine/io/MapIO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace EmuEx
 {

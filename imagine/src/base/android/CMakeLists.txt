@@ -17,7 +17,6 @@ target_sources(
 	moga.cc
 	PerformanceHintManager.cc
 	Sensor.cc
-	surfaceTexture.cc
 	RootCpufreqParamSetter.cc
 	VibrationManager.cc
 	privateApi/libhardware.c
@@ -29,6 +28,8 @@ target_sources(
 	../common/SimpleFrameTimer.cc
 	../../util/jni.cc
 )
+
+target_sources(imagine PRIVATE FILE_SET CXX_MODULES FILES internal.cc surfaceTexture.cc)
 
 if(ANDROID_NDK_SDK LESS_EQUAL 16)
 	# add missing libc functions when compiling with newer NDK headers

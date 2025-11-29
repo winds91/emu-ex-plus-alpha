@@ -18,7 +18,7 @@
 #include <imagine/util/Point2D.hh>
 #include <cstdint>
 
-namespace IG
+namespace IG::Data
 {
 
 struct GlyphMetrics

@@ -83,10 +83,10 @@ public:
 
 	struct CommandMessage
 	{
-		std::binary_semaphore* semPtr{};
+		binary_semaphore* semPtr{};
 		Command command{SuspendCommand{}};
 
-		void setReplySemaphore(std::binary_semaphore* semPtr_) { assert(!semPtr); semPtr = semPtr_; };
+		void setReplySemaphore(binary_semaphore* semPtr_) { assert(!semPtr); semPtr = semPtr_; };
 	};
 
 	struct SuspendContext
@@ -140,8 +140,8 @@ private:
 	MessagePort<CommandMessage> commandPort{"EmuSystemTask Command"};
 	std::thread taskThread;
 	ThreadId threadId_{};
-	std::binary_semaphore framePresentedSem{0};
-	std::binary_semaphore suspendSem{0};
+	binary_semaphore framePresentedSem{0};
+	binary_semaphore suspendSem{0};
 	FrameRateConfig frameRateConfig;
 	int savedAdvancedFrames{};
 	FrameRateDetector frameRateDetector;

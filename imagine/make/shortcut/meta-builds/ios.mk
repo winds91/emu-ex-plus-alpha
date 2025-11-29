@@ -54,20 +54,19 @@ endif
 ifndef ios_noARMv7
 
 ios_armv7CMakeCache := build/ios-armv7/CMakeCache.txt
-ios_armv7Exec := build/ios-armv7/$(CONFIG)/$(iOS_metadata_exec)
+ios_armv7Exec := build/ios-armv7/$(CONFIG)/$(iOS_metadata_exec).app/$(iOS_metadata_exec)
 ios_execs += $(ios_armv7Exec)
+ios_targets += ios-armv7
 ios_cleanTargets += ios-armv7-clean
 
 $(ios_armv7CMakeCache) : CMakeLists.txt
 	@echo "Configuring ARMv7 Executable"
 	$(PRINT_CMD)cmake --preset ios-armv7 --fresh
 
-$(ios_armv7Exec) : $(ios_armv7CMakeCache)
+.PHONY: ios-armv7
+ios-armv7 : $(ios_armv7CMakeCache)
 	@echo "Building ARMv7 Executable"
 	$(PRINT_CMD)cmake --build build/ios-armv7 --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: ios-armv7
-ios-armv7 : $(ios_armv7Exec)
 
 .PHONY: ios-armv7-clean
 ios-armv7-clean :
@@ -88,20 +87,19 @@ endif
 ifndef ios_noARM64
 
 ios_arm64CMakeCache := build/ios-arm64/CMakeCache.txt
-ios_arm64Exec := build/ios-arm64/$(CONFIG)/$(iOS_metadata_exec)
+ios_arm64Exec := build/ios-arm64/$(CONFIG)/$(iOS_metadata_exec).app/$(iOS_metadata_exec)
 ios_execs += $(ios_arm64Exec)
+ios_targets += ios-arm64
 ios_cleanTargets += ios-arm64-clean
 
 $(ios_arm64CMakeCache) : CMakeLists.txt
 	@echo "Configuring ARM64 Executable"
 	$(PRINT_CMD)cmake --preset ios-arm64 --fresh
 
-$(ios_arm64Exec) : $(ios_arm64CMakeCache)
+.PHONY: ios-arm64
+ios-arm64 : $(ios_arm64CMakeCache)
 	@echo "Building ARM64 Executable"
 	$(PRINT_CMD)cmake --build build/ios-arm64 --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: ios-arm64
-ios-arm64 : $(ios_arm64Exec)
 
 .PHONY: ios-arm64-clean
 ios-arm64-clean :
@@ -122,20 +120,19 @@ endif
 ifndef ios_noX86
 
 ios_x86CMakeCache := build/ios-x86/CMakeCache.txt
-ios_x86Exec := build/ios-x86/$(CONFIG)/$(iOS_metadata_exec)-x86
+ios_x86Exec := build/ios-x86/$(CONFIG)/$(iOS_metadata_exec).app/$(iOS_metadata_exec)-x86
 ios_execs += $(ios_x86Exec)
+ios_targets += ios-x86
 ios_cleanTargets += ios-x86-clean
 
 $(ios_x86CMakeCache) : CMakeLists.txt
 	@echo "Configuring X86 Executable"
 	$(PRINT_CMD)cmake --preset ios-x86 --fresh
 
-$(ios_x86Exec) : $(ios_x86CMakeCache)
+.PHONY: ios-x86
+ios-x86 : $(ios_x86CMakeCache)
 	@echo "Building X86 Executable"
 	$(PRINT_CMD)cmake --build build/ios-x86 --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: ios-x86
-ios-x86 : $(ios_x86Exec)
 
 .PHONY: ios-x86-clean
 ios-x86-clean :
@@ -145,9 +142,9 @@ ios-x86-clean :
 endif
 
 ios_fatExec := $(ios_targetBinPath)/$(iOS_metadata_exec)
-$(ios_fatExec) : $(ios_execs)
+$(ios_fatExec) : $(ios_targets)
 	@mkdir -p $(@D)
-	$(LIPO) -create $^ -output $@
+	$(LIPO) -create $(ios_execs) -output $@
 
 .PHONY: ios-build
 ios-build : $(ios_fatExec) $(ios_plist)

@@ -13,12 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/android/AAudioOutputStream.hh>
-#include <imagine/audio/OutputStream.hh>
-#include <imagine/audio/Manager.hh>
-#include <imagine/base/sharedLibrary.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 #include <aaudio/AAudio.h>
+import imagine.audio;
 
 namespace IG::Audio
 {

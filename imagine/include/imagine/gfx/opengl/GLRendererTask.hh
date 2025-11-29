@@ -17,6 +17,7 @@
 
 #include <imagine/config/defs.hh>
 #include <imagine/gfx/defs.hh>
+#include <imagine/gfx/RendererCommands.hh>
 #include "GLTask.hh"
 #include <imagine/base/GLContext.hh>
 #include <imagine/util/utility.h>
@@ -39,6 +40,7 @@ class DrawContextSupport;
 class GLRendererTask : public GLTask
 {
 public:
+	using TaskContext = GLTask::TaskContext;
 	using CommandMessage = GLTask::CommandMessage;
 
 	GLRendererTask(ApplicationContext, Renderer &);

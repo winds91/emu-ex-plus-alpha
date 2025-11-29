@@ -21,8 +21,7 @@
 #include <imagine/base/Screen.hh>
 #include <imagine/gfx/Renderer.hh>
 #include <imagine/logger/logger.h>
-#include <algorithm>
-#include <format>
+import std;
 
 namespace EmuEx
 {

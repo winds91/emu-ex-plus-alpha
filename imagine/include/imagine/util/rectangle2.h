@@ -438,7 +438,7 @@ using IRect = Rect2<int>;
 using SRect = Rect2<int16_t>;
 using FRect = Rect2<float>;
 
-constexpr static WindowRect makeWindowRectRel(WPt pos, WPt size)
+inline constexpr WindowRect makeWindowRectRel(WPt pos, WPt size)
 {
 	return WindowRect::makeRel(pos, size);
 }

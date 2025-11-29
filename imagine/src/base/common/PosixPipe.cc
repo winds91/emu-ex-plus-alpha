@@ -13,13 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/Pipe.hh>
 #include <imagine/util/fd-utils.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
-#include <cstring>
 #include <fcntl.h>
-#include <cerrno>
+import imagine;
 
 namespace IG
 {

@@ -34,23 +34,13 @@
 #include "WindowData.hh"
 #include "configFile.hh"
 #include "pathUtils.hh"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/IO.hh>
 #include <imagine/gfx/Renderer.hh>
 #include <imagine/gfx/RendererTask.hh>
 #include <imagine/gui/ToastView.hh>
 #include <imagine/gui/AlertView.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <imagine/thread/Thread.hh>
+#include <imagine/util/macros.h>
 #include <imagine/bluetooth/BluetoothInputDevice.hh>
-#include <imagine/input/android/MogaManager.hh>
-#include <cmath>
+import imagine;
 
 namespace EmuEx
 {

@@ -43,7 +43,7 @@ public:
 private:
 	FDEventSource fdSrc;
 	std::thread thread{};
-	std::binary_semaphore sem{0};
+	binary_semaphore sem{0};
 	bool requested{};
 	bool cancelled{};
 	bool quiting{};

@@ -23,9 +23,13 @@
 
 namespace IG
 {
-
 class ApplicationContext;
 class Application;
+}
+
+namespace IG::Data
+{
+
 class FontManager;
 struct GlyphMetrics;
 

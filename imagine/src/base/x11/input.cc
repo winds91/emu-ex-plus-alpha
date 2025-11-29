@@ -13,21 +13,11 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "Input"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/base/x11/XInputDevice.hh>
-#include <imagine/input/Event.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/bit.hh>
 #include "xlibutils.h"
 #include <xcb/xinput.h>
 #include <xkbcommon/xkbcommon-x11.h>
 #include <xkbcommon/xkbcommon-keysyms.h>
-#include <memory>
+import imagine;
 
 static std::string_view xiDeviceInfoName(const xcb_input_xi_device_info_t& info)
 {

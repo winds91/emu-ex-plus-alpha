@@ -29,8 +29,8 @@
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/fs/FS.hh>
 #include <imagine/bluetooth/BluetoothInputDevice.hh>
-#include <format>
 #include <imagine/logger/logger.h>
+import std;
 
 namespace EmuEx
 {

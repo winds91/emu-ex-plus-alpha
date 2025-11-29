@@ -24,7 +24,7 @@
 #include <imagine/fs/FS.hh>
 #include <imagine/io/IO.hh>
 #include <imagine/util/string.h>
-#include <format>
+import std;
 
 extern "C"
 {

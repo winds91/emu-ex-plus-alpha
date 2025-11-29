@@ -18,7 +18,7 @@
 #include <emuframework/EmuApp.hh>
 #include <imagine/gui/AlertView.hh>
 #include <imagine/logger/logger.h>
-#include <format>
+import std;
 
 namespace EmuEx
 {

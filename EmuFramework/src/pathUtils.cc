@@ -14,13 +14,7 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuSystem.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/fs/FSUtils.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
-#include <vector>
+import imagine;
 
 namespace EmuEx
 {

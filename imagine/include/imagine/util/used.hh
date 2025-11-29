@@ -16,6 +16,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <concepts>
+#include <cstddef>
 
 namespace IG
 {

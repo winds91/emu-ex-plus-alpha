@@ -16,15 +16,15 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/util/concepts.hh>
-#include "mdspan/mdspan"
+#include <mdspan>
 #include <array>
 
 namespace IG
 {
 
-using std::experimental::mdspan;
-using std::experimental::extents;
-using std::experimental::layout_stride;
+using std::mdspan;
+using std::extents;
+using std::layout_stride;
 
 constexpr auto stridedMdspan2(Pointer auto p, auto extents, size_t stride)
 {

@@ -34,7 +34,7 @@ void closeSharedLibrary(SharedLibraryRef lib);
 void *loadSymbol(SharedLibraryRef lib, const char *name);
 const char *lastOpenSharedLibraryError();
 
-static bool loadSymbol(Pointer auto &symPtr, SharedLibraryRef lib, const char *name)
+inline bool loadSymbol(Pointer auto &symPtr, SharedLibraryRef lib, const char *name)
 {
 	symPtr = reinterpret_cast<std::remove_reference_t<decltype(symPtr)>>(loadSymbol(lib, name));
 	return symPtr;

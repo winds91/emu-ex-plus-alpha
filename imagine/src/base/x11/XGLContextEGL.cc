@@ -13,18 +13,11 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "EGL"
-#include <imagine/base/GLContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/time/Time.hh>
-#include <imagine/fs/FS.hh>
 #include <imagine/util/egl.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/ranges.hh>
-#include <imagine/logger/logger.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include "xlibutils.h"
+import imagine;
 
 namespace IG
 {
@@ -77,7 +70,7 @@ std::optional<GLBufferConfig> GLManager::tryBufferConfig(ApplicationContext ctx,
 			if(found)
 			{
 				if(Config::DEBUG_BUILD)
-					printEGLConf(display(), conf);
+					printEGLConf(display(), conf, log);
 				return conf;
 			}
 		}

@@ -13,15 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "ArchFS"
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/string.h>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace IG::FS
 {
+
+[[maybe_unused]] constexpr SystemLogger log{"Archive"};
 
 template <class... Args>
 static std::shared_ptr<ArchiveIO> makeArchiveEntryPtr(Args&& ...args)

@@ -23,12 +23,7 @@
 #include <imagine/util/variant.hh>
 #include "PlaceVideoView.hh"
 #include "PlaceVControlsView.hh"
-#include <utility>
-#include <vector>
-#include <array>
-#include <span>
-#include <ranges>
-#include <format>
+import std;
 
 namespace EmuEx
 {

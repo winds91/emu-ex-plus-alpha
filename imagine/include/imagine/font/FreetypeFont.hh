@@ -29,9 +29,12 @@ struct _FcConfig;
 
 namespace IG
 {
-
 class ApplicationContext;
 class IO;
+}
+
+namespace IG::Data
+{
 
 class FreetypeGlyphImage
 {

@@ -85,14 +85,7 @@ protected:
 };
 
 template<unsigned LeastMaxValue>
-using SemaphoreImpl = MachSemaphore<LeastMaxValue>;
+using counting_semaphore = MachSemaphore<LeastMaxValue>;
+using binary_semaphore = MachSemaphore<1>;
 
-}
-
-namespace std
-{
-template<unsigned LeastMaxValue>
-using counting_semaphore = IG::SemaphoreImpl<LeastMaxValue>;
-
-using binary_semaphore = std::counting_semaphore<1>;
 }

@@ -17,9 +17,8 @@
 #include <mednafen/FileStream.h>
 #include <mednafen/MemoryStream.h>
 #include <mednafen/mednafen.h>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/util/utility.h>
-#include <system_error>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace EmuEx
 {

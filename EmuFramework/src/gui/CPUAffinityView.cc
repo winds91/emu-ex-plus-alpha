@@ -15,8 +15,7 @@
 
 #include "CPUAffinityView.hh"
 #include <emuframework/EmuApp.hh>
-#include <cstdio>
-#include <format>
+import std;
 
 namespace EmuEx
 {

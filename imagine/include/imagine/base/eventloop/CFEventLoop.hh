@@ -25,7 +25,7 @@
 namespace IG
 {
 
-constexpr int pollEventInput = kCFFileDescriptorReadCallBack, pollEventOutput = kCFFileDescriptorWriteCallBack,
+inline constexpr int pollEventInput = kCFFileDescriptorReadCallBack, pollEventOutput = kCFFileDescriptorWriteCallBack,
 	pollEventError = 0, pollEventHangUp = 0;
 
 struct CFFDEventSourceInfo

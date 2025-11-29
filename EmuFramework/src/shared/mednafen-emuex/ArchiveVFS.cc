@@ -15,11 +15,7 @@
 
 #include "ArchiveVFS.hh"
 #include <mednafen/MemoryStream.h>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/MapIO.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace Mednafen
 {

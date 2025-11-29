@@ -29,7 +29,7 @@ struct xkb_state;
 
 namespace Config
 {
-static constexpr bool XDND = !Config::MACHINE_IS_PANDORA;
+inline constexpr bool XDND = !Config::MACHINE_IS_PANDORA;
 }
 
 namespace IG

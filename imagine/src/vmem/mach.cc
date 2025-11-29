@@ -14,12 +14,11 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/config/defs.hh>
-#include <imagine/vmem/memory.hh>
-#include <imagine/util/utility.h>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 #include <mach/mach.h>
 #include <mach/vm_map.h>
 #include <mach/machine/vm_param.h>
+import imagine;
 
 namespace IG
 {

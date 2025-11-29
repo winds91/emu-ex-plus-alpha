@@ -17,7 +17,7 @@
 
 #include <cstdint>
 
-namespace IG
+namespace IG::Data
 {
 
 enum class FontWeight : uint8_t

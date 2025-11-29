@@ -14,9 +14,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/config/defs.hh>
-#include <imagine/vmem/memory.hh>
-#include <imagine/util/utility.h>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
@@ -34,6 +32,8 @@ static void *mremap(void *old_address, size_t old_size, size_t new_size, int fla
 	return (void*)syscall(__NR_mremap, old_address, old_size, new_size, flags, new_address);
 }
 #endif
+
+import imagine;
 
 namespace IG
 {

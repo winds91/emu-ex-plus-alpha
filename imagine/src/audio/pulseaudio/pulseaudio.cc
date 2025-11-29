@@ -13,16 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/pulseaudio/PAOutputStream.hh>
-#include <imagine/audio/OutputStream.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/ScopeGuard.hh>
+#include <imagine/config/defs.hh>
+#include <imagine/util/macros.h>
 #include <pulse/pulseaudio.h>
 #ifdef CONFIG_PACKAGE_PULSEAUDIO_GLIB
 #include <pulse/glib-mainloop.h>
 #else
 #include <pulse/thread-mainloop.h>
 #endif
+import imagine.audio;
 
 namespace IG::Audio
 {

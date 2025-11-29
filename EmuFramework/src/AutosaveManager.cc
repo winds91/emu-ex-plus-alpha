@@ -18,9 +18,7 @@
 #include <emuframework/Option.hh>
 #include <emuframework/EmuOptions.hh>
 #include "pathUtils.hh"
-#include <imagine/io/MapIO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {

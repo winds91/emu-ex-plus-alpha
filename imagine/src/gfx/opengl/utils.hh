@@ -1,7 +1,7 @@
 #pragma once
 
 #include <imagine/gfx/opengl/defs.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 
 #ifndef GL_RGB8
 #define GL_RGB8 0x8051
@@ -54,12 +54,6 @@
 #ifndef GL_FRAMEBUFFER_SRGB
 #define GL_FRAMEBUFFER_SRGB 0x8DB9
 #endif
-
-namespace IG::Gfx
-{
-extern bool checkGLErrors;
-extern bool checkGLErrorsVerbose;
-}
 
 constexpr const char *glErrorToString(GLenum err)
 {
@@ -123,8 +117,7 @@ constexpr const char *glImageFormatToString(int format)
 	}
 }
 
-template <class FUNC>
-static bool handleGLErrors2(FUNC callback)
+inline bool clearGLErrors(std::invocable<GLenum, const char*> auto&& callback)
 {
 	bool gotError = false;
 	GLenum error;
@@ -136,54 +129,35 @@ static bool handleGLErrors2(FUNC callback)
 	return gotError;
 }
 
-static bool handleGLErrors2()
+inline bool runGLCheckedAlways(auto&& func, auto& log, const char *label = nullptr)
 {
-	return handleGLErrors2(
-		[](GLenum, const char *errorStr)
-		{
-			logWarn("clearing error: %s", errorStr);
-		});
-}
-
-template <class FUNC>
-static bool runGLCheckedAlways(FUNC func, const char *label = nullptr)
-{
-	handleGLErrors2();
+	clearGLErrors([&](GLenum, const char *errorStr)
+	{
+		log.warn("clearing error:{}", errorStr);
+	});
 	func();
-	return !handleGLErrors2(
-		[label](GLenum, const char *err)
+	return !clearGLErrors(
+		[&](GLenum, const char *err)
 		{
 			if(label)
 			{
-				logErr("%s in %s", err, label);
+				log.error("{} in {}", err, label);
 			}
 			else
 			{
-				logErr("%s", err);
+				log.error("{}", err);
 			}
 		});
 }
 
-template <class FUNC>
-static bool runGLChecked(FUNC func, const char *label = nullptr)
+inline bool runGLChecked(auto&& func, auto& log, bool shouldCheck, const char *label = nullptr)
 {
-	if(!IG::Gfx::checkGLErrors)
+	if(!shouldCheck)
 	{
 		func();
 		return true;
 	}
-	return runGLCheckedAlways(func, label);
-}
-
-template <class FUNC>
-static bool runGLCheckedVerbose(FUNC func, const char *label = nullptr)
-{
-	if(!IG::Gfx::checkGLErrorsVerbose)
-	{
-		func();
-		return true;
-	}
-	return runGLChecked(func, label);
+	return runGLCheckedAlways(func, log, label);
 }
 
 inline GLuint makeGLTextureName(GLuint oldTex)

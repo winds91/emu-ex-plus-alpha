@@ -13,13 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/Screen.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/base/linux/DRMFrameTimer.hh>
-#include <imagine/util/memory/UniqueFileDescriptor.hh>
+#include <imagine/util/macros.h>
 #include <xf86drm.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
+import imagine;
 
 namespace IG
 {
@@ -28,7 +27,7 @@ constexpr SystemLogger log{"DRMFrameTimer"};
 
 static UniqueFileDescriptor openDevice()
 {
-	const char *drmCardPath = getenv("KMSDEVICE");
+	const char *drmCardPath = std::getenv("KMSDEVICE");
 	if(!drmCardPath)
 		drmCardPath = "/dev/dri/card0";
 	log.info("opening device path:{}", drmCardPath);
@@ -40,7 +39,7 @@ DRMFrameTimer::DRMFrameTimer(Screen &screen, EventLoop loop)
 	auto fd = openDevice();
 	if(fd == -1)
 	{
-		logErr("error opening device:%s", std::system_category().message(errno).c_str());
+		log.error("error opening device:{}", std::system_category().message(errno));
 		return;
 	}
 	fdSrc = {std::move(fd), {.debugLabel = "DRMFrameTimer", .eventLoop = loop},

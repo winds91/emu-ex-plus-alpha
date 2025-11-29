@@ -13,13 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/gfx/defs.hh>
-#include <imagine/base/Viewport.hh>
 #include <imagine/glm/geometric.hpp>
 #include <imagine/glm/gtc/matrix_transform.hpp>
 #include <imagine/glm/gtc/matrix_inverse.hpp>
-#include <imagine/logger/logger.h>
+import imagine.gfx;
 
 namespace glm
 {

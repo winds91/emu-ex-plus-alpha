@@ -13,19 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "Input"
+#include <imagine/util/macros.h>
 #include <android/api-level.h>
-#include <imagine/time/Time.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/ranges.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/base/android/AndroidInputDevice.hh>
 #include <android/input.h>
+import imagine;
 
 namespace IG
 {
+
+constexpr SystemLogger log{"Input"};
 
 extern int32_t (*AMotionEvent_getActionButton_)(const AInputEvent* motion_event);
 
@@ -140,7 +136,7 @@ static Input::Action touchEventAction(uint32_t e)
 		case AMOTION_EVENT_ACTION_CANCEL: return Action::CANCELED;
 		case AMOTION_EVENT_ACTION_MOVE:   return Action::MOVED;
 		default:
-			logWarn("unknown touch motion event action:%u", e);
+			log.warn("unknown touch motion event action:{}", e);
 			return Action::MOVED;
 	}
 }
@@ -172,7 +168,7 @@ static std::pair<Input::Action, Input::Key> mouseEventAction(uint32_t e, AInputE
 				return {Action::SCROLL_DOWN, 0};
 			return {Action::MOVED, 0};
 		default:
-			logWarn("unknown mouse motion event action:%u", e);
+			log.warn("unknown mouse motion event action:{}", e);
 			return {Action::MOVED, 0};
 	}
 }
@@ -194,7 +190,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 				{
 					if(!devPtr) [[unlikely]]
 					{
-						logWarn("pointer motion event from unknown device ID: %d", devId);
+						log.warn("pointer motion event from unknown device ID:{}", devId);
 						return false;
 					}
 					auto src = isFromSource(source, AINPUT_SOURCE_MOUSE) ? Input::Source::MOUSE : Input::Source::TOUCHSCREEN;
@@ -256,7 +252,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 				{
 					if(!devPtr) [[unlikely]]
 					{
-						logWarn("joystick motion event from unknown device ID:%d", devId);
+						log.warn("joystick motion event from unknown device ID:{}", devId);
 						return false;
 					}
 					//logMsg("joystick motion event: id:%d (%s)", devId, devPtr->name().data());
@@ -285,7 +281,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 				default:
 				{
 					if(Config::DEBUG_BUILD)
-						logWarn("motion event from other source:%s, %dx%d", aInputSourceToStr(source), (int)AMotionEvent_getX(event, 0), (int)AMotionEvent_getY(event, 0));
+						log.warn("motion event from other source:{}, {}x{}", aInputSourceToStr(source), AMotionEvent_getX(event, 0), AMotionEvent_getY(event, 0));
 					return false;
 				}
 			}
@@ -324,7 +320,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 				}
 				else
 				{
-					logWarn("key event from unknown device ID:%d", devId);
+					log.warn("key event from unknown device ID:{}", devId);
 					return false;
 				}
 			}
@@ -350,7 +346,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 				repeatCount, eventSource, time, devPtr}, win);
 		}
 	}
-	logWarn("unknown input event type:%d", type);
+	log.warn("unknown input event type:{}", type);
 	return false;
 }
 
@@ -359,7 +355,7 @@ void AndroidApplication::processInputCommon(AInputQueue *inputQueue, AInputEvent
 	//logMsg("input event start");
 	if(!deviceWindow()) [[unlikely]]
 	{
-		logMsg("ignoring input with uninitialized window");
+		log.info("ignoring input with uninitialized window");
 		AInputQueue_finishEvent(inputQueue, event, 0);
 		return;
 	}
@@ -434,7 +430,7 @@ void AndroidApplication::processInputWithHasEvents(AInputQueue *inputQueue)
 	}
 	if(hasEventsRet < 0)
 	{
-		logWarn("error %d in AInputQueue_hasEvents", hasEventsRet);
+		log.warn("error {} in AInputQueue_hasEvents", hasEventsRet);
 	}
 }
 

@@ -13,19 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/Screen.hh>
-#include <imagine/base/EventLoop.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/base/sharedLibrary.hh>
-#include <imagine/time/Time.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/variant.hh>
-#include <imagine/base/SimpleFrameTimer.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
 #include <android/choreographer.h>
+#include <android/native_activity.h>
 #include <unistd.h>
-#include <cerrno>
+#include <jni.h>
+import imagine;
 
 namespace IG
 {

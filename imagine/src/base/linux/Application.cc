@@ -13,15 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "Base"
-#include <imagine/logger/logger.h>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Application.hh>
-#include <imagine/base/EventLoop.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <cstring>
+#include <imagine/config/defs.hh>
+import imagine;
 
 namespace IG
 {
@@ -63,7 +56,7 @@ void LinuxApplication::setAcceptIPC(bool, char const*) {}
 int main(int argc, char** argv)
 {
 	using namespace IG;
-	logger_setLogDirectoryPrefix(".");
+	Log::setLogDirectoryPrefix(".");
 	auto eventLoop = EventLoop::makeForThread();
 	ApplicationContext ctx{};
 	ApplicationInitParams initParams{eventLoop, &ctx, argc, argv};

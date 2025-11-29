@@ -24,12 +24,10 @@ $(linux_cMakeCache) : CMakeLists.txt
 	@echo "Configuring Build"
 	$(PRINT_CMD)cmake --preset $(linux_archPreset) --fresh
 
-$(linux_execPath) : $(linux_cMakeCache)
+.PHONY: linux-build
+linux-build : $(linux_cMakeCache)
 	@echo "Building Executable"
 	$(PRINT_CMD)cmake --build build/$(linux_archPreset) --config=$(CONFIG) $(VERBOSE_ARG)
-
-.PHONY: linux-build
-linux-build : $(linux_execPath)
 
 linux_resourcePath := $(projectPath)/res/linux
 resFiles := $(wildcard $(linux_resourcePath)/*)
@@ -47,4 +45,4 @@ ifneq ($(resFiles),)
 endif
 
 .PHONY: linux-bundle
-linux-bundle : $(linux_bundleDeps) $(linux_execPath)
+linux-bundle : $(linux_bundleDeps) linux-build

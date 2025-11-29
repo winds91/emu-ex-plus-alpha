@@ -16,6 +16,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/gfx/defs.hh>
+#include <imagine/gfx/SyncFence.hh>
 #include <imagine/util/utility.h>
 #include <concepts>
 #include <chrono>
@@ -41,6 +42,8 @@ WISE_ENUM_CLASS((PresentMode, uint8_t),
 class RendererTask : public RendererTaskImpl
 {
 public:
+	using TaskContext = RendererTaskImpl::TaskContext;
+
 	using RendererTaskImpl::RendererTaskImpl;
 	void updateDrawableForSurfaceChange(Window &, WindowSurfaceChange);
 	void setPresentMode(Window &, PresentMode);

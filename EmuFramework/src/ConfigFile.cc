@@ -17,11 +17,8 @@
 #include <emuframework/Option.hh>
 #include <emuframework/EmuOptions.hh>
 #include "configFile.hh"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/bluetooth/BluetoothAdapter.hh>
-#include <imagine/util/ScopeGuard.hh>
+#include <imagine/config/defs.hh>
+import imagine;
 
 namespace EmuEx
 {

@@ -13,10 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/Buffer.hh>
-#include "internalDefs.hh"
-#include <imagine/logger/logger.h>
+#include <imagine/util/opengl/glUtils.hh>
+#include <imagine/util/macros.h>
+import imagine.internal.gfxOpengl;
 
 #ifndef GL_MAP_INVALIDATE_RANGE_BIT
 #define GL_MAP_INVALIDATE_RANGE_BIT 0x0004

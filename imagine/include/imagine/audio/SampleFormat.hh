@@ -56,11 +56,11 @@ protected:
 
 namespace SampleFormats
 {
-	constexpr SampleFormat   i8{1};
-	constexpr SampleFormat  i16{2};
-	constexpr SampleFormat  i32{4};
-	constexpr SampleFormat  f32{4, true};
-	constexpr SampleFormat none;
+	inline constexpr SampleFormat   i8{1};
+	inline constexpr SampleFormat  i16{2};
+	inline constexpr SampleFormat  i32{4};
+	inline constexpr SampleFormat  f32{4, true};
+	inline constexpr SampleFormat none;
 }
 
 }

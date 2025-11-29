@@ -13,13 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/audio/Manager.hh>
-#include <imagine/audio/defs.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/config/defs.hh>
+import imagine.audio;
 
 namespace IG::Audio
 {
+
+constexpr SystemLogger log{"AudioManager"};
 
 SampleFormat Manager::nativeSampleFormat() const
 {
@@ -46,19 +46,19 @@ void Manager::startSession() {}
 
 void Manager::endSession() {}
 
-static constexpr ApiDesc apiDesc[]
+constexpr std::array<ApiDesc, systemApis.size()> apiDesc
 {
 	#ifdef CONFIG_PACKAGE_PULSEAUDIO
-	{"PulseAudio", Api::PULSEAUDIO},
+	ApiDesc{"PulseAudio", Api::PULSEAUDIO},
 	#endif
 	#ifdef CONFIG_PACKAGE_ALSA
-	{"ALSA", Api::ALSA},
+	ApiDesc{"ALSA", Api::ALSA},
 	#endif
 };
 
 std::vector<ApiDesc> Manager::audioAPIs() const
 {
-	return {apiDesc, apiDesc + std::size(apiDesc)};
+	return {std::begin(apiDesc), std::end(apiDesc)};
 }
 
 Api Manager::makeValidAPI(Api api) const
@@ -67,7 +67,7 @@ Api Manager::makeValidAPI(Api api) const
 	{
 		if(desc.api == api)
 		{
-			logDMsg("found requested API:%s", desc.name);
+			log.debug("found requested API:{}", desc.name);
 			return api;
 		}
 	}

@@ -35,7 +35,7 @@ void MDFN_DoSimpleCommand(int cmd)
 
 void MDFN_printf(const char *format, ...) noexcept
 {
-	if(!Config::DEBUG_BUILD || !logger_isEnabled())
+	if(!Config::DEBUG_BUILD || !IG::Log::isEnabled())
 		return;
 	va_list args;
 	va_start( args, format );
@@ -45,7 +45,7 @@ void MDFN_printf(const char *format, ...) noexcept
 
 void MDFN_Notify(MDFN_NoticeType t, const char* format, ...) noexcept
 {
-	if(!Config::DEBUG_BUILD || !logger_isEnabled())
+	if(!Config::DEBUG_BUILD || !IG::Log::isEnabled())
 		return;
 	va_list args;
 	va_start( args, format );
@@ -55,7 +55,7 @@ void MDFN_Notify(MDFN_NoticeType t, const char* format, ...) noexcept
 
 void MDFND_OutputNotice(MDFN_NoticeType t, const char* s) noexcept
 {
-	if(!Config::DEBUG_BUILD || !logger_isEnabled())
+	if(!Config::DEBUG_BUILD || !IG::Log::isEnabled())
 		return;
 	logMsg("%s", s);
 }

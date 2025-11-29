@@ -16,7 +16,8 @@
 #include <emuframework/OutputTimingManager.hh>
 #include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuOptions.hh>
-#include <imagine/logger/logger.h>
+#include <imagine/util/macros.h>
+import imagine;
 
 namespace EmuEx
 {

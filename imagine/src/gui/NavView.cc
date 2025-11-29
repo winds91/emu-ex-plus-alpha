@@ -13,19 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/NavView.hh>
-#include <imagine/gui/ViewManager.hh>
-#include <imagine/gui/TableView.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gfx/Mat4.hh>
-#include <imagine/util/variant.hh>
-#include <imagine/logger/logger.h>
+import imagine.gui;
 
 namespace IG
 {
 
-constexpr SystemLogger log;
+constexpr SystemLogger log{"NavView"};
 
 NavView::NavView(ViewAttachParams attach, Gfx::GlyphTextureSet *face):
 	View{attach},

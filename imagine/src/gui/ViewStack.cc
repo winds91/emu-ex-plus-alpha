@@ -13,32 +13,25 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "ViewStack"
-#include <imagine/gui/ViewStack.hh>
-#include <imagine/gui/NavView.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/input/Event.hh>
-#include <imagine/gfx/GlyphTextureSet.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/BasicEffect.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/ScopeGuard.hh>
-#include <utility>
+#include <imagine/util/macros.h>
+import imagine.gui;
 
 namespace IG
 {
+
+constexpr SystemLogger log{"ViewStack"};
 
 void BasicViewController::push(std::unique_ptr<View> v, const Input::Event &e)
 {
 	if(view)
 	{
-		logMsg("removing existing view from basic view controller");
+		log.info("removing existing view from basic view controller");
 		pop();
 	}
 	assumeExpr(v);
 	v->setController(this, e);
 	view = std::move(v);
-	logMsg("push view in basic view controller");
+	log.info("push view in basic view controller");
 }
 
 void BasicViewController::pushAndShow(std::unique_ptr<View> v, const Input::Event &e, bool, bool)
@@ -247,7 +240,7 @@ void ViewStack::push(std::unique_ptr<View> v, const Input::Event &e)
 	}
 	v->setController(this, e);
 	view.emplace_back(std::move(v), true);
-	logMsg("push view, %d in stack", (int)view.size());
+	log.info("push view, {} in stack", view.size());
 	if(nav)
 	{
 		showNavLeftBtn();
@@ -278,7 +271,7 @@ void ViewStack::pop()
 		return;
 	view.back().ptr->onDismiss();
 	view.pop_back();
-	logMsg("pop view, %d in stack", (int)view.size());
+	log.info("pop view, {} in stack", view.size());
 	if(nav)
 	{
 		showNavLeftBtn();
@@ -412,7 +405,7 @@ void ViewStack::dismissView(View &v, bool refreshLayout)
 	auto idx = viewIdx(v);
 	if(idx < 0)
 	{
-		logWarn("view:%p not found to dismiss", &v);
+		log.warn("view:{} not found to dismiss", (void*)&v);
 		return;
 	}
 	return dismissView(idx, refreshLayout);
@@ -427,12 +420,12 @@ void ViewStack::dismissView(int idx, bool refreshLayout)
 	}
 	if(idx == 0)
 	{
-		logWarn("not dismissing root view");
+		log.warn("not dismissing root view");
 		return;
 	}
 	if(idx < 0 || idx >= (int)size())
 	{
-		logWarn("view dismiss index out of range:%d", idx);
+		log.warn("view dismiss index out of range:{}", idx);
 		return;
 	}
 	if(idx == (int)size() - 1)
@@ -445,7 +438,7 @@ void ViewStack::dismissView(int idx, bool refreshLayout)
 	}
 	else
 	{
-		logMsg("dismissing view at index:%d", idx);
+		log.info("dismissing view at index:{}", idx);
 		view[idx].ptr->onDismiss();
 		view.erase(view.begin() + idx);
 	}

@@ -13,12 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/io/IO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/variant.hh>
-#include <imagine/io/IOUtils-impl.hh>
+#include <sys/types.h>
+import imagine.internal.io;
 
 namespace IG
 {

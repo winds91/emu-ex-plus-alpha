@@ -20,7 +20,7 @@
 #include <imagine/gui/FSPicker.hh>
 #include <imagine/fs/FS.hh>
 #include <imagine/io/IO.hh>
-#include <string>
+import std;
 
 namespace EmuEx
 {

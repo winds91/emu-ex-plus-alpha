@@ -13,25 +13,22 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "FS"
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/FSUtils.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/utility.h>
-#include <imagine/util/string.h>
+#include <imagine/util/macros.h>
 #include "libgen.hh"
-#include <stdlib.h>
+import imagine;
 
 namespace IG::FS
 {
 
+constexpr SystemLogger log{"FS"};
+
 PathString makeAppPathFromLaunchCommand(CStringView launchCmd)
 {
-	logMsg("app path from launch command:%s", launchCmd.data());
+	log.info("app path from launch command:{}", launchCmd);
 	PathStringArray realPath;
 	if(!realpath(FS::dirname(launchCmd).data(), realPath.data()))
 	{
-		logErr("error in realpath()");
+		log.error("error in realpath()");
 		return {};
 	}
 	return realPath.data();
@@ -67,7 +64,7 @@ PathString dirnameUri(CStringView pathOrUri)
 		auto [docPath, docPos] = FS::uriPathSegment(pathOrUri, FS::uriPathSegmentDocumentName);
 		if(docPos == std::string_view::npos)
 		{
-			logErr("invalid document path in tree URI:%s", pathOrUri.data());
+			log.error("invalid document path in tree URI:{}", pathOrUri);
 			return {};
 		}
 		if(auto lastSlashPos = docPath.rfind("%2F");
@@ -82,7 +79,7 @@ PathString dirnameUri(CStringView pathOrUri)
 			return {pathOrUri, docPos + colonPos};
 		}
 	}
-	logErr("can't get directory name on unsupported URI:%s", pathOrUri.data());
+	log.error("can't get directory name on unsupported URI:{}", pathOrUri);
 	return {};
 }
 
