@@ -1,13 +1,8 @@
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/util/string.h>
-#include <imagine/logger/logger.h>
-#include <emuframework/Cheats.hh>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/viewUtils.hh>
 #include "EmuCheatViews.hh"
 #include "MainSystem.hh"
 #include <cheats.h>
-#include <imagine/util/format.hh>
+import emuex;
+import imagine;
 
 void S9xEnableCheat(SCheat&);
 void S9xDisableCheat(SCheat&);
@@ -38,9 +33,9 @@ static FS::PathString cheatsFilename(Snes9xSystem& sys)
 void Snes9xSystem::writeCheatFile()
 {
 	if(!numCheats())
-		logMsg("no cheats present, removing .cht file if present");
+		log.info("no cheats present, removing .cht file if present");
 	else
-		logMsg("saving %u cheat(s)", numCheats());
+		log.info("saving {} cheat(s)", numCheats());
 	S9xSaveCheatFile(cheatsFilename(*this).data());
 }
 

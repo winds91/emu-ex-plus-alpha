@@ -26,7 +26,7 @@
 namespace IG::Input
 {
 
-constexpr SystemLogger log{"GameController"};
+static SystemLogger log{"GameController"};
 
 static const char *appleGCButtonName(Key k);
 

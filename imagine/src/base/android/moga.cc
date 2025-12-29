@@ -13,14 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/input/android/MogaManager.hh>
+#include <imagine/base/ApplicationContext.hh>
+#include <imagine/base/Application.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/input.h>
-import imagine;
 
 namespace IG::Input
 {
 
-constexpr SystemLogger log{"Moga"};
+static SystemLogger log{"Moga"};
 constexpr int ACTION_VERSION_MOGAPRO = 1;
 constexpr int STATE_CONNECTION = 1;
 constexpr int STATE_SELECTED_VERSION = 4;
@@ -135,7 +138,7 @@ void MogaManager::initMOGAJNIAndDevice(JNIEnv *env, jobject mogaHelper)
 				auto &mogaDev = *mogaManager.mogaDev;
 				auto ctx = mogaManager.appContext();
 				//logMsg("MOGA key event: %d %d %d", action, keyCode, (int)time);
-				assert((uint32_t)keyCode < Keycode::COUNT);
+				assume((uint32_t)keyCode < Keycode::COUNT);
 				ctx.endIdleByUserActivity();
 				Key key = keyCode & 0x1ff;
 				auto time = SteadyClockTimePoint{Nanoseconds{timestamp}};

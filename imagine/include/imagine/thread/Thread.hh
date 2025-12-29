@@ -17,10 +17,12 @@
 
 #include <imagine/config/defs.hh>
 #include <imagine/thread/Semaphore.hh>
-#include <imagine/util/utility.h>
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <thread>
 #include <span>
+#include <utility>
+#endif
 
 namespace IG
 {

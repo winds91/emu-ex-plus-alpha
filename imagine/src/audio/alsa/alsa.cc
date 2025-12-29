@@ -13,14 +13,44 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-#include "alsautils.h"
-import imagine.audio;
+#include <imagine/audio/OutputStream.hh>
+#include <imagine/util/ScopeGuard.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <alsa/asoundlib.h>
 
 namespace IG::Audio
 {
 
-constexpr SystemLogger log{"ALSA"};
+static SystemLogger log{"ALSA"};
+
+constexpr const char *alsaPcmStateToString(snd_pcm_state_t state)
+{
+	switch(state)
+	{
+		case SND_PCM_STATE_OPEN: return "Open";
+		case SND_PCM_STATE_SETUP: return "Setup";
+		case SND_PCM_STATE_PREPARED: return "Prepare";
+		case SND_PCM_STATE_RUNNING: return "Running";
+		case SND_PCM_STATE_XRUN: return "XRun";
+		case SND_PCM_STATE_DRAINING: return "Draining";
+		case SND_PCM_STATE_PAUSED: return "Paused";
+		case SND_PCM_STATE_SUSPENDED: return "Suspended";
+		case SND_PCM_STATE_DISCONNECTED: return "Disconnected";
+		default: unreachable();
+	}
+}
+
+constexpr const char *alsaPcmWriteErrorToString(int error)
+{
+	switch(error)
+	{
+		case -EBADFD: return "Wrong State";
+		case -EPIPE: return "Underrun";
+		case -ESTRPIPE: return "Suspended";
+		default: return "Unknown";
+	}
+}
 
 constexpr const SampleFormat& alsaFormatToPcm(snd_pcm_format_t format)
 {
@@ -30,8 +60,7 @@ constexpr const SampleFormat& alsaFormatToPcm(snd_pcm_format_t format)
 		case SND_PCM_FORMAT_S32: return SampleFormats::i32;
 		case SND_PCM_FORMAT_S16: return SampleFormats::i16;
 		case SND_PCM_FORMAT_U8: return SampleFormats::i8;
-		default:
-			bug_unreachable("format == %d", format);
+		default: unreachable();
 	}
 }
 
@@ -42,8 +71,7 @@ constexpr snd_pcm_format_t pcmFormatToAlsa(const SampleFormat& format)
 		case 4 : return format.isFloat() ? SND_PCM_FORMAT_FLOAT : SND_PCM_FORMAT_S32;
 		case 2 : return SND_PCM_FORMAT_S16;
 		case 1 : return SND_PCM_FORMAT_U8;
-		default:
-			bug_unreachable("bytes == %d", format.bytes());
+		default: unreachable();
 	}
 }
 

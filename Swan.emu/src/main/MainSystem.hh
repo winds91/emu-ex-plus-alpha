@@ -17,6 +17,7 @@
 
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/io/FileIO.hh>
+#include <emuframework/EmuSystem.hh>
 #include <mednafen/mednafen.h>
 #include <compare>
 
@@ -77,10 +78,12 @@ constexpr WsUserProfile defaultUserProfile
 	.languageIsEnglish = 0
 };
 
-WISE_ENUM_CLASS((WsRotation, uint8_t),
+enum class WsRotation: uint8_t
+{
 	Auto,
 	Horizontal,
-	Vertical);
+	Vertical
+};
 
 class WsSystem final: public EmuSystem
 {
@@ -116,7 +119,7 @@ public:
 			case WsRotation::Horizontal: return false;
 			case WsRotation::Vertical: return true;
 		}
-		bug_unreachable("invalid WsRotation");
+		unreachable();
 	}
 
 	// required API functions

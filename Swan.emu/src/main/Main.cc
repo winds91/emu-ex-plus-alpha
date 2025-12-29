@@ -13,14 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Swan.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuSystemInlines.hh>
 #include <emuframework/EmuAppInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 #include <mednafen/state-driver.h>
 #include <mednafen/hash/md5.h>
 #include <mednafen-emuex/MDFNUtils.hh>
@@ -29,18 +23,19 @@ using namespace Mednafen; // needed for following includes
 #include <wswan/gfx.h>
 #include <wswan/sound.h>
 #include <wswan/memory.h>
+import imagine;
 
 namespace MDFN_IEN_WSWAN
 {
 uint32 GetSoundRate();
 }
 
-
 namespace EmuEx
 {
 
 using namespace MDFN_IEN_WSWAN;
 
+static SystemLogger log{"Swan.emu"};
 const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nMednafen Team\nmednafen.github.io";
 bool EmuApp::needsGlobalInstance = true;
 
@@ -58,7 +53,7 @@ const char *EmuSystem::systemName() const { return "WonderSwan"; }
 
 void WsSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	MDFN_DoSimpleCommand(MDFN_MSC_RESET);
 }
 
@@ -75,7 +70,7 @@ void WsSystem::loadBackupMemory(EmuApp &app)
 {
 	if(!eeprom_size && !sram_size)
 		return;
-	logMsg("loading sram/eeprom");
+	log.info("loading sram/eeprom");
 	app.setupStaticBackupMemoryFile(saveFileIO, saveExtMDFN("sav", noMD5InFilenames), eeprom_size + sram_size);
 	if(eeprom_size)
 		saveFileIO.read(wsEEPROM, eeprom_size, 0);
@@ -87,7 +82,7 @@ void WsSystem::onFlushBackupMemory(EmuApp &app, BackupMemoryDirtyFlags)
 {
 	if(!eeprom_size && !sram_size)
 		return;
-	logMsg("saving sram/eeprom");
+	log.info("saving sram/eeprom");
 	if(eeprom_size)
 		saveFileIO.write(wsEEPROM, eeprom_size, 0);
 	if(sram_size)
@@ -133,7 +128,7 @@ void WsSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 	configuredLCDVTotal = lcdVTotal();
 	if(GetSoundRate() == mixRate)
 		return;
-	logMsg("set sound mix rate:%d", (int)mixRate);
+	log.info("set sound mix rate:{}", mixRate);
 	WSwan_SetSoundRate(mixRate);
 }
 

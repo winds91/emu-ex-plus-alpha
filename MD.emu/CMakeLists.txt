@@ -11,6 +11,7 @@ printConfigInfo()
 configureAppTarget(mdemu)
 addMednafenFlags(mdemu cd)
 addPkgConfigDepMultiConfig(mdemu emuframework)
+addCxxModules(mdemu emuex imagine)
 evalPkgConfigFlags(mdemu all)
 target_include_directories(mdemu PRIVATE
 	src/genplus-gx

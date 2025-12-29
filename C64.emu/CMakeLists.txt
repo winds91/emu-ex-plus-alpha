@@ -9,6 +9,7 @@ project(
 printConfigInfo()
 configureAppTarget(c64emu)
 addPkgConfigDepMultiConfig(c64emu emuframework)
+addCxxModules(c64emu emuex imagine)
 evalPkgConfigFlags(c64emu all)
 
 setExportedSymbols(c64emu

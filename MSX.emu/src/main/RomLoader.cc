@@ -15,19 +15,15 @@
 
 
 #include "ziphelper.h"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
-#include <string.h>
 #include "MainSystem.hh"
 
 extern "C"
 {
 	#include <blueMSX/Memory/RomLoader.h>
 }
+
+import imagine;
+import std;
 
 namespace EmuEx
 {

@@ -1,15 +1,11 @@
 set(imagineModuleSrcs
 	imagine.ccm
-	imagine.audio.ccm
-	imagine.bluetooth.ccm
-	imagine.data.ccm
-	imagine.gfx.ccm
-	imagine.gui.ccm
+	glm.ccm
 )
 
 target_sources(imagine PRIVATE FILE_SET CXX_MODULES FILES ${imagineModuleSrcs})
 
-install(FILES ${imagineModuleSrcs} DESTINATION share/imagine)
+install(FILES ${imagineModuleSrcs} DESTINATION share/modules)
 
 add_subdirectory(base)
 add_subdirectory(audio)

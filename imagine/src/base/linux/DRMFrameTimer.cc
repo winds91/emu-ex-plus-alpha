@@ -13,17 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/base/linux/DRMFrameTimer.hh>
+#include <imagine/base/Screen.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <xf86drm.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"DRMFrameTimer"};
+static SystemLogger log{"DRMFrameTimer"};
 
 static UniqueFileDescriptor openDevice()
 {
@@ -77,7 +78,7 @@ DRMFrameTimer::DRMFrameTimer(Screen &screen, EventLoop loop)
 
 void DRMFrameTimer::scheduleVSync()
 {
-	assert(fdSrc.fd() != -1);
+	assume(fdSrc.fd() != -1);
 	cancelled = false;
 	if(requested)
 		return;

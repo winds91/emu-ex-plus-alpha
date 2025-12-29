@@ -13,12 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-import imagine.gui;
+#include <imagine/gui/TableView.hh>
+#include <imagine/gui/MenuItem.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/gfx/Mat4.hh>
+#include <imagine/base/Window.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"TableView"};
+static SystemLogger log{"TableView"};
 
 size_t TableView::cells() const
 {

@@ -13,13 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with GBA.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
 #include <core/gba/gba.h>
 #include <core/gba/gbaGlobals.h>
+import emuex;
+import imagine;
 import std;
 
 namespace EmuEx

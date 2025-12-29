@@ -13,18 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with NEO.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/SystemOptionView.hh>
-#include <emuframework/GUIOptionView.hh>
-#include <emuframework/MainMenuView.hh>
-#include <emuframework/SystemActionsView.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/bit.hh>
-#include <imagine/util/ScopeGuard.hh>
 #include "MainApp.hh"
-#include <imagine/fs/FS.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/util/string.h>
-import std;
 
 extern "C"
 {
@@ -35,6 +24,10 @@ extern "C"
 	#include <gngeo/timer.h>
 	#include <gngeo/memory.h>
 }
+
+import emuex;
+import imagine;
+import std;
 
 namespace EmuEx
 {

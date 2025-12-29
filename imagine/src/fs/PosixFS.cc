@@ -13,7 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/fs/PosixFS.hh>
+#include <imagine/fs/FS.hh>
+#include <imagine/util/format.hh>
+#include <imagine/logger/SystemLogger.hh>
 #ifdef __APPLE__
 #include <imagine/util/string/apple.h>
 #include <limits.h>
@@ -22,12 +25,12 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
-import imagine;
+import std;
 
 namespace IG::FS
 {
 
-constexpr SystemLogger log{"FS"};
+static SystemLogger log{"FS"};
 
 static file_type makeDirType(int type)
 {
@@ -116,7 +119,6 @@ std::string_view directory_entry::name() const
 	}
 	else
 	{
-		assumeExpr(dirent_);
 		return dirent_->d_name;
 	}
 }
@@ -125,7 +127,6 @@ file_type directory_entry::type() const
 {
 	if(type_ == file_type::none)
 	{
-		assumeExpr(dirent_);
 		type_ = makeDirType(dirent_->d_type);
 		if(type_ == file_type::unknown || type_ == file_type::symlink)
 		{
@@ -170,7 +171,7 @@ directory_entry* directory_iterator::operator->()
 
 void directory_iterator::operator++()
 {
-	assumeExpr(impl); // incrementing end-iterator is undefined
+	assume(impl); // incrementing end-iterator is undefined
 	if(!impl->readNextDir())
 		impl.reset();
 }

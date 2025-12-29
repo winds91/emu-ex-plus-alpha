@@ -13,13 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/PerformanceHintManager.hh>
+#include <imagine/base/ApplicationContext.hh>
+#include <imagine/base/sharedLibrary.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/performance_hint.h>
-import imagine;
 
 namespace IG
 {
 
-[[maybe_unused]] constexpr SystemLogger log{"PerfHint"};
+[[maybe_unused]] static SystemLogger log{"PerfHint"};
 
 static APerformanceHintSession* (*APerformanceHint_createSession)(APerformanceHintManager*,
 	const int32_t* threadIds, size_t size, int64_t initialTargetWorkDurationNanos);

@@ -16,16 +16,9 @@
 #include <OSystem.hxx>
 #include <SoundEmuEx.hh>
 #include <stella/emucore/Paddles.hxx>
-// TODO: Some Stella types collide with MacTypes.h
-#define Debugger DebuggerMac
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/VideoOptionView.hh>
-#include <emuframework/SystemActionsView.hh>
-#include <emuframework/viewUtils.hh>
-#undef Debugger
 #include "MainApp.hh"
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

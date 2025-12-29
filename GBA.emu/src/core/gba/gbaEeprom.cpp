@@ -5,8 +5,7 @@
 #include "core/base/file_util.h"
 #include "core/gba/gba.h"
 
-#include <imagine/util/algorithm.h>
-#include <imagine/logger/logger.h>
+import imagine;
 
 int eepromMode = EEPROM_IDLE;
 int eepromByte = 0;

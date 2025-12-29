@@ -13,17 +13,22 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "utils.hh"
-import imagine.gfx;
+#include <imagine/config/macros.h>
+#include <imagine/gfx/TextureSampler.hh>
+#include <imagine/gfx/RendererTask.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/util/opengl/glUtils.hh>
+#include <imagine/util/format.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"GLTextureSampler"};
+static SystemLogger log{"GLTextureSampler"};
 
 static void setSamplerParameteri(const Renderer &r, GLuint sampler, GLenum pname, GLint param)
 {
-	runGLChecked([&]()
+	GL::runChecked([&]()
 	{
 		r.support.glSamplerParameteri(sampler, pname, param);
 	}, log, Renderer::checkGLErrorsVerbose, "glSamplerParameteri()");
@@ -47,7 +52,7 @@ static uint16_t makeMinFilter(bool linearFiltering, MipFilter mipFiltering)
 		case MipFilter::NONE: return linearFiltering ? GL_LINEAR : GL_NEAREST;
 		case MipFilter::NEAREST: return linearFiltering ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST;
 		case MipFilter::LINEAR: return linearFiltering ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_LINEAR;
-		default: bug_unreachable("mipFiltering == %d", (int)mipFiltering);
+		default: unreachable();
 	}
 }
 
@@ -64,7 +69,7 @@ static uint16_t makeWrapMode(WrapMode mode)
 		case WrapMode::MIRROR_REPEAT: return GL_MIRRORED_REPEAT;
 		case WrapMode::CLAMP: return GL_CLAMP_TO_EDGE;
 	}
-	bug_unreachable("invalid WrapMode");
+	unreachable();
 }
 
 SamplerParams asSamplerParams(TextureSamplerConfig config)

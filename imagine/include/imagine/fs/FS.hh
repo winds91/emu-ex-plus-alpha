@@ -18,11 +18,14 @@
 #include <imagine/config/defs.hh>
 #include <imagine/fs/PosixFS.hh>
 #include <imagine/util/string/CStringView.hh>
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <cstddef>
 #include <memory>
 #include <iterator>
 #include <string_view>
+#include <utility>
+#endif
 
 // Tries to mirror API of C++ filesystem TS library in most cases
 

@@ -13,20 +13,24 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "utils.hh"
-import imagine.gfx;
+#include <imagine/config/macros.h>
+#include <imagine/gfx/opengl/GLStateCache.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/util/opengl/glUtils.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/opengl/glHeaders.h>
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"GLStateCache"};
+static SystemLogger log{"GLStateCache"};
 bool GLStateCache::verifyState = false;
 
 void GLStateCache::blendFunc(GLenum sfactor, GLenum dfactor)
 {
 	if(!(sfactor == blendFuncSfactor && dfactor == blendFuncDfactor))
 	{
-		runGLChecked([&]()
+		GL::runChecked([&]()
 		{
 			glBlendFunc(sfactor, dfactor);
 		}, log, Renderer::checkGLErrorsVerbose, "glBlendFunc()");
@@ -39,7 +43,7 @@ void GLStateCache::blendEquation(GLenum mode)
 {
 	if(mode != blendEquationState)
 	{
-		runGLChecked([&]()
+		GL::runChecked([&]()
 		{
 			glBlendEquation(mode);
 		}, log, Renderer::checkGLErrorsVerbose, "glBlendEquation()");
@@ -66,7 +70,7 @@ void GLStateCache::enable(GLenum cap)
 	{
 		// unmanaged cap
 		log.debug("glEnable unmanaged:{}", cap);
-		runGLChecked([&]()
+		GL::runChecked([&]()
 		{
 			glEnable(cap);
 		}, log, Renderer::checkGLErrorsVerbose, "glEnable()");
@@ -77,7 +81,7 @@ void GLStateCache::enable(GLenum cap)
 	{
 		// not enabled or unset
 		//logMsg("glEnable %d", (int)cap);
-		runGLChecked([&]()
+		GL::runChecked([&]()
 		{
 			glEnable(cap);
 		}, log, Renderer::checkGLErrorsVerbose, "glEnable()");
@@ -87,10 +91,11 @@ void GLStateCache::enable(GLenum cap)
 	if(verifyState)
 	{
 		GLboolean enabled = true;
-		if(runGLChecked([&]() { enabled = glIsEnabled(cap); }, log, Renderer::checkGLErrorsVerbose)
+		if(GL::runChecked([&]() { enabled = glIsEnabled(cap); }, log, Renderer::checkGLErrorsVerbose)
 				&& !enabled)
 		{
-			bug_unreachable("state %d out of sync", cap);
+			log.error("state {} out of sync", cap);
+			unreachable();
 		}
 	}
 }
@@ -102,7 +107,7 @@ void GLStateCache::disable(GLenum cap)
 	{
 		// unmanaged cap
 		log.debug("glDisable unmanaged:{}", cap);
-		runGLChecked([&]()
+		GL::runChecked([&]()
 		{
 			glDisable(cap);
 		}, log, Renderer::checkGLErrorsVerbose, "glDisable()");
@@ -113,7 +118,7 @@ void GLStateCache::disable(GLenum cap)
 	{
 		// is enabled or unset
 		//logMsg("glDisable %d", (int)cap);
-		runGLChecked([&]()
+		GL::runChecked([&]()
 		{
 			glDisable(cap);
 		}, log, Renderer::checkGLErrorsVerbose, "glDisable()");
@@ -123,10 +128,11 @@ void GLStateCache::disable(GLenum cap)
 	if(verifyState)
 	{
 		GLboolean enabled = false;
-		if(runGLChecked([&]() { enabled = glIsEnabled(cap); }, log, Renderer::checkGLErrorsVerbose)
+		if(GL::runChecked([&]() { enabled = glIsEnabled(cap); }, log, Renderer::checkGLErrorsVerbose)
 				&& enabled)
 		{
-			bug_unreachable("state %d out of sync", cap);
+			log.error("state {} out of sync", cap);
+			unreachable();
 		}
 	}
 }

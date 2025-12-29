@@ -13,15 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/data-type/image/PixmapReader.hh>
+#include <imagine/data-type/image/PixmapWriter.hh>
+#include <imagine/data-type/image/PixmapSource.hh>
+#include <imagine/util/format.hh>
 #include <CoreGraphics/CGBitmapContext.h>
 #include <CoreGraphics/CGContext.h>
-import imagine.data;
 
 namespace IG::Data
 {
 
-constexpr SystemLogger log{"Quartz2dData"};
+static SystemLogger log{"Quartz2dData"};
 
 int Quartz2dImage::width()
 {
@@ -73,7 +75,7 @@ bool Quartz2dImage::hasAlphaChannel()
 
 void Quartz2dImage::readImage(MutablePixmapView dest)
 {
-	assert(dest.format() == pixelFormat());
+	assume(dest.format() == pixelFormat());
 	int height = this->height();
 	int width = this->width();
 	auto colorSpace = isGrayscale() ? CGColorSpaceCreateDeviceGray() : CGColorSpaceCreateDeviceRGB();

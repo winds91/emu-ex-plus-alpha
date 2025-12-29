@@ -19,10 +19,13 @@
 #include <imagine/base/Pipe.hh>
 #include <imagine/thread/Semaphore.hh>
 #include <imagine/util/concepts.hh>
-#include <imagine/util/utility.h>
+#include <imagine/util/utility.hh>
+#ifndef IG_USE_MODULE_STD
 #include <cstring>
 #include <span>
 #include <string_view>
+#include <utility>
+#endif
 
 namespace IG
 {
@@ -188,7 +191,7 @@ public:
 	{
 		if(span.empty())
 			return send(msg);
-		assert(span.size_bytes() < PIPE_BUF);
+		assume(span.size_bytes() < PIPE_BUF);
 		OutVector buffs[2]{std::span<const MsgType>{&msg, 1}, span};
 		return pipe.sink().writeVector(buffs) != -1;
 	}

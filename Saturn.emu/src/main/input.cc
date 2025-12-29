@@ -13,9 +13,6 @@
 	You should have received a copy of the GNU General Public License
 	along with Saturn.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
 #include <ss/smpc_iodevice.h>
@@ -28,7 +25,8 @@
 #include <ss/input/keyboard.h>
 #include <ss/input/jpkeyboard.h>
 #include <mednafen-emuex/MDFNUtils.hh>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -267,7 +265,7 @@ AssetDesc SaturnApp::vControllerAssetDesc(KeyInfo key) const
 void SaturnSystem::handleInputAction(EmuApp *, InputAction a)
 {
 	auto player = a.flags.deviceId;
-	assumeExpr(player < maxPlayers);
+	assume(player < maxPlayers);
 	if(inputConfig.devs[player] == InputDeviceType::gun)
 	{
 		if(SaturnKey(a.code) == SaturnKey::Start)

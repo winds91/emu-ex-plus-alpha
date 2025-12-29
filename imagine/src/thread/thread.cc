@@ -13,6 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/thread/Thread.hh>
+#include <imagine/logger/SystemLogger.hh>
 #ifdef __linux__
 #include <sched.h>
 #include <sys/resource.h>
@@ -24,12 +26,12 @@
 #else
 #include <pthread.h>
 #endif
-import imagine;
+import std;
 
 namespace IG
 {
 
-[[maybe_unused]] constexpr SystemLogger log{"Thread"};
+[[maybe_unused]] static SystemLogger log{"Thread"};
 
 void setThreadCPUAffinityMask([[maybe_unused]] std::span<const ThreadId> ids, [[maybe_unused]] CPUMask mask)
 {

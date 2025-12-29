@@ -13,11 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-module;
-#include <imagine/util/macros.h>
-
 export module imagine.internal.io;
-export import imagine;
+import imagine;
 
 export namespace IG
 {
@@ -31,7 +28,7 @@ inline auto asString(IOAccessHint access)
 		case IOAccessHint::Random: return "Random";
 		case IOAccessHint::All: return "All";
 	}
-	bug_unreachable("IOAccessHint == %d", (int)access);
+	unreachable();
 }
 
 inline auto asString(IOAdvice advice)
@@ -43,7 +40,7 @@ inline auto asString(IOAdvice advice)
 		case IOAdvice::Random: return "Random";
 		case IOAdvice::WillNeed: return "Will Need";
 	}
-	bug_unreachable("IOAdvice == %d", (int)advice);
+	unreachable();
 }
 
 }

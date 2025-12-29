@@ -11,11 +11,14 @@ elseif(ENV STREQUAL macosx)
 	add_subdirectory(osx)
 endif()
 
+if(UNIX)
+	target_sources(imagine PRIVATE common/library/posix.cc)
+endif()
+
 target_sources(
 	imagine PRIVATE
 	common/ApplicationContext.cc
 	common/Application.cc
-	common/Base.cc
 	common/Screen.cc
 	common/Window.cc
 	../pixmap/Pixmap.cc

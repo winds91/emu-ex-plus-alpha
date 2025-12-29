@@ -13,12 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-import imagine.gui;
+#include <imagine/gui/ToastView.hh>
+#include <imagine/gui/ViewManager.hh>
+#include <imagine/gfx/RendererCommands.hh>
+#include <imagine/gfx/BasicEffect.hh>
+#include <imagine/gfx/Mat4.hh>
+#include <imagine/util/format.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"ToastView"};
+static SystemLogger log{"ToastView"};
 
 ToastView::ToastView(ViewAttachParams attach): View{attach},
 	text{attach.rendererTask, &attach.viewManager.defaultFace},

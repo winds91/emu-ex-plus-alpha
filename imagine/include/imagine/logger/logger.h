@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/utility.h>
+#include <imagine/util/macros.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -23,7 +23,6 @@
 enum { LOGGER_ERROR, LOGGER_WARNING, LOGGER_MESSAGE, LOGGER_DEBUG_MESSAGE };
 
 static const uint8_t loggerMaxVerbosity = LOGGER_DEBUG_MESSAGE;
-extern uint8_t loggerVerbosity;
 
 typedef uint8_t LoggerSeverity;
 
@@ -55,7 +54,3 @@ static const uint8_t LOG_E = LOGGER_ERROR;
 #define logDMsgNoBreak(msg, ...) logger_modulePrintf(LOG_D, msg, ## __VA_ARGS__)
 #define logWarnNoBreak(msg, ...) logger_modulePrintf(LOG_W, msg, ## __VA_ARGS__)
 #define logErrNoBreak(msg, ...) logger_modulePrintf(LOG_E, msg, ## __VA_ARGS__)
-
-#ifdef __cplusplus
-#include <imagine/logger/SystemLogger.hh>
-#endif

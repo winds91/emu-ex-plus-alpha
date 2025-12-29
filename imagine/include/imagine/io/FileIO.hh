@@ -19,9 +19,12 @@
 #ifdef __ANDROID__
 #include <imagine/io/AAssetIO.hh>
 #endif
+#include <imagine/fs/FSDefs.hh>
 #include <imagine/util/string/CStringView.hh>
+#ifndef IG_USE_MODULE_STD
 #include <span>
 #include <utility>
+#endif
 
 namespace IG
 {
@@ -47,11 +50,6 @@ public:
 class ApplicationContext;
 class IO;
 
-}
-
-namespace IG::FS
-{
-class PathString;
 }
 
 namespace IG::FileUtils

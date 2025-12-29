@@ -7,6 +7,8 @@ else()
 	addPkgXRandr(imagine)
 endif()
 
+target_sources(imagine PRIVATE FILE_SET CXX_MODULES FILES xutils.ccm)
+
 target_sources(
 	imagine PRIVATE
 	Application.cc

@@ -15,12 +15,7 @@
 
 #include <emuframework/GUIOptionView.hh>
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuViewController.hh>
-#include <emuframework/EmuOptions.hh>
 #include <emuframework/viewUtils.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gfx/Renderer.hh>
-import std;
 
 namespace EmuEx
 {

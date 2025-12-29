@@ -13,15 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-#include "xlibutils.h"
+#include <imagine/base/Screen.hh>
+#include <imagine/base/Application.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <xcb/randr.h>
-import imagine;
+#include "macros.h"
+import xutils;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"X11Screen"};
+static SystemLogger log{"X11Screen"};
 
 XScreen::XScreen(ApplicationContext, InitParams params)
 {
@@ -81,7 +83,7 @@ XScreen::XScreen(ApplicationContext, InitParams params)
 				}
 			}
 		}
-		assert(frameRate_.hz());
+		assume(frameRate_.hz());
 	}
 	log.info("screen:{} {}x{} ({}x{}mm) {}Hz", (void*)&screen,
 		screen.width_in_pixels, screen.height_in_pixels, (int)xMM, (int)yMM, frameRate_.hz());
@@ -138,7 +140,7 @@ void Screen::setFrameRate(FrameRate rate)
 			return;
 		}
 		auto cmd = std::format("sudo /usr/pandora/scripts/op_lcdrate.sh {}", (unsigned int)rate.hz());
-		int err = system(cmd.data());
+		int err = std::system(cmd.data());
 		if(err)
 		{
 			log.error("error:{} setting frame rate", err);

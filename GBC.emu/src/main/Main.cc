@@ -13,19 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with GBC.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuAppInlines.hh>
 #include <emuframework/EmuSystemInlines.hh>
-#include <emuframework/OutSizeTracker.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/IOStream.hh>
 #include <resample/resampler.h>
 #include <resample/resamplerinfo.h>
 #include <libgambatte/src/mem/cartridge.h>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -66,7 +60,7 @@ uint_least32_t GbcSystem::makeOutputColor(uint_least32_t rgb888) const
 void GbcSystem::applyGBPalette()
 {
 	size_t idx = optionGBPal;
-	assert(idx < gbPalettes().size());
+	assume(idx < gbPalettes().size());
 	bool useBuiltin = optionUseBuiltinGBPalette && gameBuiltinPalette;
 	if(useBuiltin)
 		log.info("using built-in game palette");
@@ -102,7 +96,7 @@ void GbcSystem::readState(EmuApp&, std::span<uint8_t> buff)
 
 size_t GbcSystem::writeState(std::span<uint8_t> buff, SaveStateFlags)
 {
-	assert(saveStateSize == buff.size());
+	assume(saveStateSize == buff.size());
 	OStream<MapIO> stream{buff};
 	gbEmu.saveState(frameBuffer, gambatte::lcd_hres, stream);
 	return saveStateSize;
@@ -241,7 +235,7 @@ size_t GbcSystem::runUntilVideoFrame(gambatte::uint_least32_t *videoBuf, std::pt
 			constexpr size_t buffSize = (snd.size() / (2097152./48000.) + 1); // TODO: std::ceil() is constexpr with GCC but not Clang yet
 			std::array<uint32_t, buffSize> destBuff;
 			unsigned destFrames = resampler->resample((short*)destBuff.data(), (const short*)snd.data(), samples);
-			assumeExpr(destFrames <= destBuff.size());
+			assume(destFrames <= destBuff.size());
 			audio->writeFrames(destBuff.data(), destFrames);
 		}
 	} while(!didOutputFrame);

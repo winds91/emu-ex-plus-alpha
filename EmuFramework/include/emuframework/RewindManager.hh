@@ -16,6 +16,7 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/config.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/base/PausableTimer.hh>
 #include <imagine/util/memory/FlexArray.hh>
 
@@ -24,6 +25,7 @@ namespace IG
 class MapIO;
 class FileIO;
 }
+#endif
 
 namespace EmuEx
 {

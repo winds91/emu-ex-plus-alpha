@@ -15,8 +15,7 @@
 
 #include <emuframework/VController.hh>
 #include <emuframework/EmuApp.hh>
-#include <imagine/util/macros.h>
-import imagine.gfx;
+import imagine;
 
 namespace EmuEx
 {
@@ -104,7 +103,7 @@ int VControllerKeyboard::getInput(WPt c) const
 
 KeyInfo VControllerKeyboard::translateInput(int idx) const
 {
-	assumeExpr(idx < VKEY_COLS * KEY_ROWS);
+	assume(idx < VKEY_COLS * KEY_ROWS);
 	return table[0][idx];
 }
 

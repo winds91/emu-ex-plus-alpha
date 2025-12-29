@@ -14,11 +14,17 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/VideoImageOverlay.hh>
-#include <emuframework/EmuSystem.hh>
-import imagine.gfx;
+#ifdef IG_USE_MODULE_IMAGINE
+import imagine;
+#else
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/gfx/Vec3.hh>
+#endif
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr uint32_t slCol(uint8_t a) { return IG::PixelDescRGBA8888Native.build(0, 0, 0, a); }
 
@@ -84,7 +90,7 @@ constexpr OverlayDesc overlayDesc(ImageOverlayId id)
 		case ImageOverlayId::CRT_GRILLE ... ImageOverlayId::CRT_GRILLE_2:
 			return {{{crtTexSize, PixelFmtRGBA8888}, crtGrillePixmapBuff}, Gfx::WrapMode::REPEAT};
 	}
-	bug_unreachable("invalid ImageOverlayId");
+	unreachable();
 }
 
 constexpr bool isCrtOverlay(ImageOverlayId id)
@@ -148,7 +154,7 @@ void VideoImageOverlay::place(WRect contentRect, WSize videoPixels, Rotation r)
 			case ImageOverlayId::CRT_GRILLE_2:
 				return {&texture, {{}, crtDotsHalf}};
 		}
-		bug_unreachable("invalid ImageOverlayId");
+		unreachable();
 	}();
 	quad.write(0, {.bounds = contentRect.as<int16_t>(), .textureSpan = tex, .rotation = r});
 }

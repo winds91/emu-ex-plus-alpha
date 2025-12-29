@@ -15,9 +15,7 @@
 
 #include "PlaceVControlsView.hh"
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuViewController.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {

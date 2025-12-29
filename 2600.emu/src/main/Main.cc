@@ -34,9 +34,7 @@
 #include <emuframework/EmuAppInlines.hh>
 #include <emuframework/EmuSystemInlines.hh>
 #undef Debugger
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {
@@ -207,7 +205,7 @@ void A2600System::renderFramebuffer(EmuVideo &video)
 
 void A2600System::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	if(mode == ResetMode::HARD)
 	{
 		osystem.console().system().reset();
@@ -238,8 +236,8 @@ size_t A2600System::writeState(std::span<uint8_t> buff, SaveStateFlags flags)
 {
 	Serializer state;
 	osystem.state().saveState(state);
-	assert(state.size() == saveStateSize);
-	assert(state.size() <= buff.size());
+	assume(state.size() == saveStateSize);
+	assume(state.size() <= buff.size());
 	state.getByteArray(buff.data(), buff.size());
 	return saveStateSize;
 }

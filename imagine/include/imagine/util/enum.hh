@@ -15,13 +15,28 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "wise_enum/wise_enum.h"
+#ifdef IG_USE_MODULE_IMAGINE
+#define MAGIC_ENUM_USE_STD_MODULE
+#endif
+#include <imagine/util/magic_enum/magic_enum.hpp>
+#ifndef IG_USE_MODULE_STD
+#include <utility>
+#endif
 
 namespace IG
 {
 
-template <class WiseEnum>
-constexpr auto lastEnum = wise_enum::range<WiseEnum>.back().value;
+#ifndef IG_USE_MODULE_IMAGINE
+using std::to_underlying;
+#endif
+
+template <class Enum>
+constexpr auto lastEnum = magic_enum::enum_values<Enum>().back();
+
+template <class Enum>
+constexpr auto enumCount = magic_enum::enum_count<Enum>();
+
+constexpr auto enumName(auto e) { return magic_enum::enum_name(e); }
 
 template<class T>
 constexpr bool isValidProperty(const T&);

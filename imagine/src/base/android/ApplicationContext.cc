@@ -13,17 +13,21 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-#include <imagine/util/macros.h>
+#include <imagine/config/macros.h>
+#include <imagine/base/ApplicationContext.hh>
+#include <imagine/base/Timer.hh>
+#include <imagine/io/PosixIO.hh>
+#include <imagine/fs/FSUtils.hh>
+#include <imagine/util/jni.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/asset_manager.h>
 #include <unistd.h>
-#include <jni.h>
 import imagine.internal.android;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"AppCtx"};
+static SystemLogger log{"AppCtx"};
 static NoopThread noopThread;
 
 FS::PathString ApplicationContext::assetPath(const char *) const { return {}; }
@@ -264,7 +268,7 @@ bool ApplicationContext::requestPermission(Permission p)
 
 JNIEnv *AndroidApplicationContext::mainThreadJniEnv() const
 {
-	assert(mainThreadId == gettid());
+	assume(mainThreadId == gettid());
 	return act->env;
 }
 
@@ -372,7 +376,7 @@ SensorValues ApplicationContext::remapSensorValuesForDeviceRotation(SensorValues
 		case Rotation::DOWN: return {v[0], -v[1], v[2]};
 		case Rotation::LEFT: return {v[1], v[0], v[2]};
 	}
-	bug_unreachable("invalid Rotation");
+	unreachable();
 }
 
 std::string AndroidApplicationContext::androidBuildDevice() const

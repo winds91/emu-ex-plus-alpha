@@ -32,7 +32,7 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 namespace IG
 {
 
-constexpr SystemLogger log{"Window"};
+static SystemLogger log{"Window"};
 
 #ifndef CONFIG_GFX_SOFT_ORIENTATION
 static unsigned validO = UIInterfaceOrientationMaskAllButUpsideDown;

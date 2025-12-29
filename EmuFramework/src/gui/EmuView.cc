@@ -14,14 +14,11 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuView.hh>
-#include <emuframework/EmuVideoLayer.hh>
-#include <emuframework/EmuAudio.hh>
 #include <emuframework/EmuSystem.hh>
-#include <emuframework/OutputTimingManager.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/logger/logger.h>
-import std;
+#include <emuframework/EmuAudio.hh>
+#include <emuframework/EmuVideoLayer.hh>
+#include <emuframework/Option.hh>
+import imagine;
 
 namespace EmuEx
 {

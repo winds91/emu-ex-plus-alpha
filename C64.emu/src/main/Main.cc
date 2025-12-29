@@ -13,16 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuAppInlines.hh>
 #include <emuframework/EmuSystemInlines.hh>
-#include <imagine/thread/Semaphore.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/span.hh>
 #include <sys/time.h>
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
@@ -62,6 +55,8 @@ extern "C"
 	#include "autostart-prg.h"
 	#include "joyport.h"
 }
+
+import imagine;
 
 namespace EmuEx
 {
@@ -212,7 +207,7 @@ EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter = hasC64Extension;
 
 void C64System::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	plugin.machine_trigger_reset(mode == ResetMode::HARD ? MACHINE_RESET_MODE_POWER_CYCLE : MACHINE_RESET_MODE_RESET_CPU);
 }
 
@@ -223,7 +218,7 @@ FS::FileString C64System::stateFilename(int slot, std::string_view name) const
 
 void C64System::enterCPUTrap()
 {
-	assert(emuThreadId);
+	assume(emuThreadId);
 	if(inCPUTrap)
 		return;
 	plugin.interrupt_maincpu_trigger_trap([](uint16_t, void *data)
@@ -279,7 +274,7 @@ static bool saveSnapshot(auto &plugin, SnapshotData &snapData)
 
 static bool loadSnapshot(auto &plugin, SnapshotData &snapData)
 {
-	assumeExpr(snapData.buffData);
+	assume(snapData.buffData);
 	log.info("loading state at:{} size:{}", (void*)snapData.buffData, snapData.buffSize);
 	if(plugin.machine_read_snapshot(snapshotVPath(snapData).data(), 0) < 0)
 		return false;

@@ -20,12 +20,16 @@
 #include <emuframework/TurboInput.hh>
 #include <emuframework/ToggleInput.hh>
 #include <emuframework/inputDefs.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/input/inputDefs.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <string>
 #include <string_view>
 #include <memory>
 #include <span>
 #include <algorithm>
+#endif
 
 namespace EmuEx
 {
@@ -34,8 +38,8 @@ using namespace IG;
 class InputDeviceConfig;
 struct InputAction;
 
-constexpr int8_t playerIndexMulti = -1;
-constexpr int8_t playerIndexUnset = -2;
+inline constexpr int8_t playerIndexMulti = -1;
+inline constexpr int8_t playerIndexUnset = -2;
 
 struct KeyCategory
 {

@@ -20,6 +20,8 @@ import imagine;
 namespace EmuEx
 {
 
+using namespace IG;
+
 constexpr SystemLogger log{"TurboInput"};
 
 void TurboInput::addEvent(KeyInfo key)

@@ -13,15 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/opengl/glUtils.hh>
+#include <imagine/config/macros.h>
+#include <imagine/gfx/opengl/android/SurfaceTextureStorage.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/opengl/glHeaders.h>
 #include <android/native_window_jni.h>
 import imagine.internal.android;
-import imagine.gfx;
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"SurfaceTexStorage"};
+static SystemLogger log{"SurfaceTexStorage"};
 
 SurfaceTextureStorage::SurfaceTextureStorage(RendererTask &r, TextureConfig config, bool makeSingleBuffered):
 	Texture{r}

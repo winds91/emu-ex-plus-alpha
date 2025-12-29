@@ -29,9 +29,11 @@
 #include <imagine/base/win32/inputDefs.hh>
 #endif
 
+#ifndef IG_USE_MODULE_STD
 #include <string>
 #include <string_view>
 #include <memory>
+#endif
 
 namespace IG
 {

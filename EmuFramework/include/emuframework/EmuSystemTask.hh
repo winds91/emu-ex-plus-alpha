@@ -16,12 +16,16 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/OutputTimingManager.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/base/MessagePort.hh>
 #include <imagine/thread/Thread.hh>
 #include <imagine/time/Time.hh>
 #include <imagine/util/variant.hh>
 #include <imagine/util/ScopeGuard.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <flat_map>
+#endif
 
 namespace EmuEx
 {
@@ -86,7 +90,7 @@ public:
 		binary_semaphore* semPtr{};
 		Command command{SuspendCommand{}};
 
-		void setReplySemaphore(binary_semaphore* semPtr_) { assert(!semPtr); semPtr = semPtr_; };
+		void setReplySemaphore(binary_semaphore* semPtr_) { assume(!semPtr); semPtr = semPtr_; };
 	};
 
 	struct SuspendContext

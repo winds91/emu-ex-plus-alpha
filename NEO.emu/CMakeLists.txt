@@ -14,6 +14,7 @@ include(emuFrameworkUtils.cmake)
 printConfigInfo()
 configureAppTarget(neoemu)
 addPkgConfigDepMultiConfig(neoemu emuframework)
+addCxxModules(neoemu emuex imagine)
 evalPkgConfigFlags(neoemu all)
 target_compile_definitions(neoemu PRIVATE
 	$<$<COMPILE_LANGUAGE:C,CXX>:HAVE_CONFIG_H LSB_FIRST>

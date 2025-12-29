@@ -13,9 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with NGP.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/SystemOptionView.hh>
 #include <mednafen-emuex/MDFNUtils.hh>
 #include "MainApp.hh"
+import emuex;
 
 namespace EmuEx
 {

@@ -13,10 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "xdnd.hh"
-#include "xlibutils.h"
+#include <imagine/base/Application.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <xcb/xfixes.h>
-import imagine;
+#include <xcb/xproto.h>
+#include "macros.h"
+import xutils;
 
 constexpr char ASCII_LF = 0xA;
 constexpr char ASCII_CR = 0xD;
@@ -24,7 +26,7 @@ constexpr char ASCII_CR = 0xD;
 namespace IG
 {
 
-constexpr SystemLogger log{"X11"};
+static SystemLogger log{"X11"};
 
 static void initXFixes(xcb_connection_t& conn);
 
@@ -66,13 +68,13 @@ static void fileURLToPath(char *url)
 	//lookup the 3rd slash which will signify the root directory of the file system
 	for(int i = 0; i < 3; i++)
 	{
-		pathStart = strchr(pathStart + 1, '/');
+		pathStart = std::strchr(pathStart + 1, '/');
 	}
-	assert(pathStart);
+	assume(pathStart);
 
 	// strip trailing new line junk at the end, needed for Nautilus
-	char *pathEnd = &pathStart[strlen(pathStart)-1];
-	assert(pathEnd >= pathStart);
+	char *pathEnd = &pathStart[std::strlen(pathStart)-1];
+	assume(pathEnd >= pathStart);
 	for(; *pathEnd == ASCII_LF || *pathEnd == ASCII_CR || *pathEnd == ' '; pathEnd--)
 	{
 		*pathEnd = '\0';
@@ -254,7 +256,7 @@ void XApplication::runX11Events(xcb_connection_t& conn)
 		{
 			eventHandler(reinterpret_cast<xcb_ge_generic_event_t&>(*event));
 		}
-		free(event);
+		std::free(event);
 	}
 }
 

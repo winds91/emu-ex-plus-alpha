@@ -13,15 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/bluetooth/defs.hh>
-#include <imagine/util/macros.h>
-#include "../input/PackedInputAccess.hh"
-import imagine;
+#include <imagine/config/macros.h>
+#include <imagine/bluetooth/Zeemote.hh>
+#include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/util/ranges.hh>
+#include <imagine/logger/SystemLogger.hh>
+import std;
+import packedInputAccess;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Zeemote"};
+static SystemLogger log{"Zeemote"};
 
 constexpr Input::Key sysKeyMap[4]
 {
@@ -132,7 +135,7 @@ bool Zeemote::dataHandler(Input::Device &dev, const char *packet, size_t size)
 		}
 
 		inputBufferPos += processBytes;
-		assert(inputBufferPos <= sizeof(inputBuffer));
+		assume(inputBufferPos <= sizeof(inputBuffer));
 
 		// check if inputBuffer is complete
 		if(inputBufferPos == packetSize)

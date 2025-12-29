@@ -14,8 +14,8 @@
 	along with GBC.emu.  If not, see <http://www.gnu.org/licenses/> */
 
 #include "Palette.hh"
-#include <imagine/util/string.h>
-#include <array>
+import imagine;
+import std;
 
 namespace EmuEx
 {

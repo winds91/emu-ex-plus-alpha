@@ -22,12 +22,10 @@
 #include <core/gba/gbaGfx.h>
 #include <core/base/sound_driver.h>
 #include <core/base/file_util.h>
-#include <imagine/logger/logger.h>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/math.hh>
-#include <imagine/io/IO.hh>
 #include "MainSystem.hh"
 #include "GBASys.hh"
+#include <imagine/logger/logger.h>
+import imagine;
 
 struct GameSettings
 {
@@ -188,7 +186,7 @@ static void resetGameSettings()
 
 void setSaveType(int type, int size)
 {
-	assert(type != GBA_SAVE_AUTO);
+	IG::assume(type != GBA_SAVE_AUTO);
 	coreOptions.saveType = type;
 	switch(type)
 	{
@@ -398,7 +396,7 @@ void setSaveMemory(IG::ByteBuffer buff)
 {
 	if(!coreOptions.saveType || coreOptions.saveType == GBA_SAVE_NONE)
 		return;
-	assert(buff.size() == saveMemorySize());
+	IG::assume(buff.size() == saveMemorySize());
 	if(coreOptions.saveType == GBA_SAVE_FLASH || coreOptions.saveType == GBA_SAVE_SRAM)
 	{
 		flashSaveMemory = std::move(buff);

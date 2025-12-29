@@ -13,15 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/font/Font.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/bitmap.h>
 import imagine.internal.android;
-import imagine.data;
 
 namespace IG::Data
 {
 
-constexpr SystemLogger log{"Font"};
+static SystemLogger log{"Font"};
 
 constexpr auto androidBitmapResultToStr(int result)
 {
@@ -115,7 +115,7 @@ Font::Glyph Font::glyph(int idx, FontSize &size)
 	[[maybe_unused]] auto res = AndroidBitmap_lockPixels(env, bitmap, &data);
 	auto pix = makePixmapView(env, bitmap, data, PixelFmtA8);
 	//logMsg("AndroidBitmap_lockPixels returned %s", androidBitmapResultToStr(res));
-	assert(res == ANDROID_BITMAP_RESULT_SUCCESS);
+	assume(res == ANDROID_BITMAP_RESULT_SUCCESS);
 	return {{{env, bitmap, mgr.recycleBitmapMethod()}, pix}, metrics};
 }
 

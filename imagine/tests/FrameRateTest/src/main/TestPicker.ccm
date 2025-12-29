@@ -13,13 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-module;
-
-#include <imagine/util/macros.h>
-
 export module gui;
-import imagine.gui;
+import imagine;
 import tests;
+import std;
 
 using namespace tests;
 
@@ -47,12 +44,13 @@ public:
 						[this, i](TestFramework &test)
 						{
 							auto diff = test.endTime - test.startTime;
-							log.info("ran from {} to {}, took {}",
+							log.info("ran {} frames from {} to {}, took {}",
+								test.frames,
 								test.startTime.time_since_epoch(),
 								test.endTime.time_since_epoch(),
 								diff);
 							auto &entry = testEntry[i];
-							auto fps = double(test.frames-1) / diff.count();
+							auto fps = double(test.frames-1) / duration_cast<FloatSeconds>(diff).count();
 							entry.set2ndName(std::format("{:.2f}", fps).data());
 							entry.text2Color = test.droppedFrames ? IG::Gfx::ColorName::RED : IG::Gfx::ColorName::WHITE;
 						};

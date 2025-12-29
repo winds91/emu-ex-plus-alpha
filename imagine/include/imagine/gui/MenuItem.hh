@@ -20,11 +20,13 @@
 #include <imagine/gfx/GfxText.hh>
 #include <imagine/util/DelegateFunc.hh>
 #include <imagine/util/concepts.hh>
-#include <imagine/util/utility.h>
 #include <imagine/util/variant.hh>
+#ifndef IG_USE_MODULE_STD
 #include <iterator>
 #include <memory>
 #include <type_traits>
+#include <utility>
+#endif
 
 namespace IG::Input
 {

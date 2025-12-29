@@ -17,7 +17,9 @@
 
 #include <imagine/gfx/defs.hh>
 #include <imagine/util/used.hh>
+#ifndef IG_USE_MODULE_STD
 #include <string_view>
+#endif
 
 namespace IG::Gfx
 {

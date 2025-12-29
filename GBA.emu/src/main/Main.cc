@@ -13,15 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with GBA.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuAppInlines.hh>
 #include <emuframework/EmuSystemInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/zlib.hh>
-#include <imagine/logger/logger.h>
 #include <core/gba/gba.h>
 #include <core/gba/gbaGfx.h>
 #include <core/gba/gbaSound.h>
@@ -33,6 +26,7 @@
 #include <core/base/patch.h>
 #include <core/base/file_util.h>
 #include <sys/mman.h>
+import imagine;
 
 bool patchApplyIPS(FILE* f, uint8_t** rom, int *size);
 bool patchApplyUPS(FILE* f, uint8_t** rom, int *size);
@@ -41,7 +35,7 @@ bool patchApplyPPF(FILE* f, uint8_t** rom, int *size);
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"GBA.emu"};
+static SystemLogger log{"GBA.emu"};
 const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2012-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nVBA-m Team\nvba-m.com";
 bool EmuSystem::hasBundledGames = true;
 bool EmuSystem::hasCheats = true;
@@ -79,7 +73,7 @@ const char *EmuSystem::systemName() const
 
 void GbaSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	CPUReset(gGba);
 }
 
@@ -102,14 +96,14 @@ void GbaSystem::readState(EmuApp &app, std::span<uint8_t> buff)
 
 size_t GbaSystem::writeState(std::span<uint8_t> buff, SaveStateFlags flags)
 {
-	assert(buff.size() >= saveStateSize);
+	assume(buff.size() >= saveStateSize);
 	if(flags.uncompressed)
 	{
 		return CPUWriteState(gGba, buff.data());
 	}
 	else
 	{
-		assert(saveStateSize);
+		assume(saveStateSize);
 		auto stateArr = DynArray<uint8_t>(saveStateSize);
 		CPUWriteState(gGba, stateArr.data());
 		return compressGzip(buff, stateArr, Z_DEFAULT_COMPRESSION);
@@ -152,7 +146,7 @@ WallClockTimePoint GbaSystem::backupMemoryLastWriteTime(const EmuApp &app) const
 
 void GbaSystem::closeSystem()
 {
-	assert(hasContent());
+	assume(hasContent());
 	CPUCleanUp();
 	saveFileIO = {};
 	coreOptions.saveType = GBA_SAVE_NONE;
@@ -289,14 +283,14 @@ void systemDrawScreen(EmuEx::EmuSystemTaskContext taskCtx, EmuEx::EmuVideo &vide
 	using namespace EmuEx;
 	auto img = video.startFrame(taskCtx);
 	IG::PixmapView framePix{{lcdSize, IG::PixelFmtRGB565}, gGba.lcd.pix};
-	assumeExpr(img.pixmap().size() == framePix.size());
+	assume(img.pixmap().size() == framePix.size());
 	if(img.pixmap().format() == IG::PixelFmtRGB565)
 	{
 		img.pixmap().writeTransformed([](uint16_t p){ return systemColorMap.map16[p]; }, framePix);
 	}
 	else
 	{
-		assumeExpr(img.pixmap().format().bytesPerPixel() == 4);
+		assume(img.pixmap().format().bytesPerPixel() == 4);
 		img.pixmap().writeTransformed([](uint16_t p){ return systemColorMap.map32[p]; }, framePix);
 	}
 	img.endFrame();

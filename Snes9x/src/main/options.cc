@@ -1,5 +1,3 @@
-#include <emuframework/EmuApp.hh>
-#include <emuframework/Option.hh>
 #include "MainSystem.hh"
 #ifndef SNES9X_VERSION_1_4
 #include <apu/apu.h>
@@ -7,6 +5,7 @@
 #include <ppu.h>
 #include <fxemu.h>
 #endif
+import emuex;
 
 namespace EmuEx
 {

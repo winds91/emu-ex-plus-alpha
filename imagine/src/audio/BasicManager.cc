@@ -13,13 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-import imagine.audio;
+#include <imagine/config/macros.h>
+#include <imagine/audio/Manager.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG::Audio
 {
 
-constexpr SystemLogger log{"AudioManager"};
+static SystemLogger log{"AudioManager"};
 
 SampleFormat Manager::nativeSampleFormat() const
 {

@@ -1,5 +1,3 @@
-#pragma once
-
 /*  This file is part of EmuFramework.
 
 	Imagine is free software: you can redistribute it and/or modify
@@ -15,17 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/io/MapIO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/logger/logger.h>
+export module configFile;
+import imagine;
 
-namespace EmuEx
+export namespace EmuEx
 {
 
 using namespace IG;
 
 template<class ON_KEY>
-static bool readConfigKeys(MapIO io, ON_KEY onKey)
+bool readConfigKeys(MapIO io, ON_KEY onKey, SystemLogger log = {})
 {
 	if(!io)
 		return false;
@@ -33,7 +30,7 @@ static bool readConfigKeys(MapIO io, ON_KEY onKey)
 	auto configSize = io.size();
 	if(configSize < 4)
 	{
-		logErr("skipping config of only %d bytes", (int)configSize);
+		log.error("skipping config of only {} bytes", configSize);
 		return false;
 	}
 
@@ -42,7 +39,7 @@ static bool readConfigKeys(MapIO io, ON_KEY onKey)
 
 	if(blockSize != 2)
 	{
-		logErr("can't read config with block size %d", blockSize);
+		log.error("can't read config with block size:{}", blockSize);
 		return false;
 	}
 
@@ -53,23 +50,23 @@ static bool readConfigKeys(MapIO io, ON_KEY onKey)
 
 		if(!size)
 		{
-			logMsg("invalid 0 size block, skipping rest of config");
+			log.error("invalid 0 size block, skipping rest of config");
 			return false;
 		}
 
 		if(size > fileBytesLeft)
 		{
-			logErr("size:%zu of key exceeds rest of file (%zu bytes), skipping rest of config", size, fileBytesLeft);
+			log.error("size:{} of key exceeds rest of file ({} bytes), skipping rest of config", size, fileBytesLeft);
 			return false;
 		}
 		fileBytesLeft -= size;
 
 		if(size < 2) // all blocks are at least a 2 byte key
 		{
-			logMsg("skipping %zu byte block", size);
+			log.info("skipping {} byte block", size);
 			if(io.seek(nextBlockPos) == -1)
 			{
-				logErr("unable to seek to next block, skipping rest of config");
+				log.error("unable to seek to next block, skipping rest of config");
 				return false;
 			}
 			continue;
@@ -78,20 +75,20 @@ static bool readConfigKeys(MapIO io, ON_KEY onKey)
 		auto key = io.get<uint16_t>();
 		size -= 2;
 
-		logMsg("got config key %u, size %zu", key, size);
+		log.info("got config key {}, size {}", key, size);
 		auto ioView = io.subView(io.tell(), size);
 		onKey(key, ioView);
 
 		if(io.seek(nextBlockPos) == -1)
 		{
-			logErr("unable to seek to next block, skipping rest of config");
+			log.error("unable to seek to next block, skipping rest of config");
 			return false;
 		}
 	}
 	return true;
 }
 
-static void writeConfigHeader(FileIO &io)
+void writeConfigHeader(FileIO &io)
 {
 	uint8_t blockHeaderSize = 2;
 	io.put(blockHeaderSize);

@@ -15,15 +15,9 @@
 
 #include <emuframework/VideoOptionView.hh>
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuVideoLayer.hh>
-#include <emuframework/EmuVideo.hh>
-#include <emuframework/VideoImageEffect.hh>
-#include <emuframework/EmuViewController.hh>
 #include <emuframework/viewUtils.hh>
 #include "PlaceVideoView.hh"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/logger/logger.h>
-import std;
+import imagine;
 
 namespace EmuEx
 {
@@ -600,7 +594,7 @@ TextMenuItem::SelectDelegate VideoOptionView::setVideoBrightnessCustomDel(ImageC
 							case ImageChannel::Green: return green;
 							case ImageChannel::Blue: return blue;
 						}
-						bug_unreachable("invalid ImageChannel");
+						unreachable();
 					}().setSelected(MenuId{val}, *this);
 				dismissPrevious();
 				return true;

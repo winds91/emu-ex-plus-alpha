@@ -22,7 +22,6 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/base/Screen.hh>
 #include <imagine/logger/SystemLogger.hh>
-#include <imagine/logger/logger.h>
 #include <imagine/util/algorithm.h>
 #include "private.hh"
 #include <imagine/fs/FS.hh>
@@ -50,7 +49,7 @@ namespace IG::Input
 namespace IG
 {
 
-constexpr SystemLogger log{"app"};
+static SystemLogger log{"app"};
 MainApp *mainApp{};
 Application *appPtr{};
 bool isIPad = false;
@@ -409,7 +408,7 @@ void ApplicationContext::setOnDeviceOrientationChanged(DeviceOrientationChangedD
 
 void ApplicationContext::setSystemOrientation(Rotation o)
 {
-	IG::log.info("setting system orientation:{}", wise_enum::to_string(o));
+	IG::log.info("setting system orientation:{}", enumName(o));
 	auto sharedApp = uiApp();
 	[sharedApp setStatusBarOrientation:gfxOrientationToUIInterfaceOrientation(o) animated:YES];
 	if(deviceWindow())
@@ -552,6 +551,13 @@ void ApplicationContext::exitWithMessage(int exitVal, const char *msg)
 {
 	IG::log.error("{}", msg);
 	::exit(exitVal);
+}
+
+void abort(const char* msg)
+{
+	log.error("{}", msg);
+	usleep(500000); // TODO: need a way to flush log output
+	std::abort();
 }
 
 }

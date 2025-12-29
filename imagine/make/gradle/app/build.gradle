@@ -55,6 +55,9 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
             signingConfig signingConfigType
+            ndk {
+                debugSymbolLevel = 'none'
+            }
         }
     }
 

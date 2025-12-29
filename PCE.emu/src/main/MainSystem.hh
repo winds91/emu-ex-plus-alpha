@@ -84,10 +84,12 @@ enum class VolumeType
 	CDDA, ADPCM
 };
 
-WISE_ENUM_CLASS((EmuCore, uint8_t),
+enum class EmuCore: uint8_t
+{
 	Auto,
 	Fast,
-	Accurate);
+	Accurate
+};
 
 inline std::string_view asModuleString(EmuCore c) { return c == EmuCore::Accurate ? "pce" : "pce_fast"; }
 
@@ -180,7 +182,7 @@ private:
 			case VolumeType::CDDA: return cddaVolume;
 			case VolumeType::ADPCM: return adpcmVolume;
 		}
-		bug_unreachable("invalid VolumeType");
+		unreachable();
 	}
 };
 

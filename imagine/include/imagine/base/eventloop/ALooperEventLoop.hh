@@ -19,8 +19,10 @@
 #include <imagine/util/used.hh>
 #include <imagine/util/memory/UniqueFileDescriptor.hh>
 #include <android/looper.h>
+#ifndef IG_USE_MODULE_STD
 #include <memory>
 #include <utility>
+#endif
 
 namespace IG
 {

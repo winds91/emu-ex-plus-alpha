@@ -18,14 +18,13 @@
 #include <imagine/config/defs.hh>
 #include <imagine/base/BaseApplication.hh>
 #include <imagine/fs/FSDefs.hh>
+#include <imagine/base/EventLoop.hh>
 #if CONFIG_PACKAGE_DBUS
 #include <gio/gio.h>
 #endif
-#include <imagine/base/EventLoop.hh>
+#ifndef IG_USE_MODULE_STD
 #include <memory>
-
-struct _XDisplay;
-union _XEvent;
+#endif
 
 namespace IG
 {

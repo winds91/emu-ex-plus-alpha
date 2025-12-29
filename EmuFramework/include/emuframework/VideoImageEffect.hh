@@ -15,23 +15,26 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gfx/Texture.hh>
 #include <imagine/gfx/Program.hh>
 #include <imagine/gfx/Quads.hh>
-#include <imagine/util/enum.hh>
+#endif
 
 namespace EmuEx
 {
 
 using namespace IG;
 
-WISE_ENUM_CLASS((ImageEffectId, uint8_t),
-	(DIRECT, 0),
-	(HQ2X, 1),
-	(SCALE2X, 2),
-	(PRESCALE2X, 3),
-	(PRESCALE3X, 4),
-	(PRESCALE4X, 5));
+enum class ImageEffectId: uint8_t
+{
+	DIRECT = 0,
+	HQ2X = 1,
+	SCALE2X = 2,
+	PRESCALE2X = 3,
+	PRESCALE3X = 4,
+	PRESCALE4X = 5
+};
 
 class VideoImageEffect
 {

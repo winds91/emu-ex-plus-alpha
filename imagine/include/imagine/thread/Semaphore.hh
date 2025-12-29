@@ -18,7 +18,9 @@
 #ifdef __APPLE__
 #include <imagine/thread/MachSemaphore.hh>
 #else
-#include <semaphore>
+	#ifndef IG_USE_MODULE_STD
+	#include <semaphore>
+	#endif
 
 namespace IG
 {
@@ -26,5 +28,4 @@ template<unsigned LeastMaxValue>
 using counting_semaphore = std::counting_semaphore<LeastMaxValue>;
 using binary_semaphore = std::binary_semaphore;
 }
-
 #endif

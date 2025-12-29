@@ -13,20 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with GBA.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/Cheats.hh>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/viewUtils.hh>
 #include "EmuCheatViews.hh"
 #include "MainSystem.hh"
 #include "GBASys.hh"
-#include <imagine/fs/FS.hh>
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 #include <core/gba/gbaCheats.h>
 #include <core/gba/gba.h>
+import emuex;
+import imagine;
 
 void cheatsEnable(CheatsData&);
 void cheatsDisable(ARM7TDMI&, CheatsData&);

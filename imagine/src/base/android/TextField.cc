@@ -13,13 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/input/TextField.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <jni.h>
-import imagine;
 
 namespace IG::Input
 {
 
-constexpr SystemLogger log{"TextInput"};
+static SystemLogger log{"TextInput"};
 static JNI::InstMethod<jobject(jstring, jstring, jint, jint, jint, jint, jint, jlong)> jNewTextEntry{};
 static JNI::InstMethod<void(jboolean)> jFinishTextInput{};
 static JNI::InstMethod<void(jint, jint, jint, jint)> jPlaceTextInput{};

@@ -13,23 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with NEO.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "unzip"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/bit.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/string.h>
-#include <cstdlib>
-
 extern "C"
 {
 	#include <gngeo/unzip.h>
 	#include <gngeo/state.h>
 }
+
+import imagine;
+import std;
 
 using namespace IG;
 
@@ -40,6 +31,8 @@ struct ZFILE
 	ArchiveIO io;
 	FS::ArchiveIterator *arch;
 };
+
+namespace EmuEx { static IG::SystemLogger log{"MSX.emu"}; }
 
 ZFILE *gn_unzip_fopen(PKZIP *archPtr, const char *filename, uint32_t fileCRC)
 {
@@ -60,7 +53,7 @@ ZFILE *gn_unzip_fopen(PKZIP *archPtr, const char *filename, uint32_t fileCRC)
 			return new ZFILE{std::move(entry), archPtr};
 		}
 	}
-	logMsg("file:%s crc32:0x%X not found in archive", filename, fileCRC);
+	EmuEx::log.info("file:{} crc32:{:X} not found in archive", filename, fileCRC);
 	return nullptr;
 }
 
@@ -87,7 +80,7 @@ PKZIP *gn_open_zip(void *contextPtr, const char *path)
 	}
 	catch(...)
 	{
-		logErr("error opening archive:%s", path);
+		EmuEx::log.error("error opening archive:{}", path);
 		return nullptr;
 	}
 }
@@ -106,11 +99,11 @@ uint8_t *gn_unzip_file_malloc(PKZIP *archPtr, const char *filename, uint32_t fil
 	}
 	auto closeZ = IG::scopeGuard([&](){ gn_unzip_fclose(z); });
 	unsigned int size = z->io.size();
-	auto buff = (uint8_t*)malloc(size);
+	auto buff = (uint8_t*)std::malloc(size);
 	if(gn_unzip_fread(z, buff, size) != (int)size)
 	{
-		logErr("read error in gn_unzip_file_malloc");
-		free(buff);
+		EmuEx::log.error("read error in gn_unzip_file_malloc");
+		std::free(buff);
 		return nullptr;
 	}
 	*outlen = size;

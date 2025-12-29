@@ -13,6 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/io/AAssetIO.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/asset_manager.h>
 #include <unistd.h>
 #include <sys/mman.h>
@@ -21,7 +23,7 @@ import imagine.internal.io;
 namespace IG
 {
 
-constexpr SystemLogger log{"AAssetIO"};
+static SystemLogger log{"AAssetIO"};
 
 template class IOUtils<AAssetIO>;
 

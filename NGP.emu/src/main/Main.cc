@@ -13,20 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with NGP.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuSystemInlines.hh>
 #include <emuframework/EmuAppInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 #include <mednafen/state-driver.h>
 #include <mednafen/MemoryStream.h>
 #include <ngp/neopop.h>
 #include <ngp/flash.h>
 #include <ngp/sound.h>
 #include <mednafen-emuex/MDFNUtils.hh>
+import imagine;
 
 namespace MDFN_IEN_NGP
 {
@@ -37,6 +32,7 @@ uint32 GetSoundRate();
 namespace EmuEx
 {
 
+constexpr SystemLogger log{"NGP.emu"};
 const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nMednafen Team\nmednafen.github.io";
 bool EmuApp::needsGlobalInstance = true;
 
@@ -61,7 +57,7 @@ const char *EmuSystem::systemName() const
 
 void NgpSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	MDFN_IEN_NGP::reset();
 }
 
@@ -81,13 +77,13 @@ static FS::PathString saveFilename(const EmuApp &app)
 
 void NgpSystem::loadBackupMemory(EmuApp &)
 {
-	logMsg("loading flash");
+	log.info("loading flash");
 	MDFN_IEN_NGP::FLASH_LoadNV();
 }
 
 void NgpSystem::onFlushBackupMemory(EmuApp &, BackupMemoryDirtyFlags)
 {
-	logMsg("saving flash");
+	log.info("saving flash");
 	MDFN_IEN_NGP::FLASH_SaveNV();
 }
 
@@ -122,7 +118,7 @@ void NgpSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 	uint32 mixRate = std::round(audioMixRate(outputRate, outputFrameRate));
 	if(mixRate == GetSoundRate())
 		return;
-	logMsg("set sound mix rate:%d", (int)mixRate);
+	log.info("set sound mix rate:{}", mixRate);
 	MDFNNGPC_SetSoundRate(mixRate);
 }
 
@@ -162,7 +158,7 @@ void system_io_flash_write(uint8_t* buffer, uint32 len)
 	if(!len)
 		return;
 	auto saveStr = saveFilename(gApp());
-	logMsg("writing flash %s", saveStr.data());
+	EmuEx::log.info("writing flash:{}", saveStr);
 	IG::FileUtils::writeToUri(gAppContext(), saveStr, {buffer, len});
 }
 

@@ -13,54 +13,22 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-#include "utils.hh"
-import imagine.gfx;
-
-#ifndef GL_TEXTURE_SWIZZLE_R
-#define GL_TEXTURE_SWIZZLE_R 0x8E42
-#endif
-
-#ifndef GL_TEXTURE_SWIZZLE_G
-#define GL_TEXTURE_SWIZZLE_G 0x8E43
-#endif
-
-#ifndef GL_TEXTURE_SWIZZLE_B
-#define GL_TEXTURE_SWIZZLE_B 0x8E44
-#endif
-
-#ifndef GL_TEXTURE_SWIZZLE_A
-#define GL_TEXTURE_SWIZZLE_A 0x8E45
-#endif
-
-#ifndef GL_TEXTURE_SWIZZLE_RGBA
-#define GL_TEXTURE_SWIZZLE_RGBA 0x8E46
-#endif
-
-#ifndef GL_UNPACK_ROW_LENGTH
-#define GL_UNPACK_ROW_LENGTH 0x0CF2
-#endif
-
-#ifndef GL_PIXEL_UNPACK_BUFFER
-#define GL_PIXEL_UNPACK_BUFFER 0x88EC
-#endif
-
-#ifndef GL_TEXTURE_EXTERNAL_OES
-#define GL_TEXTURE_EXTERNAL_OES 0x8D65
-#endif
-
-#ifndef GL_UNSIGNED_INT_8_8_8_8_REV
-#define GL_UNSIGNED_INT_8_8_8_8_REV 0x8367
-#endif
-
-#ifndef GL_RGB5
-#define GL_RGB5 0x8050
+#include <imagine/config/macros.h>
+#include <imagine/gfx/Texture.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/data-type/image/PixmapSource.hh>
+#include <imagine/util/opengl/glUtils.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/opengl/glHeaders.h>
+#ifdef __ANDROID__
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #endif
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"GLTexture"};
+static SystemLogger log{"GLTexture"};
 
 static int makeUnpackAlignment(uintptr_t addr)
 {
@@ -127,7 +95,7 @@ static GLenum makeGLFormat(const Renderer &r, PixelFormat format)
 		case PixelFmtRGBA4444:
 			return GL_RGBA;
 		case PixelFmtBGRA8888:
-			assert(r.support.hasBGRPixels);
+			assume(r.support.hasBGRPixels);
 			return GL_BGRA;
 		default: std::unreachable();
 	}
@@ -307,8 +275,8 @@ int Texture::levels() const
 
 bool Texture::setFormat(PixmapDesc desc, int levels, ColorSpace colorSpace, TextureSamplerConfig samplerConf)
 {
-	assumeExpr(desc.w());
-	assumeExpr(desc.h());
+	assume(desc.w());
+	assume(desc.h());
 	if(renderer().support.textureSizeSupport.supportsMipmaps(desc.w(), desc.h()))
 	{
 		if(!levels)
@@ -325,15 +293,15 @@ bool Texture::setFormat(PixmapDesc desc, int levels, ColorSpace colorSpace, Text
 		task().runSync(
 			[=, &r = std::as_const(renderer()), &texNameRef = texName_.get()](RendererTask::TaskContext ctx)
 			{
-				auto texName = makeGLTextureName(texNameRef);
+				auto texName = GL::makeTextureName(texNameRef);
 				texNameRef = texName;
 				ctx.notifySemaphore();
 				glBindTexture(GL_TEXTURE_2D, texName);
 				auto internalFormat = makeGLSizedInternalFormat(r, desc.format, isSrgb);
 				log.info("texture:0x{:X} storage size:{}x{} levels:{} internal format:{} {}",
-					texName, desc.w(), desc.h(), levels, glImageFormatToString(internalFormat),
+					texName, desc.w(), desc.h(), levels, GL::imageFormatToString(internalFormat),
 					desc.format == IG::PixelFmtBGRA8888 ? "write format:BGRA" : "");
-				runGLChecked([&]()
+				GL::runChecked([&]()
 				{
 					r.support.glTexStorage2D(GL_TEXTURE_2D, levels, internalFormat, desc.w(), desc.h());
 				}, log, Renderer::checkGLErrors, "glTexStorage2D()");
@@ -350,7 +318,7 @@ bool Texture::setFormat(PixmapDesc desc, int levels, ColorSpace colorSpace, Text
 				auto texName = currTexName; // a copy of texName_ is passed by value for the async case to avoid accessing this->texName_
 				if(remakeTexName)
 				{
-					texName = makeGLTextureName(texName);
+					texName = GL::makeTextureName(texName);
 					texNameRef = texName;
 					ctx.notifySemaphore();
 				}
@@ -359,13 +327,13 @@ bool Texture::setFormat(PixmapDesc desc, int levels, ColorSpace colorSpace, Text
 				auto dataType = makeGLDataType(desc.format);
 				auto internalFormat = makeGLInternalFormat(r, desc.format, false);
 				log.info("texture:0x{:X} storage size:{}x{} levels:{} internal format:{} image format:{}:{} {}",
-					texName, desc.w(), desc.h(), levels, glImageFormatToString(internalFormat),
-					glImageFormatToString(format), glDataTypeToString(dataType),
+					texName, desc.w(), desc.h(), levels, GL::imageFormatToString(internalFormat),
+					GL::imageFormatToString(format), GL::dataTypeToString(dataType),
 					desc.format == IG::PixelFmtBGRA8888 && internalFormat != GL_BGRA ? "write format:BGRA" : "");
 				int w = desc.w(), h = desc.h();
 				for(auto i : iotaCount(levels))
 				{
-					runGLChecked([&]()
+					GL::runChecked([&]()
 					{
 						glTexImage2D(GL_TEXTURE_2D, i, internalFormat, w, h, 0, format, dataType, nullptr);
 					}, log, Renderer::checkGLErrors, "glTexImage2D()");
@@ -390,14 +358,15 @@ void Texture::writeAligned(int level, PixmapView pixmap, WPt destPos, int assume
 		return;
 	}
 	auto &r = renderer();
-	assumeExpr(destPos.x + pixmap.w() <= size(level).x);
-	assumeExpr(destPos.y + pixmap.h() <= size(level).y);
-	assumeExpr(pixmap.format().bytesPerPixel() == pixDesc.format.bytesPerPixel());
+	assume(destPos.x + pixmap.w() <= size(level).x);
+	assume(destPos.y + pixmap.h() <= size(level).y);
+	assume(pixmap.format().bytesPerPixel() == pixDesc.format.bytesPerPixel());
 	if(!assumeAlign)
 		assumeAlign = unpackAlignForAddrAndPitch(pixmap.data(), pixmap.pitchBytes());
 	if((uintptr_t)pixmap.data() % (uintptr_t)assumeAlign != 0)
 	{
-		bug_unreachable("expected data from address %p to be aligned to %u bytes", pixmap.data(), assumeAlign);
+		log.error("expected data from address {} to be aligned to {} bytes", (void*)pixmap.data(), assumeAlign);
+		unreachable();
 	}
 	auto hasUnpackRowLength = r.support.hasUnpackRowLength;
 	bool makeMipmaps = writeFlags.makeMipmaps && canUseMipmaps();
@@ -412,7 +381,7 @@ void Texture::writeAligned(int level, PixmapView pixmap, WPt destPos, int assume
 					glPixelStorei(GL_UNPACK_ROW_LENGTH, pixmap.pitchPx());
 				GLenum format = makeGLFormat(r, pixmap.format());
 				GLenum dataType = makeGLDataType(pixmap.format());
-				runGLChecked([&]()
+				GL::runChecked([&]()
 				{
 					glTexSubImage2D(GL_TEXTURE_2D, level, destPos.x, destPos.y,
 						pixmap.w(), pixmap.h(), format, dataType, pixmap.data());
@@ -440,7 +409,7 @@ void Texture::writeAligned(int level, PixmapView pixmap, WPt destPos, int assume
 			log.error("error getting buffer for writeAligned()");
 			return;
 		}
-		assumeExpr(pixmap.format().bytesPerPixel() == lockBuff.pixmap().format().bytesPerPixel());
+		assume(pixmap.format().bytesPerPixel() == lockBuff.pixmap().format().bytesPerPixel());
 		lockBuff.pixmap().write(pixmap);
 		unlock(lockBuff, writeFlags);
 	}
@@ -474,8 +443,8 @@ LockedTextureBuffer Texture::lock(int level, IG::WindowRect rect, TextureBufferF
 		log.error("called lock() on uninitialized texture");
 		return {};
 	}
-	assumeExpr(rect.x2  <= size(level).x);
-	assumeExpr(rect.y2 <= size(level).y);
+	assume(rect.x2  <= size(level).x);
+	assume(rect.y2 <= size(level).y);
 	const auto bufferBytes = pixDesc.format.pixelBytes(rect.xSize() * rect.ySize());
 	char *data;
 	if(bufferFlags.clear)
@@ -497,7 +466,7 @@ void Texture::unlock(LockedTextureBuffer lockBuff, TextureWriteFlags writeFlags)
 		return;
 	if(lockBuff.pbo())
 	{
-		assert(renderer().support.hasPBOFuncs);
+		assume(renderer().support.hasPBOFuncs);
 	}
 	bool makeMipmaps = writeFlags.makeMipmaps && canUseMipmaps();
 	if(makeMipmaps)
@@ -514,7 +483,7 @@ void Texture::unlock(LockedTextureBuffer lockBuff, TextureWriteFlags writeFlags)
 			glPixelStorei(GL_UNPACK_ALIGNMENT, unpackAlignForAddrAndPitch(nullptr, pix.pitchBytes()));
 			if(pbo)
 			{
-				assumeExpr(r.support.hasUnpackRowLength);
+				assume(r.support.hasUnpackRowLength);
 				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 				glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo);
 				r.support.glFlushMappedBufferRange(GL_PIXEL_UNPACK_BUFFER, (GLintptr)bufferOffset, pix.bytes());
@@ -526,7 +495,7 @@ void Texture::unlock(LockedTextureBuffer lockBuff, TextureWriteFlags writeFlags)
 			}
 			GLenum format = makeGLFormat(r, pix.format());
 			GLenum dataType = makeGLDataType(pix.format());
-			runGLChecked([&]()
+			GL::runChecked([&]()
 			{
 				glTexSubImage2D(GL_TEXTURE_2D, level, destPos.x, destPos.y,
 					pix.w(), pix.h(), format, dataType, bufferOffset);
@@ -549,7 +518,7 @@ void Texture::unlock(LockedTextureBuffer lockBuff, TextureWriteFlags writeFlags)
 
 WSize Texture::size(int level) const
 {
-	assert(levels_);
+	assume(levels_);
 	int w = pixDesc.w(), h = pixDesc.h();
 	for([[maybe_unused]] auto i : iotaCount(level))
 	{
@@ -613,7 +582,7 @@ Renderer &GLTexture::renderer() const
 
 RendererTask &GLTexture::task() const
 {
-	assumeExpr(taskPtr());
+	assume(taskPtr());
 	return *taskPtr();
 }
 
@@ -625,7 +594,8 @@ static void verifyCurrentTexture2D(TextureRef tex)
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &realTexture);
 	if(tex != (GLuint)realTexture)
 	{
-		bug_unreachable("out of sync, expected %u but got %u, TEXTURE_2D", tex, realTexture);
+		log.error("out of sync, expected {} but got {}, TEXTURE_2D", tex, realTexture);
+		unreachable();
 	}
 }
 
@@ -657,7 +627,7 @@ void GLTexture::setSwizzleForFormatInGL(const Renderer &r, PixelFormatId format,
 
 static void setTexParameteri(GLenum target, GLenum pname, GLint param)
 {
-	runGLChecked([&]()
+	GL::runChecked([&]()
 	{
 		glTexParameteri(target, pname, param);
 	}, log, Renderer::checkGLErrorsVerbose, "glTexParameteri()");
@@ -665,7 +635,7 @@ static void setTexParameteri(GLenum target, GLenum pname, GLint param)
 
 void GLTexture::setSamplerParamsInGL(SamplerParams params, GLenum target)
 {
-	assert(params.magFilter);
+	assume(params.magFilter);
 	setTexParameteri(target, GL_TEXTURE_MAG_FILTER, params.magFilter);
 	setTexParameteri(target, GL_TEXTURE_MIN_FILTER, params.minFilter);
 	setTexParameteri(target, GL_TEXTURE_WRAP_S, params.xWrapMode);
@@ -674,7 +644,7 @@ void GLTexture::setSamplerParamsInGL(SamplerParams params, GLenum target)
 
 void GLTexture::updateFormatInfo(PixmapDesc desc, int8_t levels, GLenum target)
 {
-	assert(levels);
+	assume(levels);
 	levels_ = levels;
 	pixDesc = desc;
 	if(Config::Gfx::OPENGL_TEXTURE_TARGET_EXTERNAL && target == GL_TEXTURE_EXTERNAL_OES)
@@ -692,13 +662,13 @@ void GLTexture::initWithEGLImage(EGLImageKHR eglImg, PixmapDesc desc, SamplerPar
 		task().runSync(
 			[=, &r = std::as_const(r), &texNameRef = texName_.get(), formatID = desc.format.id](RendererTask::TaskContext ctx)
 			{
-				auto texName = makeGLTextureName(texNameRef);
+				auto texName = GL::makeTextureName(texNameRef);
 				texNameRef = texName;
 				glBindTexture(GL_TEXTURE_2D, texName);
 				if(eglImg)
 				{
 					log.info("setting immutable texture:{} with EGL image:{}", texName, eglImg);
-					runGLChecked([&]()
+					GL::runChecked([&]()
 					{
 						r.support.glEGLImageTargetTexStorageEXT(GL_TEXTURE_2D, (GLeglImageOES)eglImg, nullptr);
 					}, log, Renderer::checkGLErrors, "glEGLImageTargetTexStorageEXT()");
@@ -725,7 +695,7 @@ void GLTexture::initWithEGLImage(EGLImageKHR eglImg, PixmapDesc desc, SamplerPar
 				if(eglImg)
 				{
 					log.info("setting texture:0x{:X} with EGL image:{}", texName, eglImg);
-					runGLChecked([&]()
+					GL::runChecked([&]()
 					{
 						glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, (GLeglImageOES)eglImg);
 					}, log, Renderer::checkGLErrors, "glEGLImageTargetTexture2DOES()");
@@ -745,8 +715,8 @@ void GLTexture::updateWithEGLImage(EGLImageKHR eglImg)
 		[=, texName = texName()](RendererTask::TaskContext)
 		{
 			glBindTexture(GL_TEXTURE_2D, texName);
-			assumeExpr(eglImg);
-			runGLChecked([&]()
+			assume(eglImg);
+			GL::runChecked([&]()
 			{
 				glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, (GLeglImageOES)eglImg);
 			}, log, Renderer::checkGLErrors, "glEGLImageTargetTexture2DOES()");

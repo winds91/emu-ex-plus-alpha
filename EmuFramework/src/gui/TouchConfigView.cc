@@ -14,16 +14,13 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/TouchConfigView.hh>
+#include <emuframework/VController.hh>
 #include <emuframework/EmuApp.hh>
 #include <emuframework/AppKeyCode.hh>
 #include <emuframework/viewUtils.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/util/variant.hh>
-#include "PlaceVideoView.hh"
 #include "PlaceVControlsView.hh"
-import std;
+#include "PlaceVideoView.hh"
+import imagine;
 
 namespace EmuEx
 {

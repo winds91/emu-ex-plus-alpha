@@ -19,8 +19,10 @@
 #include <imagine/base/EventLoop.hh>
 #include <imagine/base/ApplicationContext.hh>
 #include <jni.h>
+#ifndef IG_USE_MODULE_STD
 #include <semaphore>
 #include <system_error>
+#endif
 
 namespace IG
 {

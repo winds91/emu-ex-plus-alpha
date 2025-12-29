@@ -14,13 +14,14 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuInput.hh>
-#include <emuframework/EmuOptions.hh>
 #include <emuframework/Option.hh>
-#include <imagine/util/macros.h>
+#include <emuframework/EmuOptions.hh>
 import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"KeyConfig"};
 
@@ -65,7 +66,7 @@ void KeyConfig::writeConfig(FileIO &io) const
 	bytes += name.size(); // name string
 	bytes += 1; // number of mappings present
 	bytes += keyMap.size() * keyMappingSize;
-	assert(bytes <= 0xFFFF);
+	assume(bytes <= 0xFFFF);
 	log.info("saving config:{}, {} bytes", name, bytes);
 	io.put(uint16_t(bytes));
 	io.put(uint16_t(CFGKEY_INPUT_KEY_CONFIGS_V2));

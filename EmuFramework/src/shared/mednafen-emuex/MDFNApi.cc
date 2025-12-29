@@ -20,7 +20,7 @@
 #include <mednafen/movie.h>
 #include <mednafen/cputest/cputest.h>
 #include <imagine/logger/logger.h>
-#include <imagine/config/defs.hh>
+import imagine;
 
 namespace Mednafen
 {

@@ -21,11 +21,12 @@
 #include <imagine/util/string/CStringView.hh>
 #include <imagine/util/enum.hh>
 #include <imagine/util/variant.hh>
+#ifndef IG_USE_MODULE_STD
 #include <vector>
 #include <memory>
 #include <string_view>
 #include <type_traits>
-#include <variant>
+#endif
 
 namespace Config
 {
@@ -48,7 +49,6 @@ inline constexpr bool BASE_SUPPORTS_ORIENTATION_SENSOR = false;
 #endif
 
 #if defined __ANDROID__ || defined CONFIG_OS_IOS
-#define CONFIG_BASE_MULTI_SCREEN
 inline constexpr bool BASE_MULTI_SCREEN = true;
 #else
 inline constexpr bool BASE_MULTI_SCREEN = false;
@@ -66,12 +66,6 @@ inline constexpr bool BASE_MULTI_WINDOW = true;
 inline constexpr bool BASE_MULTI_WINDOW = false;
 #endif
 
-#if defined CONFIG_OS_IOS && defined __ARM_ARCH_6K__
-#define CONFIG_GFX_SOFT_ORIENTATION 1
-#elif !defined __ANDROID__ && !defined CONFIG_OS_IOS
-#define CONFIG_GFX_SOFT_ORIENTATION 1
-#endif
-
 #if defined CONFIG_GFX_SOFT_ORIENTATION
 inline constexpr bool SYSTEM_ROTATES_WINDOWS = false;
 #else
@@ -79,11 +73,11 @@ inline constexpr bool SYSTEM_ROTATES_WINDOWS = true;
 #endif
 
 #if defined __linux__
-#define CONFIG_BASE_GL_PLATFORM_EGL
 inline constexpr bool GL_PLATFORM_EGL = true;
 #else
 inline constexpr bool GL_PLATFORM_EGL = false;
 #endif
+
 inline constexpr bool SYSTEM_FILE_PICKER = Config::envIsAndroid;
 
 #if defined __ANDROID__ || (defined __APPLE__ && TARGET_OS_IPHONE)
@@ -111,7 +105,6 @@ inline constexpr bool DISPLAY_CUTOUT = false;
 #endif
 
 #if defined __ANDROID__
-#define IG_CONFIG_SENSORS
 inline constexpr bool SENSORS = true;
 #else
 inline constexpr bool SENSORS = false;
@@ -168,14 +161,31 @@ struct Orientations
 	static constexpr Orientations all() { return {.portrait = 1, .landscapeRight = 1, .portraitUpsideDown = 1, .landscapeLeft = 1}; }
 };
 
-std::string_view asString(Orientations);
+inline constexpr std::string_view asString(Orientations o)
+{
+	switch(o)
+	{
+		case Orientations{}: return "Unset";
+		case Orientations{.portrait = 1}: return "Portrait";
+		case Orientations{.landscapeRight = 1}: return "Landscape Right";
+		case Orientations{.portraitUpsideDown = 1}: return "Portrait Upside-Down";
+		case Orientations{.landscapeLeft = 1}: return "Landscape Left";
+		case Orientations::allLandscape(): return "Either Landscape";
+		case Orientations::allPortrait(): return "Either Portrait";
+		case Orientations::allButUpsideDown(): return "All But Upside-Down";
+		case Orientations::all(): return "All";
+	}
+	return "Unknown";
+}
 
-WISE_ENUM_CLASS((Rotation, uint8_t),
+enum class Rotation: uint8_t
+{
 	UP,
 	RIGHT,
 	DOWN,
 	LEFT,
-	ANY);
+	ANY
+};
 
 template<>
 constexpr bool isValidProperty(const Rotation &v) { return enumIsValidUpToLast(v); }
@@ -230,11 +240,12 @@ struct WindowDrawParams
 
 enum class ScreenChange : int8_t { added, removed, frameRate };
 
-WISE_ENUM_CLASS((SensorType, uint8_t),
-	(Accelerometer, 1),
-	(Gyroscope, 4),
-	(Light, 5)
-);
+enum class SensorType: uint8_t
+{
+	Accelerometer = 1,
+	Gyroscope = 4,
+	Light = 5
+};
 
 using SensorValues = std::array<float, 3>;
 

@@ -13,13 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/input/inputDefs.hh>
-import imagine;
+#include <imagine/config/macros.h>
+#include <imagine/input/Device.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG::Input
 {
 
-constexpr SystemLogger log{"InputDev"};
+static SystemLogger log{"InputDev"};
 
 constexpr auto keyButtonName(Key b)
 {

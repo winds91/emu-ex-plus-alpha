@@ -13,18 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <archive.h>
 #include <archive_entry.h>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/util/string.h>
-#include <imagine/util/ScopeGuard.hh>
 #include "ziphelper.h"
 #include "MainSystem.hh"
-#include <cstdlib>
+import imagine;
+import std;
 
 namespace EmuEx
 {
@@ -99,7 +93,7 @@ static void *loadFromArchiveIt(FS::ArchiveIterator &it, const char* zipName, con
 			return buff;
 		}
 	}
-	logErr("file %s not in %sarchive:%s", fileName,
+	EmuEx::log.error("file {} not in {}archive:{}", fileName,
 		cachedZipIt.hasEntry() && cachedZipName == zipName ? "cached " : "", zipName);
 	return nullptr;
 }
@@ -121,14 +115,14 @@ void* zipLoadFile(const char* zipName, const char* fileName, int* size)
 	}
 	catch(...)
 	{
-		logErr("error opening archive:%s", zipName);
+		EmuEx::log.error("error opening archive:{}", zipName);
 		return nullptr;
 	}
 }
 
 bool zipStartWrite(const char *fileName)
 {
-	assert(!writeArch);
+	assume(!writeArch);
 	writeArch = archive_write_new();
 	archive_write_set_format_zip(writeArch);
 	if(std::string_view{fileName} == ":::B")
@@ -158,7 +152,7 @@ bool zipStartWrite(const char *fileName)
 
 int zipSaveFile(const char* zipName, const char* fileName, int append, const void* buffer, int size)
 {
-	assert(writeArch);
+	assume(writeArch);
 	auto entry = archive_entry_new();
 	auto freeEntry = IG::scopeGuard([&](){ archive_entry_free(entry); });
 	archive_entry_set_pathname(entry, fileName);
@@ -167,12 +161,12 @@ int zipSaveFile(const char* zipName, const char* fileName, int append, const voi
 	archive_entry_set_perm(entry, 0644);
 	if(archive_write_header(writeArch, entry) < ARCHIVE_OK)
 	{
-		logErr("error writing archive header: %s", archive_error_string(writeArch));
+		EmuEx::log.error("error writing archive header: {}", archive_error_string(writeArch));
 		return 0;
 	}
 	if(archive_write_data(writeArch, buffer, size) < ARCHIVE_OK)
 	{
-		logErr("error writing archive data: %s", archive_error_string(writeArch));
+		EmuEx::log.error("error writing archive data: {}", archive_error_string(writeArch));
 		return 0;
 	}
 	return 1;
@@ -180,7 +174,7 @@ int zipSaveFile(const char* zipName, const char* fileName, int append, const voi
 
 void zipEndWrite()
 {
-	assert(writeArch);
+	assume(writeArch);
 	archive_write_close(writeArch);
 	archive_write_free(writeArch);
 	writeArch = {};

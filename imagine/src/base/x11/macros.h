@@ -1,3 +1,5 @@
+#pragma once
+
 /*  This file is part of Imagine.
 
 	Imagine is free software: you can redistribute it and/or modify
@@ -13,20 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-module;
+#define XCB_REPLY_CONNECTION_ARG(connection, ...) connection
 
-#include <imagine/bluetooth/BluetoothInputDevice.hh>
+#define XCB_REPLY(call, ...) \
+	std::unique_ptr<call##_reply_t, MallocDeleter>( \
+		call##_reply(XCB_REPLY_CONNECTION_ARG(__VA_ARGS__), call(__VA_ARGS__), nullptr) \
+	)
 
-export module imagine.bluetooth;
-export import imagine;
-
-export namespace IG::Bluetooth
-{
-	using IG::Bluetooth::closeBT;
-	using IG::Bluetooth::closeDevices;
-	using IG::Bluetooth::connectPendingDevs;
-	using IG::Bluetooth::devsConnected;
-	using IG::Bluetooth::listenForDevices;
-	using IG::Bluetooth::pendingDevs;
-	using IG::Bluetooth::scanForDevices;
-}
+#define XCB_REPLY_UNCHECKED(call, ...) \
+	std::unique_ptr<call##_reply_t, MallocDeleter>( \
+		call##_reply(XCB_REPLY_CONNECTION_ARG(__VA_ARGS__), call##_unchecked(__VA_ARGS__), nullptr) \
+	)

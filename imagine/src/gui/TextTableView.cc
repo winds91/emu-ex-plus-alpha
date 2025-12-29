@@ -13,15 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-import imagine.gui;
+#include <imagine/gui/TextTableView.hh>
 
 namespace IG
 {
 
 TextMenuItem &TextTableView::item(size_t idx)
 {
-	assert(idx < textItem.size());
+	assume(idx < textItem.size());
 	return textItem[idx];
 }
 

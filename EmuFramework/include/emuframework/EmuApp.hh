@@ -27,10 +27,12 @@
 #include <emuframework/RecentContent.hh>
 #include <emuframework/RewindManager.hh>
 #include <emuframework/AssetManager.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/input/inputDefs.hh>
 #include <imagine/input/android/MogaManager.hh>
 #include <imagine/gui/ViewManager.hh>
 #include <imagine/gui/ToastView.hh>
+#include <imagine/gui/AlertView.hh>
 #include <imagine/fs/FSDefs.hh>
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/base/Application.hh>
@@ -43,17 +45,20 @@
 #include <imagine/font/Font.hh>
 #include <imagine/util/used.hh>
 #include <imagine/util/enum.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <cstring>
 #include <span>
 #include <string>
+#endif
 
+#ifndef IG_USE_MODULE_IMAGINE
 namespace IG
 {
 class FileIO;
 class BasicNavView;
-class YesNoAlertView;
-class ToastView;
 }
+#endif
 
 namespace EmuEx
 {
@@ -70,13 +75,15 @@ enum class AltSpeedMode
 	fast, slow
 };
 
-WISE_ENUM_CLASS((OutputFrameRateMode, uint8_t),
+enum class OutputFrameRateMode: uint8_t
+{
 	Auto, Detect, Screen
-);
+};
 
-WISE_ENUM_CLASS((CPUAffinityMode, uint8_t),
+enum class CPUAffinityMode: uint8_t
+{
 	Auto, Any, Manual
-);
+};
 
 struct DrawableConfig
 {
@@ -92,7 +99,7 @@ struct DrawableConfig
 	constexpr operator Gfx::DrawableConfig() const { return {.pixelFormat = pixelFormat, .colorSpace = colorSpace}; }
 };
 
-constexpr float menuVideoBrightnessScale = .25f;
+inline constexpr float menuVideoBrightnessScale = .25f;
 
 class EmuApp : public IG::Application
 {

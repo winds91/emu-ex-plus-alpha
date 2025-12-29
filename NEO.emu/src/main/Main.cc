@@ -13,16 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with NEO.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuSystemInlines.hh>
 #include <emuframework/EmuAppInlines.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/zlib.hh>
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
@@ -35,58 +27,19 @@ extern "C"
 	#include <gngeo/video.h>
 	#include <gngeo/resfile.h>
 	#include <gngeo/menu.h>
+}
 
+import imagine;
+
+extern "C"
+{
 	CONFIG conf{};
 	GN_Rect visible_area;
-
 	GN_Surface *buffer{};
 	static CONF_ITEM rompathConfItem{};
 
-	CONF_ITEM* cf_get_item_by_name(const char *nameStr)
-	{
-		using namespace EmuEx;
-		static CONF_ITEM conf{};
-		std::string_view name{nameStr};
-		if(name == "dump")
-		{
-			static CONF_ITEM dump{};
-			return &dump;
-		}
-		else if(name == "effect")
-		{
-			strcpy(conf.data.dt_str.str, "none");
-		}
-		else if(name == "blitter")
-		{
-			strcpy(conf.data.dt_str.str, "soft");
-		}
-		else if(name == "transpack")
-		{
-			strcpy(conf.data.dt_str.str, "");
-		}
-		else
-		{
-			logErr("unknown conf item %s", nameStr);
-		}
-		return &conf;
-	}
-
-	const char *get_gngeo_dir(void *contextPtr)
-	{
-		auto &sys = EmuEx::EmuApp::get(*(IG::ApplicationContext*)contextPtr).system();
-		return sys.contentSaveDirectoryPtr();
-	}
-
-	PathArray get_rom_path(void *contextPtr)
-	{
-		auto &sys = EmuEx::EmuApp::get(*(IG::ApplicationContext*)contextPtr).system();
-		PathArray path;
-		strncpy(path.data, sys.contentDirectory().data(), sizeof(path));
-		return path;
-	}
+	void main_frame(void *emuTaskPtr, void *neoSystemPtr, void *emuVideoPtr);
 }
-
-CLINK void main_frame(void *emuTaskPtr, void *neoSystemPtr, void *emuVideoPtr);
 
 namespace EmuEx
 {
@@ -139,7 +92,7 @@ EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter = hasNeoGeoExtension;
 
 void NeoSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	neogeo_reset();
 	cpu_z80_init();
 	YM2610Reset();
@@ -218,7 +171,7 @@ size_t NeoSystem::writeState(std::span<uint8_t> buff, SaveStateFlags flags)
 	}
 	else
 	{
-		assert(saveStateSize);
+		assume(saveStateSize);
 		auto stateArr = DynArray<uint8_t>{saveStateSize};
 		MapIO buffIO{stateArr};
 		openState(buffIO, STWRITE);
@@ -325,7 +278,7 @@ void NeoSystem::loadContent(IO &, EmuSystemCreateParams, OnLoadProgressDelegate 
 	if(auto memcardPath = app.contentSaveFilePath(".memcard"), sharedMemcardPath = app.contentSavePath("memcard");
 		!ctx.fileUriExists(memcardPath) && ctx.fileUriExists(sharedMemcardPath))
 	{
-		logMsg("copying shared memcard");
+		log.info("copying shared memcard");
 		FileUtils::readFromUri(ctx, sharedMemcardPath, {memory.memcard, 0x800});
 		FileUtils::writeToUri(ctx, memcardPath, {memory.memcard, 0x800});
 	}
@@ -339,7 +292,7 @@ void NeoSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 	if(conf.sample_rate == mixRate)
 		return;
 	conf.sample_rate = mixRate;
-	logMsg("set sound mix rate:%d", (int)mixRate);
+	log.info("set sound mix rate:{}", mixRate);
 	YM2610ChangeSamplerate(mixRate);
 }
 
@@ -392,18 +345,18 @@ void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
 
 using namespace EmuEx;
 
-CLINK int gn_strictROMChecking()
+extern "C" int gn_strictROMChecking()
 {
 	return static_cast<NeoSystem&>(gSystem()).optionStrictROMChecking;
 }
 
-CLINK ROM_DEF *res_load_drv(void *contextPtr, const char *name)
+extern "C" ROM_DEF *res_load_drv(void *contextPtr, const char *name)
 {
 	auto drvFilename = IG::format<FS::PathString>(DATAFILE_PREFIX "rom/{}.drv", name);
 	auto io = EmuEx::openGngeoDataIO(*((IG::ApplicationContext*)contextPtr), drvFilename);
 	if(!io)
 	{
-		logErr("Can't open driver %s", name);
+		EmuEx::log.error("Can't open driver:{}", name);
 		return nullptr;
 	}
 
@@ -433,12 +386,12 @@ CLINK ROM_DEF *res_load_drv(void *contextPtr, const char *name)
 	return drv;
 }
 
-CLINK void *res_load_data(void *contextPtr, const char *name)
+extern "C" void *res_load_data(void *contextPtr, const char *name)
 {
 	auto io = EmuEx::openGngeoDataIO(*((IG::ApplicationContext*)contextPtr), name);
 	if(!io)
 	{
-		logErr("Can't data file %s", name);
+		EmuEx::log.error("Can't open data file:{}", name);
 		return nullptr;
 	}
 	auto size = io.size();
@@ -447,7 +400,7 @@ CLINK void *res_load_data(void *contextPtr, const char *name)
 	return buffer;
 }
 
-CLINK void screen_update(void *emuTaskCtxPtr, void *neoSystemPtr, void *emuVideoPtr)
+extern "C" void screen_update(void *emuTaskCtxPtr, void *neoSystemPtr, void *emuVideoPtr)
 {
 	auto taskCtxPtr = (EmuSystemTaskContext*)emuTaskCtxPtr;
 	auto emuVideo = (EmuVideo*)emuVideoPtr;
@@ -462,7 +415,7 @@ CLINK void screen_update(void *emuTaskCtxPtr, void *neoSystemPtr, void *emuVideo
 	}
 }
 
-CLINK int currentZ80Timeslice()
+extern "C" int currentZ80Timeslice()
 {
 	return IG::remap(memory.vid.current_line, 0, 264, 0, 256);
 }
@@ -480,7 +433,7 @@ void memcardWritten()
 void gn_init_pbar(unsigned action, int size)
 {
 	auto &sys = static_cast<NeoSystem&>(gSystem());
-	logMsg("init pbar %d, %d", action, size);
+	EmuEx::log.info("init pbar:{},{}", action, size);
 	if(sys.onLoadProgress)
 	{
 		auto actionString = [](unsigned action)
@@ -500,9 +453,52 @@ void gn_init_pbar(unsigned action, int size)
 void gn_update_pbar(int pos)
 {
 	auto &sys = static_cast<NeoSystem&>(gSystem());
-	logMsg("update pbar %d", pos);
+	EmuEx::log.info("update pbar:{}", pos);
 	if(sys.onLoadProgress)
 	{
 		sys.onLoadProgress(pos, 0, nullptr);
 	}
+}
+
+extern "C" CONF_ITEM* cf_get_item_by_name(const char *nameStr)
+{
+	using namespace EmuEx;
+	static CONF_ITEM conf{};
+	std::string_view name{nameStr};
+	if(name == "dump")
+	{
+		static CONF_ITEM dump{};
+		return &dump;
+	}
+	else if(name == "effect")
+	{
+		strcpy(conf.data.dt_str.str, "none");
+	}
+	else if(name == "blitter")
+	{
+		strcpy(conf.data.dt_str.str, "soft");
+	}
+	else if(name == "transpack")
+	{
+		strcpy(conf.data.dt_str.str, "");
+	}
+	else
+	{
+		EmuEx::log.error("unknown conf item:{}", nameStr);
+	}
+	return &conf;
+}
+
+extern "C" const char *get_gngeo_dir(void *contextPtr)
+{
+	auto &sys = EmuEx::EmuApp::get(*(IG::ApplicationContext*)contextPtr).system();
+	return sys.contentSaveDirectoryPtr();
+}
+
+extern "C" PathArray get_rom_path(void *contextPtr)
+{
+	auto &sys = EmuEx::EmuApp::get(*(IG::ApplicationContext*)contextPtr).system();
+	PathArray path;
+	strncpy(path.data, sys.contentDirectory().data(), sizeof(path));
+	return path;
 }

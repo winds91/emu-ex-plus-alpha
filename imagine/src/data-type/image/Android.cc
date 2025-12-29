@@ -13,14 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/data-type/image/PixmapReader.hh>
+#include <imagine/data-type/image/PixmapWriter.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/bitmap.h>
 import imagine.internal.android;
-import imagine.data;
 
 namespace IG::Data
 {
 
-constexpr SystemLogger log{"BitmapData"};
+static SystemLogger log{"BitmapData"};
 
 BitmapFactoryReader::BitmapFactoryReader(ApplicationContext ctx):
 	appPtr{&ctx.application()},

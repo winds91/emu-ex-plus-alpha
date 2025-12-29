@@ -26,13 +26,8 @@
 #include <stella/common/AudioSettings.hxx>
 #include <stella/common/TimerManager.hxx>
 #include <stella/emucore/M6532.hxx>
-// TODO: Some Stella types collide with MacTypes.h
-#define Debugger DebuggerMac
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/logger/logger.h>
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuApp.hh>
-#undef Debugger
+import emuex;
+import imagine;
 
 OSystem::OSystem(EmuEx::EmuApp &app):
 	appPtr{&app},

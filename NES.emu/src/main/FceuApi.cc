@@ -13,14 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with NES.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
-
 #include <imagine/logger/logger.h>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/IO.hh>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/FilePicker.hh>
 #include "MainSystem.hh"
 #include <fceu/driver.h>
 #include <fceu/video.h>
@@ -31,6 +24,8 @@
 #include <fceu/cart.h>
 #include <fceu/nsf.h>
 #include <fceu/x6502.h>
+import emuex;
+import imagine;
 
 bool turbo = 0;
 int closeFinishedMovie = 0;
@@ -266,7 +261,8 @@ void RefreshThrottleFPS() {}
 
 void FCEUD_GetPalette(uint8 index, uint8 *r, uint8 *g, uint8 *b)
 {
-	bug_unreachable("called FCEUD_GetPalette()");
+	EmuEx::log.warn("called FCEUD_GetPalette()");
+	IG::unreachable();
 }
 
 // for boards/transformer.cpp

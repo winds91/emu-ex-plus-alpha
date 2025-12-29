@@ -14,17 +14,15 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuVideoLayer.hh>
-#include <emuframework/EmuInputView.hh>
 #include <emuframework/EmuVideo.hh>
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/VController.hh>
 #include <emuframework/Option.hh>
-#include <emuframework/EmuOptions.hh>
-#include <imagine/util/macros.h>
-import imagine.gfx;
+import imagine;
+import glm;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"VideoLayer"};
 
@@ -389,7 +387,7 @@ static auto &channelBrightnessVal(ImageChannel ch, auto &brightnessUnscaled)
 		case ImageChannel::Green: return brightnessUnscaled.g;
 		case ImageChannel::Blue: return brightnessUnscaled.b;
 	}
-	bug_unreachable("invalid ImageChannel");
+	unreachable();
 }
 
 float EmuVideoLayer::channelBrightness(ImageChannel ch) const

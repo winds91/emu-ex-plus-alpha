@@ -13,15 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/base/android/AndroidApplication.hh>
+#include <imagine/util/ranges.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/api-level.h>
 #include <android/input.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Input"};
+static SystemLogger log{"Input"};
 
 extern int32_t (*AMotionEvent_getActionButton_)(const AInputEvent* motion_event);
 
@@ -197,7 +199,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 					size_t actionPIdx = actionBits >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
 					auto pointers = AMotionEvent_getPointerCount(event);
 					uint32_t metaState = AMotionEvent_getMetaState(event);
-					assumeExpr(pointers >= 1);
+					assume(pointers >= 1);
 					if(src == Input::Source::TOUCHSCREEN)
 					{
 						bool handled = false;
@@ -338,7 +340,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 				return false;
 			}
 			auto time = makeTimeFromKeyEvent(event);
-			assert((uint32_t)keyCode < Keycode::COUNT);
+			assume((uint32_t)keyCode < Keycode::COUNT);
 			auto action = AKeyEvent_getAction(event) == AKEY_EVENT_ACTION_UP ? Action::RELEASED : Action::PUSHED;
 			cancelKeyRepeatTimer();
 			Key key = keyCode & 0x1ff;

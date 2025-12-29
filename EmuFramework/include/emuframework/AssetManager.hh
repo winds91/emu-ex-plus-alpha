@@ -15,23 +15,27 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gfx/Texture.hh>
 #include <imagine/data-type/image/PixmapReader.hh>
 #include <imagine/util/enum.hh>
 #include <imagine/util/rectangle2.h>
+#endif
 
 namespace EmuEx
 {
 
 using namespace IG;
 
-WISE_ENUM_CLASS((AssetFileID, size_t),
+enum class AssetFileID: size_t
+{
 	ui,
 	gamepadOverlay,
-	keyboardOverlay);
+	keyboardOverlay
+};
 
-WISE_ENUM_CLASS((AssetID, size_t),
+enum class AssetID: size_t
+{
 	arrow,
 	accept,
 	close,
@@ -49,9 +53,10 @@ WISE_ENUM_CLASS((AssetID, size_t),
 	openFile,
 	rewind,
 	gamepadOverlay,
-	keyboardOverlay);
+	keyboardOverlay
+};
 
-constexpr const char *assetFilename[wise_enum::size<AssetFileID>]
+inline constexpr const char *assetFilename[enumCount<AssetFileID>]
 {
 	"ui.png",
 	"gpOverlay.png",
@@ -77,7 +82,7 @@ public:
 	Gfx::TextureSpan collectTextCloseAsset(Gfx::Renderer&) const;
 
 private:
-	mutable Gfx::Texture assetBuffImg[wise_enum::size<AssetFileID>];
+	mutable Gfx::Texture assetBuffImg[enumCount<AssetFileID>];
 public:
 	[[no_unique_address]] IG::Data::PixmapReader pixmapReader;
 };

@@ -13,15 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Saturn.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuSystemInlines.hh>
 #include <emuframework/EmuAppInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/IOStream.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
 #include <mednafen/cdrom/CDInterface.h>
 #include <mednafen/state-driver.h>
 #include <mednafen/hash/md5.h>
@@ -32,7 +25,8 @@
 #include <ss/vdp2.h>
 #include <mednafen-emuex/MDFNUtils.hh>
 #include <mednafen-emuex/ArchiveVFS.hh>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace MDFN_IEN_SS
 {
@@ -150,7 +144,7 @@ void SaturnSystem::saveCartNV(FileIO &io)
 void SaturnSystem::loadBackupMemory(EmuApp &app)
 {
 	using namespace MDFN_IEN_SS;
-	logMsg("loading backup memory");
+	log.info("loading backup memory");
 	if(ActiveCartType == CART_STV)
 	{
 		app.setupStaticBackupMemoryFile(stvEepromFileIO, saveExtMDFN("seep", noMD5InFilenames), 0x80);
@@ -168,7 +162,7 @@ void SaturnSystem::onFlushBackupMemory(EmuApp &, BackupMemoryDirtyFlags flags)
 	using namespace MDFN_IEN_SS;
 	if(!hasContent())
 		return;
-	logMsg("saving backup memory");
+	log.info("saving backup memory");
 	if(flags & sramDirtyBit && backupRamFileIO)
 		SaveBackupRAM(backupRamFileIO);
 	if(flags & nvramDirtyBit && cartRamFileIO)
@@ -370,7 +364,7 @@ void SaturnSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAu
 
 void SaturnSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	if(mode == ResetMode::SOFT)
 	{
 		MDFN_IEN_SS::ResetPending = true;
@@ -417,7 +411,7 @@ double SaturnSystem::videoAspectRatioScale() const
 	const double widescreenScaler = 4. / 3.; // scale 4:3 to 16:9
 	const bool isWidescreen = widescreenMode == WidescreenMode::On;
 	const double baseLines = 224.;
-	assumeExpr(videoLines.size() != 0);
+	assume(videoLines.size() != 0);
 	const double lineAspectScaler = baseLines / videoLines.size();
 	return (correctLineAspect ? lineAspectScaler : 1.)
 		* (showHOverscan ? horizontalScaler : 1.)

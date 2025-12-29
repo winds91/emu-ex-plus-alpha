@@ -15,6 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with Lynx.emu.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <emuframework/EmuSystem.hh>
 #include <imagine/base/ApplicationContext.hh>
 #include <mednafen/mednafen.h>
 #include <compare>
@@ -30,11 +31,13 @@ enum LynxConfigKey
 	CFGKEY_LOWPASS_FILTER = 258, CFGKEY_NO_MD5_FILENAMES = 259,
 };
 
-WISE_ENUM_CLASS((LynxRotation, uint8_t),
+enum class LynxRotation: uint8_t
+{
 	Auto,
 	Horizontal,
 	VerticalLeft,
-	VerticalRight);
+	VerticalRight
+};
 
 enum class LynxKey : KeyCode;
 

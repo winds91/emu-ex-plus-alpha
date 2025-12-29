@@ -13,14 +13,22 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "utils.hh"
-#include <imagine/util/macros.h>
+#include <imagine/config/macros.h>
+#include <imagine/gfx/Program.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/gfx/RendererTask.hh>
+#include <imagine/gfx/Mat4.hh>
+#include <imagine/util/opengl/glUtils.hh>
+#include <imagine/util/container/ArrayList.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/opengl/glHeaders.h>
 import imagine.internal.gfxOpengl;
+import std;
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"GLProgram"};
+static SystemLogger log{"GLProgram"};
 constexpr size_t maxSourceStrings = 16;
 
 using namespace std::literals;
@@ -35,7 +43,7 @@ static GLuint makeGLProgram(GLuint vShader, GLuint fShader)
 
 static bool linkGLProgram(GLuint program)
 {
-	runGLChecked([&]()
+	GL::runChecked([&]()
 	{
 		glLinkProgram(program);
 	}, log, Renderer::checkGLErrors, "glLinkProgram()");
@@ -61,7 +69,7 @@ void destroyGLShader(RendererTask &rTask, NativeShader s)
 	rTask.run(
 		[shader = s]()
 		{
-			runGLChecked([&]()
+			GL::runChecked([&]()
 			{
 				glDeleteShader(shader);
 			}, log, Renderer::checkGLErrors, "glDeleteShader()");
@@ -81,7 +89,7 @@ void destroyGLProgram(RendererTask &rTask, NativeProgram p)
 	rTask.run(
 		[program = p]()
 		{
-			runGLChecked([&]()
+			GL::runChecked([&]()
 			{
 				glDeleteProgram(program);
 			}, log, Renderer::checkGLErrors, "glDeleteProgram()");
@@ -98,20 +106,20 @@ Program::Program(RendererTask &rTask, NativeShader vShader, NativeShader fShader
 			auto program = makeGLProgram(vShader, fShader);
 			if(!program) [[unlikely]]
 				return;
-			runGLChecked([&]()
+			GL::runChecked([&]()
 			{
 				glBindAttribLocation(program, VATTR_POS, "pos");
 			}, log, Renderer::checkGLErrors, "glBindAttribLocation(..., pos)");
 			if(flags.hasColor)
 			{
-				runGLChecked([&]()
+				GL::runChecked([&]()
 				{
 					glBindAttribLocation(program, VATTR_COLOR, "color");
 				}, log, Renderer::checkGLErrors, "glBindAttribLocation(..., color)");
 			}
 			if(flags.hasTexture)
 			{
-				runGLChecked([&]()
+				GL::runChecked([&]()
 				{
 					glBindAttribLocation(program, VATTR_TEX_UV, "texUV");
 				}, log, Renderer::checkGLErrors, "glBindAttribLocation(..., texUV)");
@@ -126,7 +134,7 @@ Program::Program(RendererTask &rTask, NativeShader vShader, NativeShader fShader
 			glDetachShader(program, fShader);
 			for(auto desc : uniformDescs)
 			{
-				runGLChecked([&]()
+				GL::runChecked([&]()
 				{
 					*desc.locationPtr = glGetUniformLocation(program, desc.name);
 				}, log, Renderer::checkGLErrors, "glGetUniformLocation()");
@@ -148,7 +156,7 @@ int Program::uniformLocation(const char *uniformName)
 	task().runSync(
 		[program = (GLuint)program_, &loc, uniformName]()
 		{
-			runGLChecked([&]()
+			GL::runChecked([&]()
 			{
 				loc = glGetUniformLocation(program, uniformName);
 			}, log, Renderer::checkGLErrors, "glGetUniformLocation()");
@@ -158,7 +166,7 @@ int Program::uniformLocation(const char *uniformName)
 
 static void setGLProgram(GLuint program)
 {
-	runGLChecked([&]() { glUseProgram(program); }, log, Renderer::checkGLErrorsVerbose, "glUseProgram()");
+	GL::runChecked([&]() { glUseProgram(program); }, log, Renderer::checkGLErrorsVerbose, "glUseProgram()");
 }
 
 void Program::uniform(int loc, float v1)
@@ -166,7 +174,7 @@ void Program::uniform(int loc, float v1)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform1f(loc, v1); }, log, Renderer::checkGLErrorsVerbose, "glUniform1f()");
+		GL::runChecked([&]() { glUniform1f(loc, v1); }, log, Renderer::checkGLErrorsVerbose, "glUniform1f()");
 	});
 }
 
@@ -175,7 +183,7 @@ void Program::uniform(int loc, float v1, float v2)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform2f(loc, v1, v2); }, log, Renderer::checkGLErrorsVerbose, "glUniform2f()");
+		GL::runChecked([&]() { glUniform2f(loc, v1, v2); }, log, Renderer::checkGLErrorsVerbose, "glUniform2f()");
 	});
 }
 
@@ -184,7 +192,7 @@ void Program::uniform(int loc, float v1, float v2, float v3)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform3f(loc, v1, v2, v3); }, log, Renderer::checkGLErrorsVerbose, "glUniform3f()");
+		GL::runChecked([&]() { glUniform3f(loc, v1, v2, v3); }, log, Renderer::checkGLErrorsVerbose, "glUniform3f()");
 	});
 }
 
@@ -193,7 +201,7 @@ void Program::uniform(int loc, float v1, float v2, float v3, float v4)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform4f(loc, v1, v2, v3, v4); }, log, Renderer::checkGLErrorsVerbose, "glUniform4f()");
+		GL::runChecked([&]() { glUniform4f(loc, v1, v2, v3, v4); }, log, Renderer::checkGLErrorsVerbose, "glUniform4f()");
 	});
 }
 
@@ -202,7 +210,7 @@ void Program::uniform(int loc, int v1)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform1i(loc, v1); }, log, Renderer::checkGLErrorsVerbose, "glUniform1i()");
+		GL::runChecked([&]() { glUniform1i(loc, v1); }, log, Renderer::checkGLErrorsVerbose, "glUniform1i()");
 	});
 }
 
@@ -211,7 +219,7 @@ void Program::uniform(int loc, int v1, int v2)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform2i(loc, v1, v2); }, log, Renderer::checkGLErrorsVerbose, "glUniform2i()");
+		GL::runChecked([&]() { glUniform2i(loc, v1, v2); }, log, Renderer::checkGLErrorsVerbose, "glUniform2i()");
 	});
 }
 
@@ -220,7 +228,7 @@ void Program::uniform(int loc, int v1, int v2, int v3)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform3i(loc, v1, v2, v3); }, log, Renderer::checkGLErrorsVerbose, "glUniform3i()");
+		GL::runChecked([&]() { glUniform3i(loc, v1, v2, v3); }, log, Renderer::checkGLErrorsVerbose, "glUniform3i()");
 	});
 }
 
@@ -229,7 +237,7 @@ void Program::uniform(int loc, int v1, int v2, int v3, int v4)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniform4i(loc, v1, v2, v3, v4); }, log, Renderer::checkGLErrorsVerbose, "glUniform4i()");
+		GL::runChecked([&]() { glUniform4i(loc, v1, v2, v3, v4); }, log, Renderer::checkGLErrorsVerbose, "glUniform4i()");
 	});
 }
 
@@ -238,7 +246,7 @@ void Program::uniform(int loc, Mat4 mat)
 	task().run([=, p = glProgram()]()
 	{
 		setGLProgram(p);
-		runGLChecked([&]() { glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]); }, log, Renderer::checkGLErrorsVerbose, "glUniformMatrix4fv()");
+		GL::runChecked([&]() { glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]); }, log, Renderer::checkGLErrorsVerbose, "glUniformMatrix4fv()");
 	});
 }
 

@@ -16,7 +16,6 @@
 #include "InputDeviceConfig.hh"
 #include "InputDeviceData.hh"
 #include <emuframework/EmuApp.hh>
-#include <imagine/util/macros.h>
 import imagine;
 
 namespace EmuEx
@@ -119,7 +118,6 @@ InputDeviceSessionConfig InputDeviceConfig::sessionConfig(const InputManager &mg
 
 KeyConfigDesc InputDeviceConfig::keyConf(const InputManager &mgr) const
 {
-	assert(dev);
 	if(savedConf && savedConf->keyConfName.size())
 	{
 		//log.info("has saved config:{}", savedConf->keyConfName);

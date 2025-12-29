@@ -15,13 +15,9 @@
 
 #include <emuframework/SystemOptionView.hh>
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuOptions.hh>
 #include <emuframework/viewUtils.hh>
 #include "CPUAffinityView.hh"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/fs/FS.hh>
-import std;
+import imagine;
 
 namespace EmuEx
 {

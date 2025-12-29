@@ -13,25 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with MD.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/viewUtils.hh>
 #include <main/Cheats.hh>
 #include <z80.hh>
 #include "EmuCheatViews.hh"
 #include "MainSystem.hh"
-#include <imagine/io/FileIO.hh>
-#include <imagine/io/FileStream.hh>
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/fs/FS.hh>
 #include <imagine/util/mayAliasInt.h>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 #include "system.h"
 #include "loadrom.h"
 #include "md_cart.h"
 #include "genesis.h"
-#include <ranges>
+import emuex;
+import imagine;
+import std;
 
 namespace EmuEx
 {
@@ -296,7 +289,7 @@ void MdSystem::applyCheats()
 {
 	for(auto &e : cheatList)
   {
-  	assert(!e.applied); // make sure cheats have been cleared beforehand
+  	assume(!e.applied); // make sure cheats have been cleared beforehand
     if(e.on)
     {
     	for(auto& code: e.codes)

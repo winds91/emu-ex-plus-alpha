@@ -13,13 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/io/PosixFileIO.hh>
+#include <imagine/util/variant.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/fd-utils.h>
 import imagine.internal.io;
 
 namespace IG
 {
 
-[[maybe_unused]] constexpr SystemLogger log{"PosixFileIO"};
+[[maybe_unused]] static SystemLogger log{"PosixFileIO"};
 
 #if defined __linux__
 constexpr bool hasMmapPopulateFlag = true;

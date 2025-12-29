@@ -13,17 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuAppInlines.hh>
 #include <emuframework/EmuSystemInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <imagine/logger/logger.h>
 
 // TODO: remove when namespace code is complete
 #ifdef __APPLE__
@@ -50,6 +41,7 @@ extern "C"
 }
 
 #include <blueMSX/Utils/ziphelper.h>
+import imagine;
 
 extern int pendingInt;
 extern RomType currentRomType[2];
@@ -239,7 +231,7 @@ static const char *boardTypeToStr(BoardType type)
 bool MsxSystem::createBoard(EmuApp &app)
 {
 	// TODO: 50hz mode
-	assert(machine);
+	assume(machine);
 	switch (machine->board.type)
 	{
 		case BOARD_MSX:
@@ -374,7 +366,7 @@ static ArchiveIO getFirstMediaFileInArchive(IG::ApplicationContext ctx, IG::CStr
 
 bool insertROM(EmuApp &app, const char *name, unsigned slot)
 {
-	assert(app.system().contentDirectory().size());
+	assume(app.system().contentDirectory().size());
 	auto path = app.system().contentDirectory(name);
 	FS::FileString fileInZipName{};
 	if(EmuApp::hasArchiveExtension(path))
@@ -397,7 +389,7 @@ bool insertROM(EmuApp &app, const char *name, unsigned slot)
 
 bool insertDisk(EmuApp &app, const char *name, unsigned slot)
 {
-	assert(app.system().contentDirectory().size());
+	assume(app.system().contentDirectory().size());
 	auto path = app.system().contentDirectory(name);
 	FS::FileString fileInZipName{};
 	if(EmuApp::hasArchiveExtension(path))
@@ -420,7 +412,7 @@ bool insertDisk(EmuApp &app, const char *name, unsigned slot)
 
 void MsxSystem::reset(EmuApp &app, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	fdcActive = 0;
 	if(mode == ResetMode::HARD)
 	{
@@ -512,7 +504,7 @@ static FS::FileString saveStateGetFileString(SaveState* state, const char* tagNa
 void MsxSystem::loadBlueMSXState(EmuApp &app, const char *filename)
 {
 	log.info("loading state:{}", filename);
-	assert(machine);
+	assume(machine);
 	saveStateCreateForRead(filename);
 	auto destroySaveState = IG::scopeGuard([](){ saveStateDestroy(); });
 	int size;
@@ -575,7 +567,7 @@ void MsxSystem::readState(EmuApp &app, std::span<uint8_t> buff)
 
 size_t MsxSystem::writeState(std::span<uint8_t> buff, SaveStateFlags flags)
 {
-	assert(buff.size() == stateSize());
+	assume(buff.size() == stateSize());
 	setZipMemBuffer(buff);
 	saveBlueMSXState(":::B");
 	return zipMemBufferSize();
@@ -687,7 +679,7 @@ void MsxSystem::loadContent(IO &, EmuSystemCreateParams, OnLoadProgressDelegate)
 
 void MsxSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 {
-	assumeExpr(outputRate == 44100);// TODO: not all sound chips handle non-44100Hz sample rate
+	assume(outputRate == 44100);// TODO: not all sound chips handle non-44100Hz sample rate
 	UInt32 mixRate = std::round(audioMixRate(outputRate, outputFrameRate));
 	if(mixerGetSampleRate(mixer) == mixRate)
 		return;

@@ -16,9 +16,16 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <linux/input.h>
+#ifndef IG_USE_MODULE_STD
+#include <cstdint>
+#endif
 
 namespace IG::Input
 {
+
+using std::uint8_t;
+using std::uint16_t;
+using std::uint32_t;
 
 using Key = uint16_t;
 

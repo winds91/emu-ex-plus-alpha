@@ -21,7 +21,7 @@ extern "C"
 	#include "drive.h"
 }
 
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {
@@ -149,7 +149,7 @@ int C64System::reSidSampling() const
 
 void C64System::setVirtualDeviceTraps(bool on)
 {
-	assert(inCPUTrap);
+	assume(inCPUTrap);
 	setIntResource("VirtualDevice8", on);
 	setIntResource("VirtualDevice9", on);
 	setIntResource("VirtualDevice10", on);

@@ -11,9 +11,8 @@
 #include "core/gba/gba.h"
 #include "core/gba/gbaGlobals.h"
 
-#include <imagine/util/utility.h>
-#include <imagine/logger/logger.h>
 #include <algorithm>
+import imagine;
 
 #define NR10 0x60
 #define NR11 0x62

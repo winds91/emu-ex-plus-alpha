@@ -17,8 +17,9 @@
 
 #include <emuframework/EmuInput.hh>
 #include <emuframework/EmuSystem.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/input/Device.hh>
-#include <string_view>
+#endif
 
 namespace EmuEx
 {

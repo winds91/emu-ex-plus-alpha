@@ -13,7 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/util/utility.hh>
+#include <imagine/io/ArchiveIO.hh>
+#include <imagine/util/variant.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <archive.h>
 #include <archive_entry.h>
 import imagine.internal.io;
@@ -21,7 +24,7 @@ import imagine.internal.io;
 namespace IG
 {
 
-constexpr SystemLogger log{"ArchiveIO"};
+static SystemLogger log{"ArchiveIO"};
 
 template class IOUtils<ArchiveIO>;
 
@@ -178,26 +181,26 @@ void ArchiveIO::freeArchive(struct archive *arch)
 
 std::string_view ArchiveIO::name() const
 {
-	assumeExpr(ptr);
+	assume(ptr);
 	auto name = archive_entry_pathname(ptr);
 	return name ? name : "";
 }
 
 FS::file_type ArchiveIO::type() const
 {
-	assumeExpr(ptr);
+	assume(ptr);
 	return makeEntryType(archive_entry_filetype(ptr));
 }
 
 size_t ArchiveIO::size()
 {
-	assumeExpr(ptr);
+	assume(ptr);
 	return archive_entry_size(ptr);
 }
 
 uint32_t ArchiveIO::crc32() const
 {
-	assumeExpr(ptr);
+	assume(ptr);
 	return archive_entry_crc32(ptr);
 }
 

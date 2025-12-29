@@ -13,15 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
-
-#include <imagine/pixmap/Pixmap.hh>
-#include <imagine/logger/logger.h>
-
 extern "C"
 {
 	#include <blueMSX/VideoChips/FrameBuffer.h>
 }
+
+import imagine;
+import std;
+
+namespace EmuEx { static IG::SystemLogger log{"MSX.emu"}; }
 
 static constexpr auto pixFmt = PIXEL_WIDTH == 16 ? IG::PixelFmtRGB565 : IG::PixelFmtRGBA8888;
 
@@ -77,7 +77,7 @@ public:
 
 	IG::PixmapView pixmap() const
 	{
-		assumeExpr(pix.format() == pixFmt);
+		IG::assume(pix.format() == pixFmt);
 		return pix;
 	}
 
@@ -115,14 +115,14 @@ IG::PixmapView frameBufferPixmap()
 
 FrameBufferData* frameBufferDataCreate(int maxWidth, int maxHeight, int defaultHorizZoom)
 {
-	logMsg("created data with max size:%dx%d zoom:%d", maxWidth, maxHeight, defaultHorizZoom);
+	EmuEx::log.info("created data with max size:{}x{} zoom:{}", maxWidth, maxHeight, defaultHorizZoom);
 	fb.setMaxWidth(maxWidth);
-	return (FrameBufferData*)malloc(maxWidth * 2 * maxHeight * sizeof(Pixel));
+	return (FrameBufferData*)std::malloc(maxWidth * 2 * maxHeight * sizeof(Pixel));
 }
 
 void frameBufferDataDestroy(FrameBufferData* frameData)
 {
-	free(frameData);
+	std::free(frameData);
 }
 
 FrameBuffer* frameBufferGetDrawFrame() { return &fb; }
@@ -170,7 +170,7 @@ int frameBufferGetDoubleWidth(FrameBuffer* frameBuffer, int y)
 void frameBufferSetDoubleWidth(FrameBuffer* frameBuffer, int y, int val)
 {
 	if(((FrameBufferImpl*)frameBuffer)->setDoubleWidth(val))
-		logMsg("set double width:%d on line:%d", val, y);
+		EmuEx::log.info("set double width:{} on line:{}", val, y);
 }
 
 // Used by gunstick and asciilaser, line is set in frameBufferGetLine()

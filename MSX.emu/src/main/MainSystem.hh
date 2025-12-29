@@ -137,7 +137,7 @@ public:
 
 		// must create the mixer first since mainInitCommon() will access it
 		mixer = mixerCreate();
-		assert(mixer);
+		assume(mixer);
 
 		// Init general emu
 		langInit();

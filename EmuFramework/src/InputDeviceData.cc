@@ -14,12 +14,13 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include "InputDeviceData.hh"
-#include <emuframework/AppKeyCode.hh>
-#include <imagine/util/macros.h>
+#include <emuframework/EmuInput.hh>
 import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"InputDevData"};
 
@@ -90,7 +91,7 @@ void InputDeviceData::buildKeyMap(const InputManager &mgr, const Input::Device &
 		}
 		else
 		{
-			assert(mapKeys[0] < totalKeys);
+			assume(mapKeys[0] < totalKeys);
 			actionTable[mapKeys[0]].tryPushBack(key);
 		}
 	}

@@ -13,16 +13,19 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-#include "../input/PackedInputAccess.hh"
-import imagine;
+#include <imagine/bluetooth/IControlPad.hh>
+#include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/util/ranges.hh>
+#include <imagine/logger/SystemLogger.hh>
+import std;
+import packedInputAccess;
 
 namespace IG
 {
 
 using namespace IG::Input;
 
-constexpr SystemLogger log{"iCP"};
+static SystemLogger log{"iCP"};
 
 constexpr PackedInputAccess iCPDataAccess[]
 {
@@ -192,7 +195,7 @@ bool IControlPad::dataHandler(Input::Device &dev, const char *packetPtr, size_t 
 			std::memcpy(&inputBuffer[inputBufferPos], &packet[size-bytesLeft], processBytes);
 			//logDMsg("read %d bytes from iCP", len);
 			inputBufferPos += processBytes;
-			assert(inputBufferPos <= 6);
+			assume(inputBufferPos <= 6);
 
 			// check if inputBuffer is complete
 			if(inputBufferPos == 6)

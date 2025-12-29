@@ -13,19 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/span.hh>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/FilePicker.hh>
-#include <emuframework/OutSizeTracker.hh>
 #include "MainSystem.hh"
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
 	#include "zfile.h"
 }
+
+import emuex;
+import imagine;
 
 using namespace IG;
 using namespace EmuEx;

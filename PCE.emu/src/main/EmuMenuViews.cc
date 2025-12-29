@@ -13,27 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with PCE.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuViewController.hh>
-#include <emuframework/SystemOptionView.hh>
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/VideoOptionView.hh>
-#include <emuframework/FilePathOptionView.hh>
-#include <emuframework/DataPathSelectView.hh>
-#include <emuframework/SystemActionsView.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/viewUtils.hh>
 #include <mednafen-emuex/MDFNUtils.hh>
 #include "MainApp.hh"
-#include <imagine/fs/FS.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
 
 using MainAppHelper = EmuAppHelperBase<MainApp>;
 
+static SystemLogger log{"PCE.emu"};
 constexpr std::string_view pceFastText{"pce_fast (Default for general use)"};
 constexpr std::string_view pceText{"pce (Better accuracy, higher power usage)"};
 constexpr std::string_view changeEmuCoreText{"Really change emulation core? Note that save states from different cores aren't compatible."};
@@ -193,7 +183,7 @@ class CustomFilePathOptionView : public FilePathOptionView, public MainAppHelper
 				[this](CStringView path, FS::file_type type)
 				{
 					system().sysCardPath = path;
-					logMsg("set system card:%s", system().sysCardPath.data());
+					log.info("set system card:{}", system().sysCardPath);
 					sysCardPath.compile(biosMenuEntryStr(path));
 					return true;
 				}, hasHuCardExtension), e);
@@ -376,7 +366,7 @@ class CustomAudioOptionView : public AudioOptionView, public MainAppHelper
 			case VolumeType::CDDA: return {"CD-DA Volume", 0};
 			case VolumeType::ADPCM: return {"ADPCM Volume", 1};
 		}
-		bug_unreachable("invalid VolumeType");
+		unreachable();
 	}
 
 	using VolumeChoiceItemArr = std::array<TextMenuItem, 3>;

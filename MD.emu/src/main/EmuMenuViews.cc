@@ -13,20 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with MD.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/SystemOptionView.hh>
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/FilePathOptionView.hh>
-#include <emuframework/DataPathSelectView.hh>
-#include <emuframework/UserPathSelectView.hh>
-#include <emuframework/SystemActionsView.hh>
 #include "MainApp.hh"
-#include <imagine/gui/AlertView.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
 #include "input.h"
 #include "io_ctrl.h"
 #include "vdp_ctrl.h"
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

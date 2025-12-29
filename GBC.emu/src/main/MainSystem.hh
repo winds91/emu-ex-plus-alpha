@@ -22,6 +22,7 @@
 #include <libgambatte/src/video/lcddef.h>
 #include <resample/resampler.h>
 #include <imagine/fs/FS.hh>
+#include <imagine/io/FileIO.hh>
 #include <imagine/util/bit.hh>
 #include <memory>
 #include <vector>

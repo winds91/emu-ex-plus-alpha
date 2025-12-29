@@ -13,13 +13,20 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-import imagine.gui;
+#include <imagine/gui/FSPicker.hh>
+#include <imagine/gui/TextTableView.hh>
+#include <imagine/gui/TextEntry.hh>
+#include <imagine/gfx/BasicEffect.hh>
+#include <imagine/fs/FSDefs.hh>
+#include <imagine/fs/FS.hh>
+#include <imagine/util/format.hh>
+#include <imagine/util/string.h>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"FSPicker"};
+static SystemLogger log{"FSPicker"};
 
 FSPicker::FSPicker(ViewAttachParams attach, Gfx::TextureSpan backRes, Gfx::TextureSpan closeRes,
 	FilterFunc filter, Mode mode, Gfx::GlyphTextureSet *face_):
@@ -313,7 +320,7 @@ bool FSPicker::isAtRoot() const
 	}
 	else
 	{
-		return root.path.empty() || root.path == "/"sv;
+		return root.path.empty() || root.path == "/";
 	}
 }
 
@@ -530,7 +537,7 @@ void FSPicker::listDirectory(CStringView path, ThreadStop &stop)
 					d.text.onSelect =
 						[this, &dirPath = d.path](const Input::Event &e)
 						{
-							assert(!isSingleDirectoryMode());
+							assume(!isSingleDirectoryMode());
 							auto path = std::move(dirPath);
 							log.info("entering dir:{}", path);
 							changeDirByInput(path, root.info, e, DepthMode::increment);

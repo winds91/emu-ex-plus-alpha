@@ -4,7 +4,7 @@
 #include <core/base/port.h>
 #include <core/gba/gba.h>
 #include <imagine/util/used.hh>
-#include <imagine/util/utility.h>
+#include <imagine/util/utility.hh>
 #include <imagine/util/memory/Buffer.hh>
 
 using MixColorType = uint16_t;

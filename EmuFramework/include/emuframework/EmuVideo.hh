@@ -18,7 +18,9 @@
 #include <emuframework/EmuAppHelper.hh>
 #include <emuframework/EmuSystemTask.hh>
 #include <emuframework/EmuSystemTaskContext.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gfx/PixmapBufferTexture.hh>
+#endif
 
 namespace EmuEx
 {

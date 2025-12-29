@@ -13,8 +13,6 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/logger/logger.h>
-
 extern "C"
 {
 	#include "log.h"
@@ -22,6 +20,9 @@ extern "C"
 	#include "uimon.h"
 	#include "archdep.h"
 }
+
+#include <imagine/logger/logger.h>
+import imagine;
 
 int log_message(log_t, const char *format, ...)
 {

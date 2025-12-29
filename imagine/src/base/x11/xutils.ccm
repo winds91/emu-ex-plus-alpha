@@ -1,25 +1,42 @@
-#pragma once
+/*  This file is part of Imagine.
+
+	Imagine is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	Imagine is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
+
+module;
 
 #include <xcb/xproto.h>
 #include <xcb/xinput.h>
-#include <array>
-#include <string_view>
-#include <memory>
-#include <cstdlib>
-#include <cstring>
-#include <ranges>
+#include "macros.h"
+
+export module xutils;
+import imagine;
+import std;
+
+export
+{
 
 // EWMH (Extended Window Manager Hints) support
 // http://freedesktop.org/wiki/Specifications/wm-spec
 
-#define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
-#define _NET_WM_STATE_ADD           1    /* add/set property */
-#define _NET_WM_STATE_TOGGLE        2    /* toggle property  */
+inline constexpr int _NET_WM_STATE_REMOVE = 0;    /* remove/unset property */
+inline constexpr int _NET_WM_STATE_ADD    = 1;    /* add/set property */
+inline constexpr int _NET_WM_STATE_TOGGLE = 2;    /* toggle property  */
 
 // from xcb_event.h
-#define XCB_EVENT_RESPONSE_TYPE_MASK (0x7f)
+inline constexpr std::uint8_t XCB_EVENT_RESPONSE_TYPE_MASK = 0x7f;
 
-constexpr std::array xcbErrorStrings
+inline constexpr std::array xcbErrorStrings
 {
 	"Success",
 	"BadRequest",
@@ -42,7 +59,7 @@ constexpr std::array xcbErrorStrings
 	"Unknown"
 };
 
-constexpr std::array xcbProtocolRequestCodes
+inline constexpr std::array xcbProtocolRequestCodes
 {
 	"Null",
 	"CreateWindow",
@@ -167,7 +184,7 @@ constexpr std::array xcbProtocolRequestCodes
 	"Unknown"
 };
 
-constexpr auto xEventTypeToString(int type)
+inline constexpr auto xEventTypeToString(int type)
 {
 	switch(type)
 	{
@@ -189,7 +206,7 @@ constexpr auto xEventTypeToString(int type)
 	}
 }
 
-constexpr auto xIEventTypeToStr(int type)
+inline constexpr auto xIEventTypeToStr(int type)
 {
 	switch(type)
 	{
@@ -211,19 +228,7 @@ struct MallocDeleter
 	void operator()(void *p) const noexcept { return std::free(p); }
 };
 
-#define XCB_REPLY_CONNECTION_ARG(connection, ...) connection
-
-#define XCB_REPLY(call, ...) \
-	std::unique_ptr<call##_reply_t, MallocDeleter>( \
-		call##_reply(XCB_REPLY_CONNECTION_ARG(__VA_ARGS__), call(__VA_ARGS__), nullptr) \
-	)
-
-#define XCB_REPLY_UNCHECKED(call, ...) \
-	std::unique_ptr<call##_reply_t, MallocDeleter>( \
-		call##_reply(XCB_REPLY_CONNECTION_ARG(__VA_ARGS__), call##_unchecked(__VA_ARGS__), nullptr) \
-	)
-
-inline xcb_atom_t internAtom(xcb_connection_t& conn, std::string_view name, bool onlyIfExists = false)
+xcb_atom_t internAtom(xcb_connection_t& conn, std::string_view name, bool onlyIfExists = false)
 {
 	auto reply = XCB_REPLY(xcb_intern_atom, &conn, onlyIfExists, name.size(), name.data());
 	if(!reply)
@@ -231,7 +236,7 @@ inline xcb_atom_t internAtom(xcb_connection_t& conn, std::string_view name, bool
 	return reply->atom;
 }
 
-inline auto internAtoms(xcb_connection_t& conn, const auto& names, bool onlyIfExists = false)
+auto internAtoms(xcb_connection_t& conn, const auto& names, bool onlyIfExists = false)
 {
 	constexpr size_t size = std::size(names);
 	std::array<xcb_intern_atom_cookie_t, size> cookies;
@@ -244,17 +249,17 @@ inline auto internAtoms(xcb_connection_t& conn, const auto& names, bool onlyIfEx
 	{
 		auto reply = xcb_intern_atom_reply(&conn, c, nullptr);
 		a = reply ? reply->atom : 0;
-		free(reply);
+		std::free(reply);
 	}
 	return atoms;
 }
 
-inline std::string_view atomNameString(xcb_get_atom_name_reply_t& reply)
+std::string_view atomNameString(xcb_get_atom_name_reply_t& reply)
 {
 	return {xcb_get_atom_name_name(&reply), size_t(xcb_get_atom_name_name_length(&reply))};
 }
 
-inline uint8_t xDrawableDepth(xcb_connection_t& conn, xcb_window_t window)
+uint8_t xDrawableDepth(xcb_connection_t& conn, xcb_window_t window)
 {
 	auto reply = XCB_REPLY(xcb_get_geometry, &conn, window);
 	if(!reply)
@@ -262,7 +267,7 @@ inline uint8_t xDrawableDepth(xcb_connection_t& conn, xcb_window_t window)
 	return reply->depth;
 }
 
-static const xcb_visualtype_t* findVisualType(xcb_screen_t& screen, int depth, std::predicate<const xcb_visualtype_t&> auto &&func)
+const xcb_visualtype_t* findVisualType(xcb_screen_t& screen, int depth, std::predicate<const xcb_visualtype_t&> auto &&func)
 {
 	auto depthIt = xcb_screen_allowed_depths_iterator(&screen);
 	if(!depthIt.data)
@@ -281,4 +286,6 @@ static const xcb_visualtype_t* findVisualType(xcb_screen_t& screen, int depth, s
 			break;
 	}
 	return {};
+}
+
 }

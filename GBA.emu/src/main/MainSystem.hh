@@ -19,7 +19,6 @@
 #include <emuframework/EmuOptions.hh>
 #include <imagine/base/Sensor.hh>
 #include <imagine/io/FileIO.hh>
-#include <imagine/util/enum.hh>
 #include <core/gba/gba.h>
 #include <core/gba/gbaCheats.h>
 
@@ -61,8 +60,10 @@ constexpr bool optionSaveTypeOverrideIsValid(const auto &val)
 	return type >= GBA_SAVE_AUTO && type <= GBA_SAVE_NONE;
 }
 
-WISE_ENUM_CLASS((GbaSensorType, uint8_t),
-	Auto, None, Accelerometer, Gyroscope, Light);
+enum class GbaSensorType: uint8_t
+{
+	Auto, None, Accelerometer, Gyroscope, Light
+};
 
 constexpr float lightSensorScaleLuxDefault = 10000.f;
 constexpr uint8_t darknessLevelDefault = 0xee;

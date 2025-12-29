@@ -18,10 +18,14 @@
 #include <emuframework/EmuApp.hh>
 #include <emuframework/EmuAppHelper.hh>
 #include <emuframework/viewUtils.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/TableView.hh>
 #include <imagine/gui/AlertView.hh>
 #include <imagine/gui/MenuItem.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <vector>
+#endif
 
 namespace EmuEx
 {
@@ -223,7 +227,7 @@ public:
 
 	bool modifyCheatCode(this auto&& self, CheatCode& c, CheatCodeDesc desc)
 	{
-		if(!strlen(desc.str))
+		if(!std::strlen(desc.str))
 		{
 			self.removeCheatCode(c);
 			return true;

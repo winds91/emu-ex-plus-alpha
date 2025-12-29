@@ -13,10 +13,11 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/util/utility.hh>
+#include <imagine/util/jni.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/bitmap.h>
 #include <jni.h>
-import imagine;
 
 namespace JNI
 {
@@ -27,7 +28,8 @@ jmethodID getJNIStaticMethodID(JNIEnv *env, jclass cls, const char *fName, const
 {
 	if(!cls)
 	{
-		bug_unreachable("class missing for java static method:%s (%s)", fName, sig);
+		log.error("class missing for java static method:{} ({})", fName, sig);
+		IG::unreachable();
 	}
 	auto method = env->GetStaticMethodID(cls, fName, sig);
 	if(!method)
@@ -41,7 +43,8 @@ jmethodID getJNIMethodID(JNIEnv *env, jclass cls, const char *fName, const char 
 {
 	if(!cls)
 	{
-		bug_unreachable("class missing for java method:%s (%s)", fName, sig);
+		log.error("class missing for java method:{} ({})", fName, sig);
+		IG::unreachable();
 	}
 	auto method = env->GetMethodID(cls, fName, sig);
 	if(!method)

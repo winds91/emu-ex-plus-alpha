@@ -19,7 +19,9 @@
 #include <imagine/font/Font.hh>
 #include <imagine/gfx/Texture.hh>
 #include <imagine/util/container/VMemArray.hh>
+#ifndef IG_USE_MODULE_STD
 #include <string_view>
+#endif
 
 namespace IG::Gfx
 {

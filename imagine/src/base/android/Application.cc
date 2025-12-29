@@ -13,13 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-#include <imagine/util/macros.h>
+#include <imagine/base/Application.hh>
+#include <imagine/util/ScopeGuard.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/window.h>
 #include <android/configuration.h>
 #include <android/looper.h>
 #include <android/native_activity.h>
 #include <android/api-level.h>
+#include <android/log.h>
 #include <dlfcn.h>
 #include <unistd.h>
 #include <pthread.h>
@@ -30,7 +33,7 @@ import imagine.internal.android;
 namespace IG
 {
 
-constexpr SystemLogger log{"App"};
+static SystemLogger log{"App"};
 static JavaVM* jVM{};
 static void *mainLibHandle{};
 [[maybe_unused]] constexpr bool unloadNativeLibOnDestroy{};
@@ -300,7 +303,6 @@ void AndroidApplication::initActivity(JNIEnv *env, jobject baseActivity, jclass 
 				(void*)
 				+[](JNIEnv*, jobject, jlong windowAddr, jint x, jint y, jint x2, jint y2, jint winWidth, jint winHeight)
 				{
-					assumeExpr(windowAddr);
 					auto win = (Window*)windowAddr;
 					win->setContentRect({{x, y}, {x2, y2}}, {winWidth, winHeight});
 				}
@@ -399,12 +401,15 @@ void AndroidApplication::initActivity(JNIEnv *env, jobject baseActivity, jclass 
 	/*if(unloadNativeLibOnDestroy)
 	{
 		auto soPath = mainSOPath(appCtx);
-		#if ANDROID_MIN_API >= 21
-		mainLibHandle = dlopen(soPath.data(), RTLD_LAZY | RTLD_NOLOAD);
-		#else
-		mainLibHandle = dlopen(soPath.data(), RTLD_LAZY);
-		dlclose(mainLibHandle);
-		#endif
+		if constexpr(ENV_ANDROID_MIN_SDK >= 21)
+		{
+			mainLibHandle = dlopen(soPath.data(), RTLD_LAZY | RTLD_NOLOAD);
+		}
+		else
+		{
+			mainLibHandle = dlopen(soPath.data(), RTLD_LAZY);
+			dlclose(mainLibHandle);
+		}
 		if(!mainLibHandle)
 			log.warn("unable to get native lib handle");
 	}*/
@@ -419,7 +424,6 @@ JNIEnv* AndroidApplication::thisThreadJniEnv() const
 		{
 			log.debug("attaching JNI thread:{}", thisThreadId());
 		}
-		assumeExpr(jVM);
 		if(jVM->AttachCurrentThread(&env, nullptr) != 0)
 		{
 			log.error("error attaching JNI thread");
@@ -520,7 +524,7 @@ void AndroidApplication::onWindowFocusChanged(ApplicationContext ctx, int focuse
 
 void AndroidApplication::onInputQueueCreated(ApplicationContext, AInputQueue* queue)
 {
-	assert(!inputQueue);
+	assume(!inputQueue);
 	inputQueue = queue;
 	log.info("made & attached input queue");
 	AInputQueue_attachLooper(queue, EventLoop::forThread().nativeObject(), ALOOPER_POLL_CALLBACK,
@@ -773,9 +777,15 @@ static void setNativeActivityCallbacks(ANativeActivity *nActivity)
 	//nActivity->callbacks->onContentRectChanged = nullptr;
 }
 
+void abort(const char* msg)
+{
+	log.error("{}", msg);
+	__android_log_assert("", "imagine", "%s", msg);
 }
 
-CLINK void LVISIBLE ANativeActivity_onCreate(ANativeActivity* nActivity, [[maybe_unused]] void* savedState, [[maybe_unused]] size_t savedStateSize)
+}
+
+extern "C" void LVISIBLE ANativeActivity_onCreate(ANativeActivity* nActivity, [[maybe_unused]] void* savedState, [[maybe_unused]] size_t savedStateSize)
 {
 	using namespace IG;
 	if(Config::DEBUG_BUILD)

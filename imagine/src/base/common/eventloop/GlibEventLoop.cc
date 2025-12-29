@@ -13,14 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/EventLoop.hh>
+#include <imagine/thread/Thread.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <glib.h>
 #include <glib-unix.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"EventLoop"};
+static SystemLogger log{"EventLoop"};
 
 void destroyGSource(GSource* src)
 {

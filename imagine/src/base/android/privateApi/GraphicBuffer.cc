@@ -13,15 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-#include <imagine/base/android/gralloc.h>
+#include <imagine/base/android/GraphicBuffer.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <EGL/egl.h>
 import imagine.internal.android;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"GBuffer"};
+static SystemLogger log{"GBuffer"};
 static gralloc_module_t const *grallocMod{};
 static alloc_device_t *allocDev{};
 static bool testPassed_ = false;
@@ -135,8 +135,9 @@ bool GraphicBuffer::lock(uint32_t usage, IG::WindowRect rect, void **vaddr)
 		if((rect.x < 0 || rect.x2 > (int)width ||
 			rect.y < 0 || rect.y2 > (int)height)) [[unlikely]]
 		{
-			bug_unreachable("locking pixels:[%d:%d:%d:%d] outside of buffer:%d,%d",
+			log.error("locking pixels:[%d:%d:%d:%d] outside of buffer:%d,%d",
 				rect.x, rect.y, rect.x2, rect.y2, width, height);
+			unreachable();
 		}
 	}
 	auto err = grallocMod->lock(grallocMod, handle, usage, rect.x, rect.y, rect.xSize(), rect.ySize(), vaddr);

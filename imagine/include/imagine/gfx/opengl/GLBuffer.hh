@@ -20,7 +20,9 @@
 #include <imagine/gfx/Vertex.hh>
 #include <imagine/util/memory/UniqueResource.hh>
 #include <imagine/util/memory/Buffer.hh>
+#ifndef IG_USE_MODULE_STD
 #include <span>
+#endif
 
 namespace IG::Gfx
 {

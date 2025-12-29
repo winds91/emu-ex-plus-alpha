@@ -14,17 +14,10 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/FilePathOptionView.hh>
-#include <emuframework/EmuApp.hh>
 #include <emuframework/FilePicker.hh>
 #include <emuframework/UserPathSelectView.hh>
-#include <emuframework/EmuOptions.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/format.hh>
-#include "../pathUtils.hh"
-#include <imagine/logger/logger.h>
+import pathUtils;
+import imagine;
 
 namespace EmuEx
 {

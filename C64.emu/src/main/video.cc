@@ -13,10 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuApp.hh>
 #include "MainSystem.hh"
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
@@ -29,6 +26,9 @@ extern "C"
 	#include "vsyncapi.h"
 	#include "viewport.h"
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx{ constexpr SystemLogger log{"video"}; }
 
@@ -76,19 +76,19 @@ static bool isValidPixelFormat(IG::PixelFormat fmt)
 static IG::PixmapView pixmapView(const struct video_canvas_s *c)
 {
 	IG::PixelFormat fmt{IG::PixelFormatId{c->pixelFormat}};
-	assumeExpr(isValidPixelFormat(fmt));
+	assume(isValidPixelFormat(fmt));
 	return {{{c->w, c->h}, fmt}, c->pixmapData};
 }
 
 static IG::PixelDesc pixelDesc(IG::PixelFormat fmt)
 {
-	assumeExpr(isValidPixelFormat(fmt));
+	assume(isValidPixelFormat(fmt));
 	return fmt.desc().nativeOrder();
 }
 
 static void updateInternalPixelFormat(struct video_canvas_s *c, IG::PixelFormat fmt)
 {
-	assumeExpr(isValidPixelFormat(fmt));
+	assume(isValidPixelFormat(fmt));
 	c->pixelFormat = to_underlying(fmt.id);
 }
 
@@ -173,7 +173,7 @@ void C64System::resetCanvasSourcePixmap(struct video_canvas_s *c)
 static void updateCanvasMemPixmap(struct video_canvas_s *c, int x, int y)
 {
 	IG::PixelFormat fmt{IG::PixelFormatId{c->pixelFormat}};
-	assumeExpr(isValidPixelFormat(fmt));
+	assume(isValidPixelFormat(fmt));
 	IG::PixmapDesc desc{{x, y}, fmt};
 	c->w = x;
 	c->h = y;
@@ -198,7 +198,7 @@ static void refreshFullCanvas(video_canvas_t *canvas)
 
 bool C64System::updateCanvasPixelFormat(struct video_canvas_s *c, IG::PixelFormat fmt)
 {
-	assumeExpr(isValidPixelFormat(fmt));
+	assume(isValidPixelFormat(fmt));
 	if(c->pixelFormat == to_underlying(fmt.id))
 		return false;
 	updateInternalPixelFormat(c, fmt);

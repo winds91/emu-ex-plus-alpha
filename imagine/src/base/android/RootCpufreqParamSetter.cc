@@ -13,9 +13,11 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/base/android/RootCpufreqParamSetter.hh>
+#include <imagine/io/PosixIO.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <stdio.h>
-import imagine;
 
 #define TIMER_RATE_PATH "/sys/devices/system/cpu/cpufreq/interactive/timer_rate"
 #define UP_THRESHOLD_PATH "/sys/devices/system/cpu/cpufreq/ondemand/up_threshold"
@@ -25,7 +27,7 @@ import imagine;
 namespace IG
 {
 
-constexpr SystemLogger log{"CpufreqParam"};
+static SystemLogger log{"CpufreqParam"};
 
 static int readIntFileValue(const char *path)
 {
@@ -85,7 +87,6 @@ RootCpufreqParamSetter::~RootCpufreqParamSetter()
 
 void RootCpufreqParamSetter::setLowLatency()
 {
-	assumeExpr(rootShell);
 	if(origTimerRate > 0)
 	{
 		// interactive
@@ -106,7 +107,6 @@ void RootCpufreqParamSetter::setLowLatency()
 
 void RootCpufreqParamSetter::setDefaults()
 {
-	assumeExpr(rootShell);
 	if(origTimerRate > 0)
 	{
 		// interactive

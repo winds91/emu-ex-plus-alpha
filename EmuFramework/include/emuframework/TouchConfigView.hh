@@ -16,11 +16,12 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuAppHelper.hh>
+#include <emuframework/config.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/TableView.hh>
 #include <imagine/gui/MenuItem.hh>
 #include <imagine/util/memory/DynArray.hh>
-#include <emuframework/config.hh>
-#include <vector>
+#endif
 
 namespace EmuEx
 {

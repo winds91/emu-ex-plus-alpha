@@ -13,12 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-import imagine.gui;
+#include <imagine/gui/ScrollView.hh>
+#include <imagine/gfx/Mat4.hh>
+#include <imagine/gfx/BasicEffect.hh>
+#include <imagine/base/Screen.hh>
+#include <imagine/base/Window.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-[[maybe_unused]] constexpr SystemLogger log{"ScrollView"};
+[[maybe_unused]] static SystemLogger log{"ScrollView"};
 
 // minimum velocity before releasing a drag causes a scroll animation
 static constexpr float SCROLL_MIN_START_VEL = 1.;

@@ -13,8 +13,6 @@
 	You should have received a copy of the GNU General Public License
 	along with NEO.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
 
@@ -22,6 +20,9 @@ extern "C"
 {
 	#include <gngeo/memory.h>
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

@@ -13,16 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/GLContext.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/egl.hh>
+#include <xcb/xproto.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include "xlibutils.h"
-import imagine;
+import xutils;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"X11GL"};
+static SystemLogger log{"X11GL"};
 
 GLDisplay GLManager::getDefaultDisplay(NativeDisplayConnection nativeDpy) const
 {

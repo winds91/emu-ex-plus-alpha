@@ -13,20 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuOptions.hh>
-#include <emuframework/EmuSystem.hh>
+#include <imagine/config/macros.h>
 #include <emuframework/EmuApp.hh>
 #include <emuframework/MainMenuView.hh>
-#include <emuframework/VideoImageEffect.hh>
-#include <emuframework/VideoImageOverlay.hh>
-#include <emuframework/VController.hh>
-#include "WindowData.hh"
-#include <imagine/config/defs.hh>
-#include <imagine/util/macros.h>
-import imagine.gfx;
+import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"App"};
 

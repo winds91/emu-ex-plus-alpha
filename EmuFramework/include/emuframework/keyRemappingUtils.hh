@@ -16,9 +16,14 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/AppKeyCode.hh>
+#include <imagine/config/macros.h>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/input/inputDefs.hh>
 #include <imagine/input/bluetoothInputDefs.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <ranges>
+#endif
 
 namespace EmuEx
 {

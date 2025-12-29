@@ -13,12 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with 2600.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-// TODO: Some Stella types collide with MacTypes.h
-#define Debugger DebuggerMac
-#include <emuframework/EmuApp.hh>
-#undef Debugger
 #include "MainSystem.hh"
-#include <emuframework/Option.hh>
+import emuex;
 
 namespace EmuEx
 {

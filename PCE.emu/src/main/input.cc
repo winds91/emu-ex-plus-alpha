@@ -13,11 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with PCE.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -211,7 +210,7 @@ AssetDesc PceApp::vControllerAssetDesc(KeyInfo key) const
 void PceSystem::handleInputAction(EmuApp *, InputAction a)
 {
 	auto player = a.flags.deviceId;
-	assumeExpr(player < maxPlayers);
+	assume(player < maxPlayers);
 	inputBuff[player] = setOrClearBits(inputBuff[player], bit(a.code - 1), a.state == Input::Action::PUSHED);
 }
 

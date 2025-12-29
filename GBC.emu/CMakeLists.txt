@@ -9,6 +9,7 @@ project(
 printConfigInfo()
 configureAppTarget(gbcemu)
 addPkgConfigDepMultiConfig(gbcemu emuframework)
+addCxxModules(gbcemu emuex imagine)
 evalPkgConfigFlags(gbcemu all)
 target_include_directories(gbcemu PRIVATE
 	src/common

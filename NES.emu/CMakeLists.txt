@@ -9,6 +9,7 @@ project(
 printConfigInfo()
 configureAppTarget(nesemu)
 addPkgConfigDepMultiConfig(nesemu emuframework)
+addCxxModules(nesemu emuex imagine)
 evalPkgConfigFlags(nesemu all)
 target_include_directories(nesemu PRIVATE src/fceu)
 target_compile_definitions(nesemu PRIVATE HAVE_ASPRINTF PSS_STYLE=1 LSB_FIRST FRAMESKIP)

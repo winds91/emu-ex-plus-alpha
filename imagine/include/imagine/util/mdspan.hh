@@ -16,8 +16,10 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/util/concepts.hh>
+#ifndef IG_USE_MODULE_STD
 #include <mdspan>
 #include <array>
+#endif
 
 namespace IG
 {

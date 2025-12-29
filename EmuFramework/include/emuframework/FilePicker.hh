@@ -17,7 +17,9 @@
 
 #include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuAppHelper.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/FSPicker.hh>
+#endif
 
 namespace EmuEx
 {

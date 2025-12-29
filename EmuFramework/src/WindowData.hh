@@ -15,14 +15,15 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/Mat4.hh>
 #include <emuframework/EmuViewController.hh>
+#ifndef IG_USE_MODULE_IMAGINE
+#include <imagine/gfx/Mat4.hh>
+#endif
 
 namespace EmuEx
 {
 
-class EmuView;
-class ToastView;
+using namespace IG;
 
 struct WindowData
 {
@@ -54,14 +55,12 @@ struct MainWindowData : public WindowData
 inline auto &windowData(const IG::Window &win)
 {
 	auto data = win.appData<WindowData>();
-	assumeExpr(data);
 	return *data;
 }
 
 inline auto &mainWindowData(const IG::Window &win)
 {
 	auto data = win.appData<MainWindowData>();
-	assumeExpr(data);
 	return *data;
 }
 

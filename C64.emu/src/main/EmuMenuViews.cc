@@ -13,25 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/SystemOptionView.hh>
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/VideoOptionView.hh>
-#include <emuframework/FilePathOptionView.hh>
-#include <emuframework/DataPathSelectView.hh>
-#include <emuframework/SystemActionsView.hh>
-#include <emuframework/MainMenuView.hh>
-#include <emuframework/FilePicker.hh>
-#include <emuframework/viewUtils.hh>
 #include "MainApp.hh"
 #include "VicePlugin.hh"
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
@@ -50,6 +33,9 @@ extern "C"
 	#include "plus4model.h"
 	#include "vic20model.h"
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -822,7 +808,7 @@ public:
 					items.emplace_back(entry.name, attachParams(), [this](TextMenuItem &item)
 					{
 						auto slot = currDriveTypeSlot;
-						assumeExpr(slot < 4);
+						assume(slot < 4);
 						system().sessionOptionSet();
 						system().setDriveType(slot + 8, item.id);
 						onDiskMediaChange(slot);

@@ -26,7 +26,7 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 namespace IG
 {
 
-constexpr SystemLogger log{"EAGL"};
+static SystemLogger log{"EAGL"};
 
 // GLDisplay
 

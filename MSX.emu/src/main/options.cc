@@ -14,10 +14,8 @@
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
 #include "MainSystem.hh"
-#include <emuframework/Option.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

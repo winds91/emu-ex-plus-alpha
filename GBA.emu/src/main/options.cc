@@ -20,7 +20,7 @@
 #include <core/gba/gba.h>
 #include <core/gba/gbaRtc.h>
 #include <core/gba/gbaSound.h>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {

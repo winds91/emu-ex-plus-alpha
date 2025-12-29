@@ -13,14 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
 #include "MainApp.hh"
 
 extern "C"
 {
 	#include <blueMSX/Input/InputEvent.h>
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -534,7 +535,7 @@ void MsxSystem::handleInputAction(EmuApp *appPtr, InputAction a)
 	}
 	else
 	{
-		assert(a.code < EC_KEYCOUNT);
+		assume(a.code < EC_KEYCOUNT);
 		auto keyIdx = [&] -> int
 		{
 			bool isPort1 = a.flags.deviceId == 0;

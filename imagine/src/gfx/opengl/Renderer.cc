@@ -13,29 +13,19 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/opengl/defs.hh>
+#include <imagine/config/macros.h>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/gfx/PixmapBufferTexture.hh>
+#include <imagine/gfx/TextureSampler.hh>
+#include <imagine/data-type/image/PixmapSource.hh>
 #include <imagine/util/opengl/glUtils.hh>
-#include <imagine/util/macros.h>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/opengl/glHeaders.h>
 #ifdef __ANDROID__
-#include <imagine/gfx/opengl/android/egl.hh>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #endif
 import imagine.internal.gfxOpengl;
-
-#ifndef GL_R8
-#define GL_R8 0x8229
-#endif
-
-#ifndef GL_RG
-#define GL_RG 0x8227
-#endif
-
-#ifndef GL_RG8
-#define GL_RG8 0x822B
-#endif
-
-#ifndef GL_RED
-#define GL_RED 0x1903
-#endif
 
 namespace IG::Gfx
 {
@@ -43,7 +33,7 @@ namespace IG::Gfx
 static_assert(!Config::Gfx::OPENGL_ES || Config::Gfx::OPENGL_ES >= 2);
 static_assert((uint8_t)TextureBufferMode::DEFAULT == 0, "TextureBufferMode::DEFAULT != 0");
 
-constexpr SystemLogger log{"GLRenderer"};
+static SystemLogger log{"GLRenderer"};
 [[gnu::weak]] const bool Renderer::enableSamplerObjects = false;
 bool GLRenderer::checkGLErrors = Config::DEBUG_BUILD;
 bool GLRenderer::checkGLErrorsVerbose = false;
@@ -137,7 +127,7 @@ static float rotationRadians(Rotation r)
 		case Rotation::DOWN: return radians(-180.);
 		case Rotation::LEFT: return radians(-90.);
 	}
-	bug_unreachable("Rotation == %d", std::to_underlying(r));
+	unreachable();
 }
 
 bool GLRenderer::attachWindow(Window &win, GLBufferConfig bufferConfig, GLColorSpace colorSpace)
@@ -350,7 +340,7 @@ int Renderer::maxSwapChainImages() const
 	#endif
 	if(Config::envIsLinux)
 	{
-		if(const char *maxFramesEnv = getenv("__GL_MaxFramesAllowed");
+		if(const char *maxFramesEnv = std::getenv("__GL_MaxFramesAllowed");
 			maxFramesEnv && maxFramesEnv[0] == '1')
 		{
 			return 2;
@@ -939,7 +929,7 @@ static void printGLExtensions()
 		return;
 	std::string allExtStr;
 	log.beginInfo(allExtStr, "extensions: ");
-	forEachOpenGLExtension([&](const auto &extStr)
+	GL::forEachExtension([&](const auto &extStr)
 	{
 		allExtStr += extStr;
 		allExtStr += ' ';
@@ -957,11 +947,11 @@ void Renderer::configureRenderer()
 		[this](GLTask::TaskContext ctx)
 		{
 			auto version = (const char*)glGetString(GL_VERSION);
-			assert(version);
+			assume(version);
 			auto rendererName = (const char*)glGetString(GL_RENDERER);
 			log.info("version: {} ({})", version, rendererName);
 
-			int glVer = glVersionFromStr(version);
+			int glVer = GL::toVersion(version);
 
 			#ifdef CONFIG_BASE_GL_PLATFORM_EGL
 			if constexpr((bool)Config::Gfx::OPENGL_ES)
@@ -979,7 +969,7 @@ void Renderer::configureRenderer()
 			}
 			#else
 			// core functionality
-			assumeExpr(glVer >= 20);
+			assume(glVer >= 20);
 			if(glVer >= 30)
 				setupNonPow2MipmapRepeatTextures();
 			if(glVer >= 30)
@@ -1007,7 +997,7 @@ void Renderer::configureRenderer()
 			#endif // CONFIG_GFX_OPENGL_ES
 
 			// extension functionality
-			forEachOpenGLExtension([&](const auto &extStr)
+			GL::forEachExtension([&](const auto &extStr)
 			{
 				checkExtensionString(extStr);
 			});
@@ -1016,7 +1006,7 @@ void Renderer::configureRenderer()
 			GLint texSize;
 			glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texSize);
 			support.textureSizeSupport.maxXSize = support.textureSizeSupport.maxYSize = texSize;
-			assert(support.textureSizeSupport.maxXSize > 0 && support.textureSizeSupport.maxYSize > 0);
+			assume(support.textureSizeSupport.maxXSize > 0 && support.textureSizeSupport.maxYSize > 0);
 
 			printFeatures(support);
 			task().runInitialCommandsInGL(ctx, support);

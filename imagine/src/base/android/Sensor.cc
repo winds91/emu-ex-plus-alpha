@@ -13,13 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/Sensor.hh>
+#include <imagine/base/ApplicationContext.hh>
+#include <imagine/util/enum.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/sensor.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Sensor"};
+static SystemLogger log{"Sensor"};
 
 // verify SensorType maps to Sensor.TYPE_*
 static_assert(to_underlying(SensorType::Accelerometer) == 1);
@@ -49,7 +53,7 @@ AndroidSensorListener::AndroidSensorListener(ASensorManager *manager, SensorType
 			}
 			return 1;
 		}, ctrl.get()));
-	log.info("created sensor:{} event queue:{}", wise_enum::to_string(type).data(), (void*)ctrl->queue.get());
+	log.info("created sensor:{} event queue:{}", enumName(type), (void*)ctrl->queue.get());
 	ASensorEventQueue_enableSensor(ctrl->queue.get(), sensor);
 	ASensorEventQueue_setEventRate(ctrl->queue.get(), sensor, 20000);
 }

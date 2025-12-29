@@ -74,7 +74,7 @@ public:
 	Font makeFromFile(const char *name) const;
 	Font makeSystem() const;
 	Font makeBoldSystem() const;
-	Font makeFromAsset(const char *name, const char *appName = ApplicationContext::applicationName) const;
+	Font makeFromAsset(const char *name, const char *appName = ApplicationMeta::name) const;
 };
 
 

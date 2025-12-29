@@ -71,7 +71,7 @@ public:
 	UIKitFontSize &operator=(UIKitFontSize &&o) noexcept;
 	~UIKitFontSize();
 	#ifdef __OBJC__
-	UIFont *font() { assert(font_); return (__bridge UIFont*)font_; }
+	UIFont *font() { return (__bridge UIFont*)font_; }
 	#endif
 
 protected:

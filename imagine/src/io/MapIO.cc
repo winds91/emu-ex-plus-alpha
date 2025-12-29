@@ -13,18 +13,21 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-#include <imagine/util/macros.h>
+#include <imagine/io/MapIO.hh>
+#include <imagine/io/IOUtils-impl.hh>
+#include <imagine/vmem/memory.hh>
+#include <imagine/logger/SystemLogger.hh>
 #if defined __linux__ || defined __APPLE__
 #include <sys/mman.h>
 #endif
 #include <errno.h>
 import imagine.internal.io;
+import std;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"MapIO"};
+static SystemLogger log{"MapIO"};
 
 template class IOUtils<MapIO>;
 
@@ -110,7 +113,7 @@ ssize_t MapIO::copyBuffer(auto *buff, size_t bytes, std::optional<off_t> offset)
 	if(!offset)
 	{
 		currPos += span.size_bytes();
-		assert(currPos <= size());
+		assume(currPos <= size());
 	}
 	return span.size_bytes();
 }

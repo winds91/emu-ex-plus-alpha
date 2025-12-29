@@ -14,9 +14,7 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/LoadProgressView.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/util/math.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {
@@ -39,7 +37,7 @@ LoadProgressView::LoadProgressView(ViewAttachParams attach, const Input::Event &
 				{
 					case EmuSystem::LoadProgress::FAILED:
 					{
-						assumeExpr(msg.intArg3 > 0);
+						assume(msg.intArg3 > 0);
 						size_t len = msg.intArg3;
 						char errorStr[len];
 						msgs.readExtraData(std::span{errorStr, len});
@@ -64,7 +62,7 @@ LoadProgressView::LoadProgressView(ViewAttachParams attach, const Input::Event &
 					{
 						setPos(msg.intArg);
 						setMax(msg.intArg2);
-						assumeExpr(msg.intArg3 >= -1);
+						assume(msg.intArg3 >= -1);
 						switch(msg.intArg3)
 						{
 							case -1: // no string

@@ -13,14 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuOptions.hh>
 #include <emuframework/EmuAudio.hh>
 #include <emuframework/EmuSystem.hh>
 #include <emuframework/Option.hh>
-import imagine.audio;
+import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"EmuAudio"};
 
@@ -108,10 +109,7 @@ static void simpleResample(void *dest, size_t destFrames, const void *src, size_
 	}
 	else
 	{
-		if(format.channels != 2)
-		{
-			bug_unreachable("channels == %d", format.channels);
-		}
+		assume(format.channels == 2);
 		if(format.sample.isFloat())
 			simpleResample((uint64_t*)dest, destFrames, (uint64_t*)src, srcFrames);
 		else
@@ -253,7 +251,7 @@ void EmuAudio::writeFrames(const void *samples, size_t framesToWrite)
 {
 	if(!framesToWrite) [[unlikely]]
 		return;
-	assumeExpr(rBuff.capacity());
+	assume(rBuff.capacity());
 	auto inputFormat = format();
 	switch(audioWriteState)
 	{
@@ -318,7 +316,7 @@ void EmuAudio::writeFrames(const void *samples, size_t framesToWrite)
 
 void EmuAudio::setRate(int newRate)
 {
-	assert(newRate <= defaultRate);
+	assume(newRate <= defaultRate);
 	if(!newRate)
 		newRate = defaultRate;
 	if(rate_ == newRate)
@@ -353,7 +351,7 @@ void EmuAudio::setSpeedMultiplier(double speed)
 
 void EmuAudio::updateVolume()
 {
-	assumeExpr(maxVolume_ >= 0.f && maxVolume_ <= 1.25f);
+	assume(maxVolume_ >= 0.f && maxVolume_ <= 1.25f);
 	if(speedMultiplier != 1.)
 	{
 		if(isEnabledDuringAltSpeed())
@@ -413,7 +411,7 @@ void EmuAudio::setEnabledDuringAltSpeed(bool on)
 
 IG::Audio::Format EmuAudio::format() const
 {
-	assumeExpr(rate_ > 0);
+	assume(rate_ > 0);
 	return {rate_, EmuSystem::audioSampleFormat, channels};
 }
 

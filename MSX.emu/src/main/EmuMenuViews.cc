@@ -13,27 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/SystemOptionView.hh>
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/FilePathOptionView.hh>
-#include <emuframework/DataPathSelectView.hh>
-#include <emuframework/SystemActionsView.hh>
-#include <emuframework/FilePicker.hh>
-#include <emuframework/viewUtils.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/AssetFS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
 #include "MainApp.hh"
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
 	#include <blueMSX/IoDevice/Disk.h>
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

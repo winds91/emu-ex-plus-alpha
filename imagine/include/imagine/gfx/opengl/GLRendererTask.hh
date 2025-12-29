@@ -20,10 +20,13 @@
 #include <imagine/gfx/RendererCommands.hh>
 #include "GLTask.hh"
 #include <imagine/base/GLContext.hh>
-#include <imagine/util/utility.h>
+#include <imagine/util/utility.hh>
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <array>
 #include <string_view>
+#include <utility>
+#endif
 
 namespace IG
 {
@@ -32,10 +35,13 @@ class Window;
 
 namespace IG::Gfx
 {
-
 class RendererTask;
 class RendererCommands;
 class DrawContextSupport;
+}
+
+namespace IG::Gfx
+{
 
 class GLRendererTask : public GLTask
 {
@@ -63,7 +69,7 @@ public:
 		std::invocable<Window &, RendererCommands &> auto &&f)
 	{
 		doPreDraw(win, winParams, params);
-		assert(params.asyncMode != DrawAsyncMode::AUTO); // doPreDraw() should set mode
+		assume(params.asyncMode != DrawAsyncMode::AUTO); // doPreDraw() should set mode
 		bool manageSemaphore = params.asyncMode == DrawAsyncMode::PRESENT;
 		bool notifyWindowAfterPresent = params.asyncMode != DrawAsyncMode::NONE;
 		MessageReplyMode replyMode = params.asyncMode != DrawAsyncMode::FULL ? MessageReplyMode::wait : MessageReplyMode::none;

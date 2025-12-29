@@ -13,13 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-import imagine.gui;
+#include <imagine/gui/ViewStack.hh>
+#include <imagine/base/Window.hh>
+#include <imagine/gfx/BasicEffect.hh>
+#include <imagine/util/ScopeGuard.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"ViewStack"};
+static SystemLogger log{"ViewStack"};
 
 void BasicViewController::push(std::unique_ptr<View> v, const Input::Event &e)
 {
@@ -28,7 +31,6 @@ void BasicViewController::push(std::unique_ptr<View> v, const Input::Event &e)
 		log.info("removing existing view from basic view controller");
 		pop();
 	}
-	assumeExpr(v);
 	v->setController(this, e);
 	view = std::move(v);
 	log.info("push view in basic view controller");
@@ -70,7 +72,7 @@ void BasicViewController::place()
 {
 	if(!view)
 		return;
-	assert(viewRect.xSize() && viewRect.ySize());
+	assume(viewRect.xSize() && viewRect.ySize());
 	view->setViewRect(viewRect);
 	view->place();
 }
@@ -116,7 +118,7 @@ void ViewStack::place()
 {
 	if(!view.size())
 		return;
-	assert(viewRect.xSize() && viewRect.ySize());
+	assume(viewRect.xSize() && viewRect.ySize());
 	customViewRect = viewRect;
 	customDisplayRect = displayRect;
 	if(navViewIsActive())
@@ -233,7 +235,6 @@ void ViewStack::draw(Gfx::RendererCommands &cmds)
 
 void ViewStack::push(std::unique_ptr<View> v, const Input::Event &e)
 {
-	assumeExpr(v);
 	if(view.size())
 	{
 		top().onHide();
@@ -348,13 +349,13 @@ View* ViewStack::parentView(View& v)
 
 View &ViewStack::top() const
 {
-	assumeExpr(view.size());
+	assume(view.size());
 	return *view.back().ptr;
 }
 
 View &ViewStack::viewAtIdx(int idx) const
 {
-	assumeExpr(size_t(idx) < view.size());
+	assume(size_t(idx) < view.size());
 	return *view[idx].ptr;
 }
 

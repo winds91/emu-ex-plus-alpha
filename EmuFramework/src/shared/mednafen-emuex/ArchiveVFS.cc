@@ -28,8 +28,8 @@ ArchiveVFS::ArchiveVFS(IG::ArchiveIO arch):
 
 Stream* ArchiveVFS::open(const std::string &path, const uint32 mode, const int do_lock, const bool throw_on_noent, const CanaryType canary)
 {
-	assert(mode == MODE_READ);
-	assert(do_lock == 0);
+	IG::assume(mode == MODE_READ);
+	IG::assume(do_lock == 0);
 	seekFile(path);
 	auto stream = std::make_unique<MemoryStream>(arch.size(), true);
 	if(arch.read(stream->map(), arch.size()) != ssize_t(arch.size()))
@@ -41,7 +41,7 @@ Stream* ArchiveVFS::open(const std::string &path, const uint32 mode, const int d
 
 FILE* ArchiveVFS::openAsStdio(const std::string& path, const uint32 mode)
 {
-	assert(mode == MODE_READ);
+	IG::assume(mode == MODE_READ);
 	seekFile(path);
 	return IG::MapIO{arch}.toFileStream("rb");
 }

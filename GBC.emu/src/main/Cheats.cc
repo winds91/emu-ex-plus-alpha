@@ -13,23 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with GBC.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
-#include <emuframework/Cheats.hh>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/viewUtils.hh>
-#include <emuframework/Option.hh>
 #include "EmuCheatViews.hh"
 #include "MainSystem.hh"
 #include <gambatte.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"GBC.emu"};
+static SystemLogger log{"GBC.emu"};
 
 static bool strIsGGCode(const char *str)
 {
@@ -120,12 +113,12 @@ void GbcSystem::readCheatFile()
 	{
 		return;
 	}
-	logMsg("reading cheats file:%s", path.data());
+	log.info("reading cheats file:{}", path);
 
 	const auto version = file.get<int8_t>();
 	if(version > 1)
 	{
-		logMsg("skipping due to version code %d", version);
+		log.info("skipping due to version code:{}", version);
 		return;
 	}
 	auto size = file.get<uint16_t>();

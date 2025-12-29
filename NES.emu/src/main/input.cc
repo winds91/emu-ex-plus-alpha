@@ -13,15 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with NES.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
-#include <imagine/util/math.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
 #include <fceu/fceu.h>
 #include <fceu/fds.h>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -201,7 +198,7 @@ AssetDesc NesApp::vControllerAssetDesc(KeyInfo key) const
 
 void NesSystem::connectNESInput(int port, ESI type)
 {
-	assert(GameInfo);
+	assume(GameInfo);
 	if(type == SI_GAMEPAD)
 	{
 		//log.debug("gamepad to port {}", port);

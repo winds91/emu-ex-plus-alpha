@@ -14,10 +14,10 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/AudioOptionView.hh>
-#include <emuframework/viewUtils.hh>
-#include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuAudio.hh>
-import std;
+#include <emuframework/EmuSystem.hh>
+#include <emuframework/viewUtils.hh>
+import imagine;
 
 namespace EmuEx
 {

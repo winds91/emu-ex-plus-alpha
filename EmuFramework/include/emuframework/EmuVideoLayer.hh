@@ -18,10 +18,12 @@
 #include <emuframework/VideoImageOverlay.hh>
 #include <emuframework/VideoImageEffect.hh>
 #include <emuframework/EmuOptions.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gfx/Quads.hh>
 #include <imagine/gfx/Vec3.hh>
 #include <imagine/pixmap/PixelFormat.hh>
 #include <imagine/util/container/ArrayList.hh>
+#endif
 
 namespace EmuEx
 {
@@ -31,11 +33,13 @@ class EmuVideo;
 class EmuSystem;
 class VController;
 
-WISE_ENUM_CLASS((ImageChannel, uint8_t),
+enum class ImageChannel: uint8_t
+{
 	All,
 	Red,
 	Green,
-	Blue);
+	Blue
+};
 
 class EmuVideoLayer
 {

@@ -22,7 +22,7 @@ set(PACK_DYN_RELOCS none)
 
 # don't use FORTIFY_SOURCE to avoid linking in newer glibc symbols
 set(CFLAGS_COMMON "--sysroot=${pandoraSDKSysroot} \
--isystem /usr/lib/gcc/${CTARGET}/15/include/g++-v15 \
+-isystem /usr/lib/gcc/${CTARGET}/16/include/g++-v16 \
 -isystem /usr/${CTARGET}/usr/include \
 -isystem ${pandoraSDKSysroot}/usr/include \
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 \

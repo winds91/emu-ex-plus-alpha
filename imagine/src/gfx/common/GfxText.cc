@@ -13,17 +13,22 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-import imagine.gfx;
+#include <imagine/gfx/GfxText.hh>
+#include <imagine/gfx/RendererCommands.hh>
+#include <imagine/gfx/Mat4.hh>
+#include <imagine/gfx/BasicEffect.hh>
+#include <imagine/gfx/GlyphTextureSet.hh>
+#include <imagine/util/ctype.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"GfxText"};
+static SystemLogger log{"GfxText"};
 
 static int xSizeOfChar(Renderer &r, GlyphTextureSet *face_, int c, int spaceX)
 {
-	assert(c != '\0');
+	assume(c != '\0');
 	if(c == ' ')
 		return spaceX;
 	if(c == '\n')
@@ -80,7 +85,7 @@ bool Text::compile(TextLayoutConfig conf)
 			log.warn("called compile() before setting face");
 		return false;
 	}
-	assert(quads.hasTask());
+	assume(quads.hasTask());
 	auto &r = renderer();
 	if(sizeBeforeLineSpans)
 	{
@@ -277,7 +282,7 @@ size_t Text::stringSize() const
 {
 	if(sizeBeforeLineSpans)
 	{
-		assumeExpr(sizeBeforeLineSpans < textStr.size());
+		assume(sizeBeforeLineSpans < textStr.size());
 		return sizeBeforeLineSpans;
 	}
 	else
@@ -322,7 +327,7 @@ void Text::LineSpan::encodeTo(std::u16string &outStr)
 
 Text::LineSpan Text::LineSpan::decode(std::u16string_view str)
 {
-	assumeExpr(str.size() >= 3);
+	assume(str.size() >= 3);
 	auto xSize = str[1] | (str[2] << 16);
 	return {xSize, str[0]};
 }

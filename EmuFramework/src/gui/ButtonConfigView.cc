@@ -14,16 +14,10 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/ButtonConfigView.hh>
-#include <emuframework/AppKeyCode.hh>
 #include <emuframework/EmuApp.hh>
 #include "InputManagerView.hh"
-#include "../InputDeviceConfig.hh"
 #include "../InputDeviceData.hh"
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/variant.hh>
-#include <imagine/logger/logger.h>
-import std;
+import imagine;
 
 namespace EmuEx
 {

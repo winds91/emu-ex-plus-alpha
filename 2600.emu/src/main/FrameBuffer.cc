@@ -16,11 +16,8 @@
 #include <FrameBuffer.hxx>
 #include <OSystem.hxx>
 #include <stella/emucore/tia/TIA.hxx>
-// TODO: Some Stella types collide with MacTypes.h
-#define Debugger DebuggerMac
-#include <emuframework/EmuApp.hh>
-#undef Debugger
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 FrameBuffer::FrameBuffer(OSystem& osystem):
 	appPtr{&osystem.app()}, myPaletteHandler{osystem}
@@ -39,7 +36,7 @@ void FrameBuffer::enablePhosphor(bool enable, int blend)
 	if(blend >= 0)
 	{
 		myPhosphorPercent = std::max(blend, 1) / 100.0;
-  	logMsg("phosphor blend:%d (%.2f%%)", blend, myPhosphorPercent);
+  	log.info("phosphor blend:{} ({}%)", blend, myPhosphorPercent);
 	}
 	if(enable)
   {
@@ -60,7 +57,7 @@ uint8_t FrameBuffer::getPhosphor(uInt8 c1, uInt8 c2) const
 
 void FrameBuffer::setTIAPalette(const PaletteArray& palette)
 {
-	logMsg("setTIAPalette");
+	log.info("setTIAPalette");
 	auto desc32 = format == IG::PixelFmtBGRA8888 ? IG::PixelDescBGRA8888Native : IG::PixelDescRGBA8888Native;
 	for(auto i : IG::iotaCount(256))
 	{
@@ -110,9 +107,9 @@ template <int outputBits>
 void FrameBuffer::renderOutput(IG::MutablePixmapView pix, TIA &tia)
 {
 	IG::PixmapView framePix{{{(int)tia.width(), (int)tia.height()}, IG::PixelFmtI8}, tia.frameBuffer()};
-	assumeExpr(pix.size() == framePix.size());
-	assumeExpr(pix.format().bytesPerPixel() == outputBits / 8);
-	assumeExpr(framePix.format().bytesPerPixel() == 1);
+	IG::assume(pix.size() == framePix.size());
+	IG::assume(pix.format().bytesPerPixel() == outputBits / 8);
+	IG::assume(framePix.format().bytesPerPixel() == 1);
 	if(myUsePhosphor)
 	{
 		uint8_t* prevFrame = prevFramebuffer.data();

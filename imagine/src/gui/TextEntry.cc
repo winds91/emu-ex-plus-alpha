@@ -13,13 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/used.hh>
-import imagine.gui;
+#include <imagine/gui/TextEntry.hh>
+#include <imagine/gui/ViewManager.hh>
+#include <imagine/gfx/BasicEffect.hh>
+#include <imagine/gfx/GlyphTextureSet.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"TextEntry"};
+static SystemLogger log{"TextEntry"};
 
 TextEntry::TextEntry(const char *initText, ViewAttachParams attach, Gfx::GlyphTextureSet *face):
 	bgQuads{attach.rendererTask, {.size = 1}},

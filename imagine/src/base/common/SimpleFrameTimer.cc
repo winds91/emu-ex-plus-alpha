@@ -13,13 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-import imagine;
+#include <imagine/base/SimpleFrameTimer.hh>
+#include <imagine/base/Screen.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"SimpleFrameTimer"};
+static SystemLogger log{"SimpleFrameTimer"};
 
 SimpleFrameTimer::SimpleFrameTimer(Screen &screen, EventLoop loop):
 	timer
@@ -51,7 +53,7 @@ void SimpleFrameTimer::scheduleVSync()
 	{
 		return;
 	}
-	assert(rate.hz());
+	assume(rate.hz());
 	timer.runIn(Nanoseconds{1}, rate.duration());
 }
 

@@ -13,6 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/bluetooth/BluetoothAdapter.hh>
+#include <imagine/util/algorithm.h>
+#include <imagine/util/ranges.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/fd-utils.h>
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
@@ -21,7 +25,6 @@
 #include <bluetooth/rfcomm.h>
 #include <bluetooth/hidp.h>
 #include <errno.h>
-import imagine;
 
 #ifdef __ANDROID__
 // Bluez dlsym functions
@@ -31,7 +34,7 @@ CLINK int bluez_dl();
 namespace IG
 {
 
-constexpr SystemLogger log{"Bluetooth"};
+static SystemLogger log{"Bluetooth"};
 
 struct ScanStatusMessage
 {
@@ -347,7 +350,7 @@ void BluetoothPendingSocket::requestName(BluetoothAdapter& bta, BluetoothAdapter
 
 std::system_error BluetoothSocket::open(BluetoothAdapter&, BluetoothPendingSocket& pending)
 {
-	assert(pending);
+	assume(pending);
 	log.info("accepting connection from fd:{}", pending.fd);
 	fd = pending.fd;
 	pending = {};
@@ -498,7 +501,7 @@ void BluezBluetoothSocket::close()
 
 ssize_t BluetoothSocket::write(const void *data, size_t size)
 {
-	assert(fd >= 0);
+	assume(fd >= 0);
 	return fd_writeAll(fd, data, size);
 }
 

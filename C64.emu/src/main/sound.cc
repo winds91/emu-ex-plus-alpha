@@ -13,8 +13,6 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "sound"
-#include <emuframework/EmuAudio.hh>
 #include "MainSystem.hh"
 
 extern "C"
@@ -22,15 +20,18 @@ extern "C"
 	#include "sound.h"
 }
 
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
+
+namespace EmuEx { static SystemLogger log{"C64.emu"}; }
 
 using namespace EmuEx;
 
 static int soundInit(const char *param, int *speed,
 		   int *fragsize, int *fragnr, int *channels)
 {
-	logMsg("sound init %dHz, %d fragsize, %d fragnr, %d channels", *speed, *fragsize, *fragnr, *channels);
-	assert(*channels == 1);
+	EmuEx::log.info("sound init {}Hz, fragsize:{}, fragnr:{}, channels:{}", *speed, *fragsize, *fragnr, *channels);
+	assume(*channels == 1);
 	return 0;
 }
 

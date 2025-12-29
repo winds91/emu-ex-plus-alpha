@@ -15,13 +15,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/utility.h>
 #include <imagine/util/math.hh>
 #include <imagine/util/enum.hh>
-#include <cassert>
+#ifndef IG_USE_MODULE_STD
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#endif
 
 // Origins are based on Cartesian coordinates,
 // min:negative x = left
@@ -32,13 +32,15 @@
 namespace IG
 {
 
-WISE_ENUM_CLASS((Origin, uint8_t),
+enum class Origin: uint8_t
+{
 	center,
 	min,
 	max,
 	centerInverted,
 	minInverted,
-	maxInverted);
+	maxInverted
+};
 
 class _2DOrigin
 {
@@ -71,7 +73,7 @@ public:
 			case Origin::centerInverted: return 0;
 			case Origin::max:
 			case Origin::maxInverted: return 1;
-			default: bug_unreachable("invalid Origin");
+			default: unreachable();
 		}
 	}
 
@@ -137,7 +139,7 @@ public:
 			case Origin::centerInverted: return Origin::center;
 			case Origin::max: return Origin::minInverted;
 			case Origin::maxInverted: return Origin::min;
-			default: bug_unreachable("invalid Origin");
+			default: unreachable();
 		}
 	}
 
@@ -164,7 +166,7 @@ public:
 			case Origin::centerInverted: return Origin::centerInverted;
 			case Origin::max: return Origin::min;
 			case Origin::maxInverted: return Origin::minInverted;
-			default: bug_unreachable("invalid Origin");
+			default: unreachable();
 		}
 	}
 

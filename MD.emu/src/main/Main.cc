@@ -34,11 +34,7 @@
 #include <mednafen-emuex/ArchiveVFS.hh>
 #endif
 #include "Cheats.hh"
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/ScopeGuard.hh>
+import imagine;
 
 t_config config{};
 t_bitmap bitmap{};
@@ -123,7 +119,7 @@ VideoSystem MdSystem::videoSystem() const { return vdp_pal ? VideoSystem::PAL : 
 
 void MdSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	#ifndef NO_SCD
 	if(sCD.isActive)
 		system_reset();
@@ -154,7 +150,7 @@ void MdSystem::readState(EmuApp &app, std::span<uint8_t> buff)
 
 size_t MdSystem::writeState(std::span<uint8_t> buff, SaveStateFlags flags)
 {
-	assert(buff.size() == maxSaveStateSize);
+	assume(buff.size() == maxSaveStateSize);
 	return state_save(buff.data(), flags.uncompressed);
 }
 

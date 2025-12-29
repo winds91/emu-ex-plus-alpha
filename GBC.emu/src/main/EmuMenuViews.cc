@@ -13,22 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with GBC.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/VideoOptionView.hh>
-#include <emuframework/FilePathOptionView.hh>
-#include <emuframework/UserPathSelectView.hh>
-#include <emuframework/SystemActionsView.hh>
 #include "Palette.hh"
 #include "MainApp.hh"
 #include <resample/resamplerinfo.h>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
 
 using MainAppHelper = EmuAppHelperBase<MainApp>;
 
+static SystemLogger log{"GBC.emu"};
 static constexpr size_t MAX_RESAMPLERS = 4;
 
 class CustomAudioOptionView : public AudioOptionView, public MainAppHelper
@@ -49,12 +45,12 @@ public:
 	CustomAudioOptionView(ViewAttachParams attach, EmuAudio& audio): AudioOptionView{attach, audio, true}
 	{
 		loadStockItems();
-		logMsg("%d resamplers", (int)ResamplerInfo::num());
+		log.info("{} resamplers", ResamplerInfo::num());
 		auto resamplers = std::min(ResamplerInfo::num(), MAX_RESAMPLERS);
 		for(auto i : iotaCount(resamplers))
 		{
 			ResamplerInfo r = ResamplerInfo::get(i);
-			logMsg("%zu %s", i, r.desc);
+			log.info("{} {}", i, r.desc);
 			resamplerItem.emplace_back(r.desc, attachParams(),
 				[this, i](){ system().optionAudioResampler = i; });
 		}
@@ -200,7 +196,7 @@ class CustomFilePathOptionView : public FilePathOptionView, public MainAppHelper
 			pushAndShow(makeViewWithName<UserPathSelectView>("Cheats", system().userPath(system().cheatsDir),
 				[this](CStringView path)
 				{
-					logMsg("set cheats path:%s", path.data());
+					log.info("set cheats path:{}", path);
 					system().cheatsDir = path;
 					cheatsPath.compile(cheatsMenuName(appContext(), path));
 				}), e);

@@ -20,11 +20,12 @@ module;
 #include <sys/resource.h>
 
 export module imagine.internal.android;
-export import imagine;
+import imagine;
+import std;
 
 namespace IG
 {
-constexpr SystemLogger log("Android");
+static constexpr SystemLogger log("Android");
 }
 
 export namespace IG

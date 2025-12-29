@@ -13,16 +13,19 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/bluetooth/BluetoothAdapter.hh>
+#include <imagine/util/container/ArrayList.hh>
+#include <imagine/util/ranges.hh>
+#include <imagine/util/algorithm.h>
+#include <imagine/logger/SystemLogger.hh>
 #import <btstack/btstack.h>
 #include <errno.h>
 #include <string.h>
-#include <imagine/util/macros.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Bluetooth"};
+static SystemLogger log{"Bluetooth"};
 static int writeAuthEnable = -1;
 static bool inL2capSocketOpenHandler = 0;
 
@@ -532,7 +535,7 @@ void BtstackBluetoothAdapter::packetHandler(uint8_t packet_type, uint16_t channe
 					}
 
 					[[maybe_unused]] bool removedFromScanList = IG::erase_if(scanDevList, [&](BTDevice &dev){ return BD_ADDR_CMP(dev.address, addr) == 0; });
-					assert(removedFromScanList);
+					assume(removedFromScanList);
 
 					if(!cached && !scanDevList.size())
 					{
@@ -679,7 +682,7 @@ void BluetoothAdapter::setL2capService(uint32_t psm, bool on, OnStatusDelegate o
 	if(on)
 	{
 		log.info("registering l2cap service for psm:{:X}", psm);
-		assert(!setL2capServiceOnResult); // only handle one request at a time
+		assume(!setL2capServiceOnResult); // only handle one request at a time
 		setL2capServiceOnResult = onResult;
 		pendingCmdList.emplace_back(BtstackCmd::l2capRegisterService(psm, 672));
 		if(isInactive())
@@ -749,8 +752,7 @@ void BluetoothAdapter::setActiveState(bool on, OnStateChangeDelegate onStateChan
 	}
 	else
 	{
-		// TODO
-		bug_unreachable("TODO");
+		log.error("TODO");
 		onStateChange(*this, BluetoothState::Error);
 	}
 }
@@ -873,13 +875,13 @@ void BluetoothAdapter::requestName(BluetoothPendingSocket &pending, OnScanDevice
 
 void BluetoothPendingSocket::requestName(BluetoothAdapter& bta, BTOnScanDeviceNameDelegate onDeviceName)
 {
-	assert(ch);
+	assume(ch);
 	bta.requestName(*this, onDeviceName);
 }
 
 void BluetoothPendingSocket::close()
 {
-	assert(ch);
+	assume(ch);
 	log.info("declining L2CAP connection:{}", localCh);
 	bt_send_cmd(&l2cap_decline_connection, localCh, 0);
 	ch = 0;
@@ -930,7 +932,7 @@ std::system_error BluetoothSocket::openL2cap(BluetoothAdapter &, BluetoothAddr a
 
 std::system_error BluetoothSocket::open(BluetoothAdapter &, BluetoothPendingSocket &pending)
 {
-	assert(pending);
+	assume(pending);
 	addr = pending.addr;
 	type = pending.type;
 	ch = pending.ch;
@@ -1091,7 +1093,7 @@ void BtstackBluetoothSocket::close()
 
 ssize_t BluetoothSocket::write(const void *data, size_t size)
 {
-	assert(localCh);
+	assume(localCh);
 	if(type)
 		bt_send_rfcomm(localCh, (uint8_t*)data, size);
 	else

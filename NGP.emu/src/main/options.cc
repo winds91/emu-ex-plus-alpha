@@ -13,11 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with NGP.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/Option.hh>
 #include "MainSystem.hh"
 #include <mednafen-emuex/MDFNUtils.hh>
 #include <mednafen/general.h>
+import emuex;
 
 namespace EmuEx
 {
@@ -62,12 +61,14 @@ namespace Mednafen
 {
 
 #define EMU_MODULE "ngp"
+constexpr IG::SystemLogger log{"NGP.emu"};
 
 using namespace EmuEx;
 
 uint64 MDFN_GetSettingUI(const char *name)
 {
-	bug_unreachable("unhandled settingUI %s", name);
+	log.error("unhandled settingUI {}", name);
+	unreachable();
 }
 
 int64 MDFN_GetSettingI(const char *name_)
@@ -75,12 +76,14 @@ int64 MDFN_GetSettingI(const char *name_)
 	std::string_view name{name_};
 	if("filesys.state_comp_level" == name)
 		return 6;
-	bug_unreachable("unhandled settingI %s", name_);
+	log.error("unhandled settingI {}", name_);
+	unreachable();
 }
 
 double MDFN_GetSettingF(const char *name)
 {
-	bug_unreachable("unhandled settingF %s", name);
+	log.error("unhandled settingF {}", name);
+	unreachable();
 }
 
 bool MDFN_GetSettingB(const char *name_)
@@ -92,12 +95,14 @@ bool MDFN_GetSettingB(const char *name_)
 		return static_cast<NgpSystem&>(gSystem()).optionNGPLanguage;
 	if("filesys.untrusted_fip_check" == name)
 		return 0;
-	bug_unreachable("unhandled settingB %s", name_);
+	log.error("unhandled settingB {}", name_);
+	unreachable();
 }
 
 std::string MDFN_GetSettingS(const char *name)
 {
-	bug_unreachable("unhandled settingS %s", name);
+	log.error("unhandled settingS {}", name);
+	unreachable();
 }
 
 std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
@@ -108,8 +113,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
 		case MDFNMKF_SAV:
 		case MDFNMKF_SAVBACK:
 			return savePathMDFN(id1, cd1);
-		default:
-			bug_unreachable("type == %d", type);
+		default: unreachable();
 	}
 }
 

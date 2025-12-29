@@ -14,8 +14,7 @@
 #define sscanf sscanf_s
 #endif
 
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/io/FileIO.hh>
+import imagine;
 
 #define CPUReadMemory(s) CPUReadMemory(cpu, s)
 #define CPUReadByte(s) CPUReadByte(cpu, s)

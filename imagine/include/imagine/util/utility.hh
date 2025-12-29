@@ -15,21 +15,46 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-
-#ifdef __cplusplus
+#include <imagine/config/defs.hh>
+#ifndef IG_USE_MODULE_STD
 #include <utility>
+#include <source_location>
+#include <stdexcept>
 #endif
-
-#include <imagine/util/macros.h>
-
-#ifdef __cplusplus
 
 namespace IG
 {
 
 using std::to_underlying;
 
-constexpr char hexDigitChar(int value, bool uppercase = true)
+[[noreturn]]
+void abort(const char* msg);
+
+[[noreturn]]
+void onBug(std::source_location location = std::source_location::current());
+
+[[gnu::always_inline, noreturn]]
+inline constexpr void unreachable(std::source_location location = std::source_location::current())
+{
+	if constexpr(Config::DEBUG_BUILD)
+	{
+		onBug(location);
+	}
+	else
+	{
+		__builtin_unreachable();
+	}
+}
+
+[[gnu::always_inline]]
+inline constexpr void assume(const auto& expr, std::source_location location = std::source_location::current())
+{
+	if(expr)
+		return;
+	unreachable(location);
+}
+
+inline constexpr char hexDigitChar(int value, bool uppercase = true)
 {
 	switch(value)
 	{
@@ -52,7 +77,7 @@ constexpr char hexDigitChar(int value, bool uppercase = true)
 	}
 }
 
-constexpr unsigned char charHexDigitInt(char c)
+inline constexpr unsigned char charHexDigitInt(char c)
 {
 	switch (c)
 	{
@@ -68,7 +93,6 @@ constexpr unsigned char charHexDigitInt(char c)
 }
 
 template <auto val>
-static constexpr auto evalNow = val;
+inline constexpr auto evalNow = val;
 
 }
-#endif

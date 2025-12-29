@@ -13,11 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with NES.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/Option.hh>
 #include "MainSystem.hh"
 #include <fceu/sound.h>
 #include <fceu/fceu.h>
+import emuex;
 
 namespace EmuEx
 {

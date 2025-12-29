@@ -13,13 +13,23 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/bluetooth/defs.hh>
-import imagine.bluetooth;
+#include <imagine/config/macros.h>
+#include <imagine/bluetooth/BluetoothInputDevice.hh>
+#include <imagine/bluetooth/BluetoothAdapter.hh>
+#include <imagine/bluetooth/Wiimote.hh>
+#include <imagine/bluetooth/IControlPad.hh>
+#include <imagine/bluetooth/Zeemote.hh>
+#include <imagine/bluetooth/PS3Controller.hh>
+#include <imagine/base/Application.hh>
+#include <imagine/base/Timer.hh>
+#include <imagine/util/variant.hh>
+#include <imagine/logger/SystemLogger.hh>
+import std;
 
 namespace IG::Bluetooth
 {
 
-constexpr SystemLogger log{"BTInput"};
+static SystemLogger log{"BTInput"};
 static std::vector<std::unique_ptr<Input::Device>> btInputDevPendingList;
 static bool hidServiceActive = false;
 

@@ -14,12 +14,11 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <meta.h>
-#include <imagine/util/macros.h>
-
-import imagine.gui;
+import imagine;
 import gui;
 import cpuUtils;
 import tests;
+import std;
 
 namespace frameRateTest
 {
@@ -54,7 +53,7 @@ public:
 		fontManager{ctx},
 		renderer{ctx}
 	{
-		IG::WindowConfig winConf{ .title = ctx.applicationName };
+		IG::WindowConfig winConf{ .title = ApplicationMeta::name };
 
 		ctx.makeWindow(winConf,
 			[this](IG::ApplicationContext ctx, IG::Window &win)
@@ -134,7 +133,7 @@ public:
 				case TestID::Draw: return std::make_unique<DrawTest>(ctx, attach, t.pixmapSize, t.bufferMode);
 				case TestID::Write: return std::make_unique<WriteTest>(ctx, attach, t.pixmapSize, t.bufferMode);
 			}
-			bug_unreachable("invalid TestID");
+			unreachable();
 		}();
 		ctx.setIdleDisplayPowerSave(false);
 		initCPUFreqStatus();
@@ -344,11 +343,11 @@ private:
 namespace IG
 {
 
-const char *const ApplicationContext::applicationName{CONFIG_APP_NAME};
+const char *const ApplicationMeta::name{CONFIG_APP_NAME};
 
-void ApplicationContext::onInit(ApplicationInitParams initParams)
+void ApplicationMeta::onInit(ApplicationInitParams initParams, ApplicationContext& ctx)
 {
-	initApplication<frameRateTest::FrameRateTestApplication>(initParams, *this);
+	ctx.initApplication<frameRateTest::FrameRateTestApplication>(initParams);
 }
 
 }

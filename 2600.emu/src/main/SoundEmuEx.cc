@@ -20,12 +20,8 @@
 #include <stella/common/audio/LanczosResampler.hxx>
 #include <OSystem.hxx>
 #include <SoundEmuEx.hh>
-// TODO: Some Stella types collide with MacTypes.h
-#define Debugger DebuggerMac
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuAudio.hh>
-#include <imagine/logger/logger.h>
-#undef Debugger
+import emuex;
+import imagine;
 
 using namespace EmuEx;
 
@@ -69,7 +65,7 @@ void SoundEmuEx::updateResampler()
 			myResampler = make_unique<LanczosResampler>(formatFrom, formatTo, fragCallback, 3);
 		break;
 	}
-	logMsg("set sound mix rate:%d resampler type:%d", mixRate, (int)resampleQuality);
+	log.info("set sound mix rate:{} resampler type:{}", mixRate, (int)resampleQuality);
 }
 
 void SoundEmuEx::setMixRate(int mixRate_)
@@ -79,7 +75,7 @@ void SoundEmuEx::setMixRate(int mixRate_)
 	mixRate = mixRate_;
 	if(!audioQueue)
 	{
-		logWarn("called setRate() without audio queue");
+		log.warn("called setRate() without audio queue");
 		return;
 	}
 	updateResampler();
@@ -107,7 +103,7 @@ void SoundEmuEx::setEmuAudio(EmuEx::EmuAudio *audio)
 		while(queue.size())
 		{
 			float buffF[512];
-			assert(fragSamples <= std::ssize(buffF));
+			IG::assume(fragSamples <= std::ssize(buffF));
 			myResampler->fillFragment(buffF, fragFrames);
 			if(audio)
 			{

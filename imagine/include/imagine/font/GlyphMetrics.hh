@@ -16,7 +16,6 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/util/Point2D.hh>
-#include <cstdint>
 
 namespace IG::Data
 {

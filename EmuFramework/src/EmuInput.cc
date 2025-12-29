@@ -13,19 +13,19 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuSystem.hh>
+#include <emuframework/EmuInput.hh>
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuViewController.hh>
 #include <emuframework/AppKeyCode.hh>
 #include <emuframework/FilePicker.hh>
 #include <emuframework/Option.hh>
 #include "InputDeviceData.hh"
 #include "gui/ResetAlertView.hh"
-#include <emuframework/EmuOptions.hh>
 import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"InputManager"};
 
@@ -51,7 +51,7 @@ bool InputManager::handleAppActionKeyInput(EmuApp& app, InputAction action, cons
 	bool isPushed = action.state == Input::Action::PUSHED;
 	auto& viewController = app.viewController();
 	auto& system = app.system();
-	assert(action.flags.appCode);
+	assume(action.flags.appCode);
 	using enum AppKeyCode;
 	switch(AppKeyCode(action.code))
 	{
@@ -350,7 +350,8 @@ void InputManager::writeSavedInputDevices(ApplicationContext ctx, FileIO &io) co
 	}
 	if(bytes > 0xFFFF)
 	{
-		bug_unreachable("excessive input device config size, should not happen");
+		log.error("excessive input device config size, should not happen");
+		unreachable();
 	}
 	// write to config file
 	log.info("saving {} input device configs, {} bytes", savedDevConfigs.size(), bytes);
@@ -480,7 +481,8 @@ void InputManager::writeInputDeviceSessionConfigs(FileIO &io) const
 	}
 	if(bytes > 0xFFFF)
 	{
-		bug_unreachable("excessive input device config size, should not happen");
+		log.error("excessive input device config size, should not happen");
+		unreachable();
 	}
 	// write to config file
 	log.info("saving {} input device content configs, {} bytes", savedSessionDevConfigs.size(), bytes);

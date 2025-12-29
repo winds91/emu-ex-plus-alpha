@@ -13,26 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/ButtonConfigView.hh>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuViewController.hh>
-#include <emuframework/AppKeyCode.hh>
-#include <emuframework/EmuOptions.hh>
-#include <emuframework/viewUtils.hh>
 #include "InputManagerView.hh"
 #include "ProfileSelectView.hh"
 #include "../InputDeviceData.hh"
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/gui/TextTableView.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/bluetooth/BluetoothAdapter.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/variant.hh>
-#include <imagine/util/bit.hh>
-#include <imagine/logger/logger.h>
+#include <emuframework/EmuApp.hh>
+#include <emuframework/AppKeyCode.hh>
+#include <emuframework/viewUtils.hh>
+#include <emuframework/ButtonConfigView.hh>
+import imagine;
 
 namespace EmuEx
 {
@@ -516,7 +504,8 @@ InputManagerDeviceView::InputManagerDeviceView(UTF16String name, ViewAttachParam
 						auto conf = devConf.mutableKeyConf(inputManager);
 						if(!conf)
 						{
-							bug_unreachable("confirmed deletion of a read-only key config, should never happen");
+							log.error("confirmed deletion of a read-only key config, should never happen");
+							unreachable();
 						}
 						log.info("deleting profile:{}", conf->name);
 						inputManager.deleteKeyProfile(appContext(), conf);

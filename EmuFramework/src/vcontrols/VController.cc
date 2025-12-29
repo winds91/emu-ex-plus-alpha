@@ -13,14 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/config/macros.h>
 #include <emuframework/VController.hh>
 #include <emuframework/EmuApp.hh>
 #include <emuframework/AppKeyCode.hh>
-#include <emuframework/EmuOptions.hh>
-#include "../WindowData.hh"
 #include <emuframework/Option.hh>
-#include <imagine/config/defs.hh>
-import imagine.gfx;
+#include "../WindowData.hh"
 
 namespace EmuEx
 {
@@ -116,7 +114,7 @@ void VController::updateTextures()
 
 static void setSize(VControllerElement &elem, int sizePx, Gfx::Renderer &r)
 {
-	assert(sizePx);
+	assume(sizePx);
 	elem.visit(overloaded
 	{
 		[&](VControllerDPad &dpad){ dpad.setSize(r, makeEvenRoundedUp(int(sizePx * 2.5f))); },
@@ -225,8 +223,8 @@ std::array<KeyInfo, 2> VController::findGamepadElements(WPt pos)
 
 KeyInfo VController::keyboardKeyFromPointer(const Input::MotionEvent &e)
 {
-	assert(isInKeyboardMode());
-	assumeExpr(e.isPointer());
+	assume(isInKeyboardMode());
+	assume(e.isPointer());
 	if(e.pushed())
 	{
 		kb.unselectKey();
@@ -256,7 +254,7 @@ KeyInfo VController::keyboardKeyFromPointer(const Input::MotionEvent &e)
 
 bool VController::pointerInputEvent(const Input::MotionEvent &e, IG::WindowRect gameRect)
 {
-	assumeExpr(e.isPointer());
+	assume(e.isPointer());
 	if(e.pushed() || e.released())
 	{
 		for(const auto &grp: uiElements)
@@ -1026,7 +1024,7 @@ VControllerElement &VController::add(std::vector<VControllerElement> &elems, Inp
 			case InputComponent::ui:
 				return elems.emplace_back(std::in_place_type<VControllerUIButtonGroup>, c.keyCodes, c.layoutOrigin);
 			case InputComponent::dPad:
-				assert(c.keyCodes.size() == 4);
+				assume(c.keyCodes.size() == 4);
 				return elems.emplace_back(std::in_place_type<VControllerDPad>, std::span<const KeyInfo, 4>{c.keyCodes.data(), 4});
 			case InputComponent::button:
 			case InputComponent::trigger:
@@ -1038,7 +1036,7 @@ VControllerElement &VController::add(std::vector<VControllerElement> &elems, Inp
 				return e;
 			}
 		}
-		bug_unreachable("invalid InputComponent");
+		unreachable();
 	}();
 	if(hasWindow())
 	{

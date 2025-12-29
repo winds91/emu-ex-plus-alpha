@@ -29,8 +29,11 @@ class GLContext;
 
 namespace IG::Gfx
 {
-
 class TextureSampler;
+}
+
+namespace IG::Gfx
+{
 
 class GLRendererCommands
 {

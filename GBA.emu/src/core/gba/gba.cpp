@@ -40,15 +40,13 @@
 #include "core/base/image_util.h"
 #endif // !__LIBRETRO__
 
-#include <imagine/logger/logger.h>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/algorithm.h>
-#include <imagine/util/ScopeGuard.hh>
-#include <emuframework/EmuSystemTaskContext.hh>
-
 #ifdef PROFILING
 #include "prof/prof.h"
 #endif
+
+import emuex;
+import imagine;
+import std;
 
 #ifdef __GNUC__
 #define _stricmp strcasecmp

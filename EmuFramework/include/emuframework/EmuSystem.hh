@@ -15,20 +15,24 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <emuframework/EmuTiming.hh>
+#include <emuframework/VController.hh>
+#include <emuframework/EmuInput.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/fs/FSUtils.hh>
 #include <imagine/base/baseDefs.hh>
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/time/Time.hh>
-#include <imagine/audio/SampleFormat.hh>
+#include <imagine/audio/Format.hh>
 #include <imagine/util/rectangle2.h>
 #include <imagine/util/memory/DynArray.hh>
-#include <imagine/util/enum.hh>
-#include <emuframework/EmuTiming.hh>
-#include <emuframework/VController.hh>
-#include <emuframework/EmuInput.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <string>
 #include <string_view>
+#endif
 
+#ifndef IG_USE_MODULE_IMAGINE
 namespace IG
 {
 class ApplicationContext;
@@ -45,6 +49,7 @@ class MotionEvent;
 class DragTrackerState;
 enum class Action : uint8_t;
 }
+#endif
 
 namespace EmuEx
 {
@@ -136,14 +141,14 @@ enum class VideoSystem: uint8_t
 	NATIVE_NTSC, PAL
 };
 
-WISE_ENUM_CLASS((DeinterlaceMode, uint8_t),
-	Bob,
-	Weave
-);
+enum class DeinterlaceMode: uint8_t
+{
+	Bob, Weave
+};
 
 using FrameDuration = Nanoseconds;
 
-constexpr const char *optionUserPathContentToken = ":CONTENT:";
+inline constexpr const char *optionUserPathContentToken = ":CONTENT:";
 
 struct SaveStateFlags
 {
@@ -316,13 +321,13 @@ public:
 
 	FS::PathString contentLocalDirectory(std::string_view basePath, std::string_view name, auto &&...components) const
 	{
-		assert(!contentName_.empty());
+		assume(!contentName_.empty());
 		return FS::uriString(basePath, contentName_, name, IG_forward(components)...);
 	}
 
 	bool createContentLocalDirectory(std::string_view basePath, std::string_view name, auto &&...components)
 	{
-		assert(!contentName_.empty());
+		assume(!contentName_.empty());
 		try
 		{
 			FS::createDirectoryUriSegments(appContext(), basePath, contentName_, name, IG_forward(components)...);

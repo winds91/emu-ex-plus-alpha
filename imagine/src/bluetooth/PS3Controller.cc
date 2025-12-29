@@ -13,11 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-#include "../input/PackedInputAccess.hh"
-import imagine;
+#include <imagine/bluetooth/PS3Controller.hh>
+#include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/util/ranges.hh>
+#include <imagine/logger/SystemLogger.hh>
+import std;
+import packedInputAccess;
 
-static constexpr uint32_t CELL_PAD_BTN_OFFSET_DIGITAL1 = 0, CELL_PAD_BTN_OFFSET_DIGITAL2 = 1;
+constexpr std::uint32_t CELL_PAD_BTN_OFFSET_DIGITAL1 = 0, CELL_PAD_BTN_OFFSET_DIGITAL2 = 1;
 
 // CELL_PAD_BTN_OFFSET_DIGITAL1
 #define CELL_PAD_CTRL_LEFT      (1 << 7)
@@ -46,7 +49,7 @@ namespace IG
 
 using namespace IG::Input;
 
-constexpr SystemLogger log{"PS3Ctrl"};
+static SystemLogger log{"PS3Ctrl"};
 
 static const PackedInputAccess padDataAccess[] =
 {

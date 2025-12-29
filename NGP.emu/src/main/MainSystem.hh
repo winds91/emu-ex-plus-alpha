@@ -16,6 +16,7 @@
 	along with NGP.emu.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/base/ApplicationContext.hh>
+#include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuOptions.hh>
 #include <mednafen/mednafen.h>
 

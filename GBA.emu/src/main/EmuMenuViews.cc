@@ -13,23 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with GBA.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/SystemOptionView.hh>
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/FilePathOptionView.hh>
-#include <emuframework/UserPathSelectView.hh>
-#include <emuframework/SystemActionsView.hh>
-#include <emuframework/DataPathSelectView.hh>
-#include <emuframework/viewUtils.hh>
 #include "MainApp.hh"
 #include "GBASys.hh"
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
 #include <core/gba/gba.h>
 #include <core/gba/gbaRtc.h>
 #include <core/gba/gbaSound.h>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 import std;
 
 namespace EmuEx
@@ -170,7 +160,7 @@ class ConsoleOptionView : public TableView, public MainAppHelper
 			{
 				if(idx == 0)
 				{
-					t.resetString(wise_enum::to_string(system().detectedSensorType));
+					t.resetString(enumName(system().detectedSensorType));
 					return true;
 				}
 				return false;
@@ -471,7 +461,7 @@ class CustomFilePathOptionView : public FilePathOptionView, public MainAppHelper
 			pushAndShow(makeViewWithName<UserPathSelectView>("Cheats", system().userPath(system().cheatsDir),
 				[this](CStringView path)
 				{
-					logMsg("set cheats path:%s", path.data());
+					log.info("set cheats path:{}", path);
 					system().cheatsDir = path;
 					cheatsPath.compile(cheatsMenuName(appContext(), path));
 				}), e);
@@ -486,7 +476,7 @@ class CustomFilePathOptionView : public FilePathOptionView, public MainAppHelper
 			pushAndShow(makeViewWithName<UserPathSelectView>("Patches", system().userPath(system().patchesDir),
 				[this](CStringView path)
 				{
-					logMsg("set patches path:%s", path.data());
+					log.info("set patches path:{}", path);
 					system().patchesDir = path;
 					patchesPath.compile(patchesMenuName(appContext(), path));
 				}), e);

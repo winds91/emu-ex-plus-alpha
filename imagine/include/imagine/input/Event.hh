@@ -20,8 +20,10 @@
 #include <imagine/time/Time.hh>
 #include <imagine/util/variant.hh>
 #include <imagine/util/Point2D.hh>
+#ifndef IG_USE_MODULE_STD
 #include <string>
 #include <string_view>
+#endif
 
 namespace IG
 {

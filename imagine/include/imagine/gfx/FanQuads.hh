@@ -14,7 +14,9 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/gfx/Quads.hh>
+#ifndef IG_USE_MODULE_STD
 #include <numeric>
+#endif
 
 namespace IG::Gfx
 {

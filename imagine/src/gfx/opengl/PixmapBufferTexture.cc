@@ -13,46 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/opengl/defs.hh>
-#include <imagine/util/macros.h>
+#include <imagine/config/macros.h>
+#include <imagine/gfx/PixmapBufferTexture.hh>
+#include <imagine/gfx/RendererTask.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/opengl/glHeaders.h>
 import imagine.internal.gfxOpengl;
-
-#ifndef GL_MAP_WRITE_BIT
-#define GL_MAP_WRITE_BIT 0x0002
-#endif
-
-#ifndef GL_MAP_FLUSH_EXPLICIT_BIT
-#define GL_MAP_FLUSH_EXPLICIT_BIT 0x0010
-#endif
-
-#ifndef GL_DYNAMIC_STORAGE_BIT
-#define GL_DYNAMIC_STORAGE_BIT 0x0100
-#endif
-
-#ifndef GL_CLIENT_STORAGE_BIT
-#define GL_CLIENT_STORAGE_BIT 0x0200
-#endif
-
-#ifndef GL_MAP_PERSISTENT_BIT
-#define GL_MAP_PERSISTENT_BIT 0x0040
-#endif
-
-#ifndef GL_MAP_COHERENT_BIT
-#define GL_MAP_COHERENT_BIT 0x0080
-#endif
-
-#ifndef GL_PIXEL_UNPACK_BUFFER
-#define GL_PIXEL_UNPACK_BUFFER 0x88EC
-#endif
-
-#ifndef GL_TEXTURE_EXTERNAL_OES
-#define GL_TEXTURE_EXTERNAL_OES 0x8D65
-#endif
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"GLPixmapBufferTexture"};
+static SystemLogger log{"GLPixmapBufferTexture"};
 
 PixmapBufferTexture::PixmapBufferTexture(RendererTask& r, TextureConfig config, TextureBufferMode mode, TextureBufferImageMode imageMode)
 {
@@ -68,7 +40,7 @@ PixmapBufferTexture::PixmapBufferTexture(RendererTask& r, TextureConfig config, 
 		else if(Config::Gfx::OPENGL_TEXTURE_TARGET_EXTERNAL && mode == TextureBufferMode::ANDROID_SURFACE_TEXTURE)
 			initWithSurfaceTexture(r, config, imageMode);
 		else
-			bug_unreachable("mode == %d", std::to_underlying(mode));
+			unreachable();
 	}
 	catch(std::exception &)
 	{
@@ -123,10 +95,10 @@ void GLPixmapBufferTexture::initWithHardwareBuffer(RendererTask& r, TextureConfi
 }
 #endif
 
-#ifdef CONFIG_GFX_OPENGL_TEXTURE_TARGET_EXTERNAL
+#ifdef CONFIG_GFX_ANDROID_SURFACE_TEXTURE
 void GLPixmapBufferTexture::initWithSurfaceTexture(RendererTask& r, TextureConfig config, TextureBufferImageMode imageMode)
 {
-	assert(Config::Gfx::OPENGL_TEXTURE_TARGET_EXTERNAL);
+	assume(Config::Gfx::OPENGL_TEXTURE_TARGET_EXTERNAL);
 	directTex.emplace<SurfaceTextureStorage>(r, config, imageMode);
 }
 #endif
@@ -313,7 +285,7 @@ void GLPixelBufferStorage::initBuffer(PixmapDesc desc, TextureBufferImageMode im
 {
 	const auto bufferBytes = desc.bytes();
 	auto &r = renderer();
-	assert(hasPersistentBufferMapping(r));
+	assume(hasPersistentBufferMapping(r));
 	char *bufferPtr{};
 	const auto fullBufferBytes = bufferBytes * bufferCount(imageMode);
 	task().runSync(

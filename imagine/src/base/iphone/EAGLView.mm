@@ -32,12 +32,12 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 #define glFramebufferRenderbuffer glFramebufferRenderbufferOES
 #define glCheckFramebufferStatus glCheckFramebufferStatusOES
 #endif
-#include "../../gfx/opengl/utils.hh"
+#include <imagine/util/opengl/glUtils.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"EAGLView"};
+static SystemLogger log{"EAGLView"};
 EAGLViewMakeRenderbufferDelegate makeRenderbuffer{};
 EAGLViewDeleteRenderbufferDelegate deleteRenderbuffer{};
 
@@ -50,11 +50,11 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 {
 	assert([EAGLContext currentContext]);
 	glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-	runGLChecked([&]()
+	GL::runChecked([&]()
 	{
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
 	}, IG::log, checkGLErrors, "glFramebufferRenderbuffer(colorRenderbuffer)");
-	runGLChecked([&]()
+	GL::runChecked([&]()
 	{
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
 	}, IG::log, checkGLErrors, "glFramebufferRenderbuffer(depthRenderbuffer)");
@@ -124,7 +124,7 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 		return; // already deinit
 	}
 	IG::log.info("deleting layer renderbuffer:{}", _colorRenderbuffer);
-	assumeExpr(deleteRenderbuffer);
+	IG::assume(deleteRenderbuffer);
 	deleteRenderbuffer(_colorRenderbuffer, _depthRenderbuffer);
 	_colorRenderbuffer = 0;
 	_depthRenderbuffer = 0;
@@ -153,7 +153,7 @@ static void bindGLRenderbuffer(GLuint colorRenderbuffer, GLuint depthRenderbuffe
 {
 	IG::log.info("in layoutSubviews");
 	[self deleteDrawable];
-	assumeExpr(makeRenderbuffer);
+	IG::assume(makeRenderbuffer);
 	auto size = makeRenderbuffer((__bridge void*)self.layer, _colorRenderbuffer, _depthRenderbuffer);
 	auto &win = *windowForUIWindow({[UIApplication sharedApplication]}, self.window);
 	win.updateWindowSizeAndContentRect(size.x, size.y);

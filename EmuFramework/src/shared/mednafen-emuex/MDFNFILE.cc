@@ -19,12 +19,8 @@
 #include <mednafen/memory.h>
 #include <mednafen/MemoryStream.h>
 #include <fcntl.h>
+import emuex;
 import imagine;
-
-namespace EmuEx
-{
-IG::ApplicationContext gAppContext();
-}
 
 namespace Mednafen
 {

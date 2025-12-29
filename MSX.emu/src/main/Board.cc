@@ -13,12 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "board"
-
-#include <imagine/logger/logger.h>
-#include <assert.h>
 #include <string.h>
-#include <emuframework/Option.hh>
 #include "MainApp.hh"
 
 extern "C"
@@ -28,10 +23,14 @@ extern "C"
 	#include <blueMSX/Memory/MegaromCartridge.h>
 }
 
+import emuex;
+import imagine;
+
 using namespace EmuEx;
 
 namespace EmuEx
 {
+static IG::SystemLogger log{"MSX.emu"};
 bool fdcActive = 0;
 }
 
@@ -43,7 +42,7 @@ static constexpr unsigned mixerSyncHz = 120;
 
 Mixer* boardGetMixer()
 {
-	assert(mixer);
+	assume(mixer);
     return mixer;
 }
 
@@ -67,7 +66,7 @@ void boardChangeDiskette(int driveId, char* fileName, const char* fileInZipFile)
 static void onFdcDone(void* ref, UInt32 time)
 {
     fdcActive = 0;
-    logMsg("ended FDC activity");
+    EmuEx::log.info("ended FDC activity");
 }
 
 void boardSetFdcActive()
@@ -76,7 +75,7 @@ void boardSetFdcActive()
 	if(sys.optionSkipFdcAccess)
 	{
 		if(!fdcActive)
-			logMsg("FDC active");
+			EmuEx::log.info("FDC active");
 		boardTimerAdd(fdcTimer, boardSystemTime() + (UInt32)((UInt64)300 * boardFrequency() / 1000));
 		fdcActive = 1;
 	}
@@ -90,7 +89,7 @@ static void onMixerSync(void* mixer, UInt32 time)
 
 void boardSetDataBus(UInt8 value, UInt8 defValue, int useDef)
 {
-    assert(boardInfo.setDataBus);
+    assume(boardInfo.setDataBus);
     boardInfo.setDataBus(boardInfo.cpuRef, value, defValue, useDef);
 }
 
@@ -101,7 +100,7 @@ static const UInt64 HIRES_CYCLES_PER_LORES_CYCLE = 100000;*/
 
 BoardType boardGetType()
 {
-	assert(machine);
+	assume(machine);
     return BoardType(machine->board.type & BOARD_MASK);
 }
 
@@ -405,7 +404,7 @@ int boardChangeCartridge(int cartNo, RomType romType, const char* cart, const ch
     }
 
     if(hdType[cartNo] != HD_NONE)
-    	logMsg("HD Type:%d", (int)hdType[cartNo]);
+    	EmuEx::log.info("HD Type:{}", (int)hdType[cartNo]);
 
     bool success;
     if(cartNo < boardInfo.cartridgeCount)
@@ -414,7 +413,7 @@ int boardChangeCartridge(int cartNo, RomType romType, const char* cart, const ch
     }
     else
     {
-    	logErr("cart #%d exceeds max:%d", cartNo, boardInfo.cartridgeCount);
+    	EmuEx::log.error("cart #{} exceeds max:{}", cartNo, boardInfo.cartridgeCount);
     	success = 0;
     }
 

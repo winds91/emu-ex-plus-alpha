@@ -13,6 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/fs/FS.hh>
+#include <imagine/logger/SystemLogger.hh>
 #ifdef __ANDROID__
 #include <android/log.h>
 #endif
@@ -22,14 +24,14 @@
 #endif
 #define LOGTAG "Logger"
 #include <imagine/logger/logger.h>
-#include <cstdio>
-import imagine;
+#include <stdio.h>
+import std;
 
 using namespace IG;
 
 static const bool bufferLogLineOutput = Config::envIsAndroid || Config::envIsIOS;
 static char logLineBuffer[512]{};
-uint8_t loggerVerbosity = loggerMaxVerbosity;
+static uint8_t loggerVerbosity = loggerMaxVerbosity;
 static std::FILE *logExternalFile{};
 static bool logEnabled = Config::DEBUG_BUILD; // default logging off in release builds
 
@@ -78,7 +80,7 @@ static void printToLogLineBuffer(const char* msg, va_list args)
 	std::vsnprintf(logLineBuffer + std::strlen(logLineBuffer), sizeof(logLineBuffer) - std::strlen(logLineBuffer), msg, args);
 }
 
-void logger_vprintf(LoggerSeverity severity, const char* msg, va_list args)
+CLINK void logger_vprintf(LoggerSeverity severity, const char* msg, va_list args)
 {
 	if(!logEnabled)
 		return;
@@ -123,7 +125,7 @@ void logger_vprintf(LoggerSeverity severity, const char* msg, va_list args)
 	#endif
 }
 
-void logger_printf(LoggerSeverity severity, const char* msg, ...)
+extern "C" void logger_printf(LoggerSeverity severity, const char* msg, ...)
 {
 	if(!logEnabled)
 		return;
@@ -136,7 +138,7 @@ void logger_printf(LoggerSeverity severity, const char* msg, ...)
 namespace IG::Log
 {
 
-constexpr SystemLogger log{"Logger"};
+static SystemLogger log{"Logger"};
 
 void setLogDirectoryPrefix(const char *dirStr)
 {

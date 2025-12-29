@@ -104,15 +104,15 @@ public:
 		Memory.Init();
 		S9xGraphicsInit();
 		S9xInitAPU();
-		assert(Settings.Stereo == TRUE);
+		assume(Settings.Stereo == TRUE);
 		#ifndef SNES9X_VERSION_1_4
 		S9xInitSound(0);
 		S9xUnmapAllControls();
 		S9xCheatsEnable();
 		#else
 		S9xInitSound(Settings.SoundPlaybackRate, Settings.Stereo, 0);
-		assert(Settings.H_Max == SNES_CYCLES_PER_SCANLINE);
-		assert(Settings.HBlankStart == (256 * Settings.H_Max) / SNES_HCOUNTER_MAX);
+		assume(Settings.H_Max == SNES_CYCLES_PER_SCANLINE);
+		assume(Settings.HBlankStart == (256 * Settings.H_Max) / SNES_HCOUNTER_MAX);
 		#endif
 	}
 	void setupSNESInput(VController &);

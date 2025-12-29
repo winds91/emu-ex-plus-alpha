@@ -13,15 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
 #include <imagine/bluetooth/Wiimote.hh>
-#include "../input/PackedInputAccess.hh"
-import imagine;
+#include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/util/ranges.hh>
+#include <imagine/logger/SystemLogger.hh>
+import std;
+import packedInputAccess;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Wiimote"};
+static SystemLogger log{"Wiimote"};
 constexpr char ccDataBytes = 6;
 constexpr char nunchuckDataBytes = 6;
 constexpr char proDataBytes = 10;
@@ -313,7 +315,6 @@ bool Wiimote::dataHandler(Input::Device& dev, const char* packetPtr, size_t)
 		case 0x30:
 		{
 			//logMsg("got core report");
-			//assert(device);
 			processCoreButtons(dev, packet, time);
 			break;
 		}
@@ -321,7 +322,6 @@ bool Wiimote::dataHandler(Input::Device& dev, const char* packetPtr, size_t)
 		case 0x32:
 		{
 			//logMsg("got core+extension report");
-			//assert(device);
 			processCoreButtons(dev, packet, time);
 			switch(extension)
 			{
@@ -336,7 +336,6 @@ bool Wiimote::dataHandler(Input::Device& dev, const char* packetPtr, size_t)
 		case 0x34:
 		{
 			//logMsg("got core+extension19 report");
-			//assert(device);
 			processProButtons(dev, packet, time);
 			break;
 		}
@@ -395,7 +394,7 @@ bool Wiimote::dataHandler(Input::Device& dev, const char* packetPtr, size_t)
 						axis[1] = {Input::AxisId::Y, axisClassicLScaler};
 						axis[2] = {Input::AxisId::Z, axisClassicRScaler};
 						axis[3] = {Input::AxisId::RZ, axisClassicRScaler};
-						assert(!extDevicePtr);
+						assume(!extDevicePtr);
 						extDevicePtr = &ctx.application().addInputDevice(ctx,
 							std::make_unique<Input::Device>(std::in_place_type<WiimoteExtDevice>, Input::Map::WII_CC, DeviceTypeFlags{.gamepad = true}, "Wii Classic Controller"), true);
 					}

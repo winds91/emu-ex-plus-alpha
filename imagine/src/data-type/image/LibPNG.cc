@@ -13,10 +13,19 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/data-type/image/PixmapReader.hh>
+#include <imagine/data-type/image/PixmapWriter.hh>
+#include <imagine/data-type/image/PixmapSource.hh>
+#include <imagine/pixmap/MemPixmap.hh>
+#include <imagine/io/IO.hh>
+#include <imagine/io/FileIO.hh>
+#include <imagine/fs/FS.hh>
+#include <imagine/util/ScopeGuard.hh>
+#include <imagine/logger/SystemLogger.hh>
+#ifndef PNG_SKIP_SETJMP_CHECK
 #define PNG_SKIP_SETJMP_CHECK
+#endif
 #include <png.h>
-import imagine.data;
 
 // this must be in the range 1 to 8
 #define INITIAL_HEADER_READ_BYTES 8
@@ -27,7 +36,7 @@ CLINK void PNGAPI png_error(png_const_structrp png_ptr, png_const_charp error_me
 CLINK void PNGAPI png_error(png_const_structrp png_ptr, png_const_charp error_message)
 {
 	// TODO: print out more verbose error
-	bug_unreachable("fatal libpng error");
+	unreachable();
 }
 
 CLINK void PNGAPI png_chunk_error(png_const_structrp png_ptr, png_const_charp error_message) PNG_NORETURN;
@@ -56,7 +65,7 @@ CLINK void PNGAPI png_chunk_warning(png_const_structrp png_ptr, png_const_charp 
 namespace IG::Data
 {
 
-constexpr SystemLogger log{"PngData"};
+static SystemLogger log{"PngData"};
 bool PngImage::supportUncommonConv = 0;
 
 static void png_ioReader(png_structp pngPtr, png_bytep data, png_size_t length)
@@ -173,8 +182,8 @@ void PngImage::freeImageData()
 		png_infopp pngInfopAddr = &info;
 		//void * pngEndInfopAddr = &data->end;
 		png_destroy_read_struct(pngStructpAddr, pngInfopAddr, (png_infopp)NULL/*pngEndInfopAddr*/);
-		assert(!png);
-		assert(!info);
+		assume(!png);
+		assume(!info);
 	}
 }
 
@@ -283,7 +292,7 @@ std::errc PngImage::readImage(MutablePixmapView dest)
 	
 	//log_mPrintf(LOG_MSG,"after transforms, rowbytes = %u", (uint32_t)png_get_rowbytes(data->png, data->info));
 
-	assumeExpr( (uint32_t)width*dest.format().bytesPerPixel() == png_get_rowbytes(png, info) );
+	assume( (uint32_t)width*dest.format().bytesPerPixel() == png_get_rowbytes(png, info) );
 	
 	if(png_get_interlace_type(png, info) == PNG_INTERLACE_NONE)
 	{
@@ -434,7 +443,7 @@ bool PixmapWriter::writeToFile(PixmapView pix, const char *path) const
 		auto tempPix = tempMemPix.view();
 		tempPix.writeConverted(pix);
 		int rowBytes = png_get_rowbytes(pngPtr, infoPtr);
-		assumeExpr(rowBytes == tempPix.pitchBytes());
+		assume(rowBytes == tempPix.pitchBytes());
 		auto rowData = (png_const_bytep)tempPix.data();
 		for([[maybe_unused]] auto i : iotaCount(tempPix.h()))
 		{

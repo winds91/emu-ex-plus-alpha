@@ -18,6 +18,7 @@
 #include <emuframework/EmuInputView.hh>
 #include <emuframework/EmuView.hh>
 #include <emuframework/EmuAppHelper.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/ViewStack.hh>
 #include <imagine/gui/ToastView.hh>
 
@@ -35,6 +36,7 @@ namespace IG::Input
 class Event;
 class KeyEvent;
 }
+#endif
 
 namespace EmuEx
 {

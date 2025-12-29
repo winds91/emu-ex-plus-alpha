@@ -15,26 +15,14 @@
 
 #include <emuframework/EmuViewController.hh>
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuView.hh>
-#include <emuframework/EmuVideoLayer.hh>
-#include <emuframework/EmuVideo.hh>
-#include <emuframework/EmuAudio.hh>
 #include <emuframework/MainMenuView.hh>
-#include <emuframework/EmuOptions.hh>
 #include "../WindowData.hh"
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/base/Screen.hh>
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/gui/ToastView.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"EmuViewController"};
 

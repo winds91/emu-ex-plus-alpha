@@ -15,10 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/pixmap/PixelFormat.hh>
 #include <imagine/util/Property.hh>
-#include <imagine/util/enum.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <cstdint>
+#include <string_view>
+#endif
 
 namespace EmuEx
 {
@@ -98,40 +102,40 @@ enum class InEmuTristate : uint8_t
 	Off, InEmu, On
 };
 
-constexpr unsigned optionContentScaleIntegerOnly = 255, optionContentScaleIntegerOnlyY = 254;
+inline constexpr unsigned optionContentScaleIntegerOnly = 255, optionContentScaleIntegerOnlyY = 254;
 
-constexpr const char *optionSavePathDefaultToken = ":DEFAULT:";
+inline constexpr std::string_view optionSavePathDefaultToken{":DEFAULT:"};
 
-constexpr double minRunSpeed = .05;
-constexpr double maxRunSpeed = 20.;
+inline constexpr double minRunSpeed = .05;
+inline constexpr double maxRunSpeed = 20.;
 
-constexpr bool isValidFastSpeed(const auto &v) { return v <= int(maxRunSpeed * 100.) && v > 100; }
-constexpr bool isValidSlowSpeed(const auto &v) { return v >= int(minRunSpeed * 100.) && v < 100; }
+inline constexpr bool isValidFastSpeed(const auto &v) { return v <= int(maxRunSpeed * 100.) && v > 100; }
+inline constexpr bool isValidSlowSpeed(const auto &v) { return v >= int(minRunSpeed * 100.) && v < 100; }
 
 bool isValidAspectRatio(float val);
 
-constexpr bool isValidFontSize(const auto &v)
+inline constexpr bool isValidFontSize(const auto &v)
 {
 	return v >= 2000 && v <= 10000;
 }
 
-constexpr bool optionContentScaleIsValid(const auto &v)
+inline constexpr bool optionContentScaleIsValid(const auto &v)
 {
 	return v == optionContentScaleIntegerOnly || v == optionContentScaleIntegerOnlyY
 		|| (v >= 10 && v <= 200);
 }
 
-constexpr bool optionMenuScaleIsValid(const auto &v)
+inline constexpr bool optionMenuScaleIsValid(const auto &v)
 {
 	return v >= 50 && v <= 100;
 }
 
-constexpr bool isValidFrameInterval(const auto &v)
+inline constexpr bool isValidFrameInterval(const auto &v)
 {
 	return v >= 0 && v <= 4;
 }
 
-constexpr bool imageEffectPixelFormatIsValid(const auto &v)
+inline constexpr bool imageEffectPixelFormatIsValid(const auto &v)
 {
 	switch(v)
 	{
@@ -156,7 +160,7 @@ constexpr bool isValidWithMinMax(const auto &v)
 	return v >= min && v <= max;
 }
 
-constexpr bool windowPixelFormatIsValid(const IG::PixelFormat &v)
+inline constexpr bool windowPixelFormatIsValid(const IG::PixelFormat &v)
 {
 	switch(v)
 	{
@@ -168,7 +172,7 @@ constexpr bool windowPixelFormatIsValid(const IG::PixelFormat &v)
 	}
 }
 
-constexpr bool renderPixelFormatIsValid(const auto &v)
+inline constexpr bool renderPixelFormatIsValid(const auto &v)
 {
 	return windowPixelFormatIsValid(v);
 }
@@ -179,9 +183,9 @@ namespace IG
 {
 
 template<>
-constexpr bool isValidProperty(const EmuEx::AutoTristate &v) { return unsigned(v) <= 2; }
+inline constexpr bool isValidProperty(const EmuEx::AutoTristate &v) { return unsigned(v) <= 2; }
 
 template<>
-constexpr bool isValidProperty(const EmuEx::InEmuTristate &v) { return unsigned(v) <= 2; }
+inline constexpr bool isValidProperty(const EmuEx::InEmuTristate &v) { return unsigned(v) <= 2; }
 
 }

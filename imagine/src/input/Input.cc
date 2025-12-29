@@ -13,10 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/input/inputDefs.hh>
+#include <imagine/config/macros.h>
+#include <imagine/input/Event.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/bluetooth/defs.hh>
-#include <imagine/util/macros.h>
-import imagine;
+#include <imagine/util/ranges.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG::Input
 {
@@ -79,19 +81,19 @@ std::string_view BaseEvent::mapName(Map map)
 		case Map::POINTER: return "Pointer";
 		case Map::REL_POINTER: return "Relative Pointer";
 		case Map::WIIMOTE:
-			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			if constexpr(!Config::Input::BLUETOOTH) { unreachable(); }
 			return "Wiimote";
 		case Map::WII_CC:
-			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			if constexpr(!Config::Input::BLUETOOTH) { unreachable(); }
 			return "Classic / Wii U Pro Controller";
 		case Map::ICONTROLPAD:
-			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			if constexpr(!Config::Input::BLUETOOTH) { unreachable(); }
 			return "iControlPad";
 		case Map::ZEEMOTE:
-			if constexpr(!Config::Input::BLUETOOTH) { bug_unreachable("Bluetooth input support not enabled"); }
+			if constexpr(!Config::Input::BLUETOOTH) { unreachable(); }
 			return "Zeemote JS1";
 		case Map::PS3PAD:
-			if constexpr(!Config::Bluetooth::server) { bug_unreachable("Bluetooth server support not enabled"); }
+			if constexpr(!Config::Bluetooth::server) { unreachable(); }
 			return "PS3 Gamepad";
 		#ifdef CONFIG_INPUT_APPLE_GAME_CONTROLLER
 		case Map::APPLE_GAME_CONTROLLER: return "Apple Game Controller";
@@ -173,7 +175,7 @@ DirectionKeys directionKeys()
 namespace IG
 {
 
-constexpr SystemLogger log{"Input"};
+static SystemLogger log{"Input"};
 
 void BaseApplication::startKeyRepeatTimer(Input::KeyEvent event)
 {

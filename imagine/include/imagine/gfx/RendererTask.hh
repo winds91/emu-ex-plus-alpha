@@ -17,9 +17,11 @@
 
 #include <imagine/gfx/defs.hh>
 #include <imagine/gfx/SyncFence.hh>
-#include <imagine/util/utility.h>
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <chrono>
+#include <utility>
+#endif
 
 #ifdef CONFIG_GFX_OPENGL
 #include <imagine/gfx/opengl/GLRendererTask.hh>
@@ -35,9 +37,10 @@ class Viewport;
 namespace IG::Gfx
 {
 
-WISE_ENUM_CLASS((PresentMode, uint8_t),
+enum class PresentMode: uint8_t
+{
 	Auto, Immediate, FIFO
-);
+};
 
 class RendererTask : public RendererTaskImpl
 {

@@ -15,8 +15,11 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/config/macros.h>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/config/defs.hh>
 #include <imagine/bluetooth/defs.hh>
+#endif
 
 #ifdef ENV_NOTE
 #define PLATFORM_INFO_STR ENV_NOTE " (" CONFIG_ARCH_STR ")"
@@ -35,15 +38,15 @@ class EmuSystem;
 	defined CONFIG_OS_IOS || \
 	(defined CONFIG_BASE_X11 && !defined CONFIG_MACHINE_PANDORA)
 #define CONFIG_VCONTROLS_GAMEPAD
-constexpr bool VCONTROLS_GAMEPAD = true;
+inline constexpr bool VCONTROLS_GAMEPAD = true;
 #else
-constexpr bool VCONTROLS_GAMEPAD = false;
+inline constexpr bool VCONTROLS_GAMEPAD = false;
 #endif
 
-constexpr bool HAS_MULTIPLE_WINDOW_PIXEL_FORMATS = Config::envIsLinux || Config::envIsAndroid || Config::envIsIOS;
-constexpr bool MOGA_INPUT = Config::envIsAndroid;
-constexpr bool CAN_HIDE_TITLE_BAR = !Config::envIsIOS;
-constexpr bool enableFullFrameTimingStats = Config::DEBUG_BUILD;
-constexpr bool hasICadeInput = Config::Input::KEYBOARD_DEVICES;
+inline constexpr bool HAS_MULTIPLE_WINDOW_PIXEL_FORMATS = Config::envIsLinux || Config::envIsAndroid || Config::envIsIOS;
+inline constexpr bool MOGA_INPUT = Config::envIsAndroid;
+inline constexpr bool CAN_HIDE_TITLE_BAR = !Config::envIsIOS;
+inline constexpr bool enableFullFrameTimingStats = Config::DEBUG_BUILD;
+inline constexpr bool hasICadeInput = Config::Input::KEYBOARD_DEVICES;
 
 }

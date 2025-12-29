@@ -13,19 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Lynx.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuSystemInlines.hh>
 #include <emuframework/EmuAppInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 #include <mednafen/state-driver.h>
 #include <mednafen/hash/md5.h>
 #include <mednafen/MemoryStream.h>
 #include <mednafen-emuex/MDFNUtils.hh>
 #include <mednafen/video/surface.h>
+import imagine;
 
 void Lynx_SetPixelFormat(Mednafen::MDFN_PixelFormat);
 int Lynx_HCount();
@@ -55,7 +50,7 @@ const char *EmuSystem::systemName() const { return "Lynx"; }
 
 void LynxSystem::reset(EmuApp&, ResetMode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	MDFN_DoSimpleCommand(MDFN_MSC_RESET);
 }
 
@@ -133,7 +128,7 @@ Rotation LynxSystem::contentRotation() const
 		case LynxRotation::VerticalLeft: return Rotation::LEFT;
 		case LynxRotation::VerticalRight: return Rotation::RIGHT;
 	}
-	bug_unreachable("invalid LynxRotation");
+	unreachable();
 }
 
 void EmuApp::onCustomizeNavView(EmuApp::NavView &view)

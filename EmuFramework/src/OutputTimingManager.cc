@@ -14,13 +14,12 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/OutputTimingManager.hh>
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuOptions.hh>
-#include <imagine/util/macros.h>
 import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"OutputTimingManager"};
 
@@ -35,8 +34,8 @@ static FrameRateConfig bestOutputRateForScreen(std::span<const FrameRate> suppor
 {
 	static auto selectAcceptableRate = [](double rate, double targetRate) -> std::pair<double, int>
 	{
-		assumeExpr(rate > 0);
-		assumeExpr(targetRate > 0);
+		assume(rate > 0);
+		assume(targetRate > 0);
 		int refreshMultiplier = 1;
 		static constexpr double stretchFrameRate = 4.; // accept rates +/- this value
 		do
@@ -78,8 +77,8 @@ bool OutputTimingManager::setFrameRateOption(VideoSystem vidSys, FrameDuration d
 FrameRateConfig OutputTimingManager::frameRateConfig(const EmuSystem &system, std::span<const FrameRate> supportedFrameRates, FrameClockSource frameClockSrc) const
 {
 	auto t = frameRateVar(system.videoSystem());
-	assumeExpr(frameRateOptionIsValid(t));
-	assert(frameClockSrc != FrameClockSource::Unset);
+	assume(frameRateOptionIsValid(t));
+	assume(frameClockSrc != FrameClockSource::Unset);
 	if(t.count() > 0)
 		return {t, 0};
 	else if(t == originalOption)

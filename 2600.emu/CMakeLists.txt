@@ -9,6 +9,7 @@ project(
 printConfigInfo()
 configureAppTarget(2600emu)
 addPkgConfigDepMultiConfig(2600emu emuframework)
+addCxxModules(2600emu emuex imagine)
 evalPkgConfigFlags(2600emu all)
 target_include_directories(2600emu PRIVATE
 	src/stella/emucore

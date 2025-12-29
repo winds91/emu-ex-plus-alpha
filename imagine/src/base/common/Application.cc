@@ -13,14 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-import imagine;
+#include <imagine/base/Application.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
 const char *copyright = "Imagine is Copyright 2010-2025 Robert Broglia";
-constexpr SystemLogger log{"App"};
+static SystemLogger log{"App"};
 
 BaseApplication::BaseApplication(ApplicationContext ctx)
 {
@@ -60,7 +61,7 @@ const WindowContainer &BaseApplication::windows() const
 
 Window &BaseApplication::mainWindow() const
 {
-	assert(windows().size());
+	assume(windows().size());
 	return *windows()[0];
 }
 
@@ -140,7 +141,7 @@ void BaseApplication::setPausedActivityState()
 
 void BaseApplication::setRunningActivityState()
 {
-	assert(appState != ActivityState::EXITING); // should never set running state after exit state
+	assume(appState != ActivityState::EXITING); // should never set running state after exit state
 	appState = ActivityState::RUNNING;
 }
 
@@ -244,6 +245,15 @@ void Application::runOnMainThread(MainThreadMessageDelegate del)
 void Application::flushMainThreadMessages()
 {
 	commandPort.dispatchMessages();
+}
+
+void onBug(std::source_location location)
+{
+	abort(std::format("bug in {} @ {}:{} {}",
+		location.function_name(),
+		location.line(),
+		location.column(),
+		location.file_name()).c_str());
 }
 
 }

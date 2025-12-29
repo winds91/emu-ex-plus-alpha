@@ -13,8 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-#include <imagine/util/macros.h>
+#include <imagine/config/macros.h>
+#include <imagine/font/Font.hh>
+#include <imagine/io/IO.hh>
+#include <imagine/io/FileIO.hh>
+#include <imagine/util/ScopeGuard.hh>
+#include <imagine/util/format.hh>
+#include <imagine/logger/SystemLogger.hh>
 #ifdef CONFIG_PACKAGE_FONTCONFIG
 #include <fontconfig/fontconfig.h>
 #endif
@@ -22,12 +27,11 @@
 #include FT_FREETYPE_H
 #include FT_BITMAP_H
 #include FT_SIZES_H
-import imagine.data;
 
 namespace IG::Data
 {
 
-constexpr SystemLogger log{"Font"};
+static SystemLogger log{"Font"};
 
 #ifdef CONFIG_PACKAGE_FONTCONFIG
 static FS::PathString fontPathWithPattern(FcPattern *pat)
@@ -174,7 +178,7 @@ static FreetypeFont::GlyphRenderData makeGlyphRenderDataWithFace(FT_Library libr
 			log.error("error occurred converting character {:X}", c);
 			return {};
 		}
-		assert(bitmap.num_grays == 2); // only handle 2 gray levels for now
+		assume(bitmap.num_grays == 2); // only handle 2 gray levels for now
 		//log.info("new bitmap has {} gray levels", convBitmap.num_grays);
 		// scale 1-bit values to 8-bit range
 		for(auto y : iotaCount(bitmap.rows))

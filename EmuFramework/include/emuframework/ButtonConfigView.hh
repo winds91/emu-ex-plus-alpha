@@ -17,12 +17,16 @@
 
 #include <emuframework/EmuAppHelper.hh>
 #include <emuframework/EmuInput.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gfx/GfxText.hh>
 #include <imagine/gfx/Quads.hh>
 #include <imagine/gui/TableView.hh>
 #include <imagine/gui/MenuItem.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <string>
 #include <string_view>
+#endif
 
 namespace EmuEx
 {

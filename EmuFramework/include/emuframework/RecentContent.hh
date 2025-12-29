@@ -15,16 +15,22 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/fs/FSDefs.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <vector>
 #include <string_view>
+#endif
 
+#ifndef IG_USE_MODULE_IMAGINE
 namespace IG
 {
 class ApplicationContext;
 class FileIO;
 class MapIO;
 }
+#endif
 
 namespace EmuEx
 {

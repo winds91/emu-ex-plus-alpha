@@ -14,36 +14,26 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuView.hh>
-#include <emuframework/LoadProgressView.hh>
-#include <emuframework/EmuVideoLayer.hh>
-#include <emuframework/EmuVideo.hh>
-#include <emuframework/EmuAudio.hh>
-#include <emuframework/FilePicker.hh>
 #include <emuframework/MainMenuView.hh>
+#include <emuframework/LoadProgressView.hh>
 #include <emuframework/SystemActionsView.hh>
 #include <emuframework/SystemOptionView.hh>
-#include <emuframework/GUIOptionView.hh>
-#include <emuframework/AudioOptionView.hh>
 #include <emuframework/VideoOptionView.hh>
+#include <emuframework/AudioOptionView.hh>
+#include <emuframework/GUIOptionView.hh>
 #include <emuframework/FilePathOptionView.hh>
-#include <emuframework/AppKeyCode.hh>
+#include <emuframework/FilePicker.hh>
 #include "gui/AutosaveSlotView.hh"
-#include "InputDeviceData.hh"
 #include "WindowData.hh"
-#include "configFile.hh"
-#include "pathUtils.hh"
-#include <imagine/gfx/Renderer.hh>
-#include <imagine/gfx/RendererTask.hh>
-#include <imagine/gui/ToastView.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/macros.h>
-#include <imagine/bluetooth/BluetoothInputDevice.hh>
+#include "InputDeviceData.hh"
 import imagine;
+import configFile;
+import pathUtils;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"App"};
 static EmuApp *gAppPtr{};
@@ -333,7 +323,7 @@ void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::Applicatio
 				suspendEmulation(*this);
 				if(showsNotificationIcon)
 				{
-					auto title = std::format("{} was suspended", ctx.applicationName);
+					auto title = std::format("{} was suspended", ApplicationMeta::name);
 					ctx.addNotification(title, title, system().contentDisplayName());
 				}
 			}
@@ -347,7 +337,7 @@ void EmuApp::mainInitCommon(IG::ApplicationInitParams initParams, IG::Applicatio
 			return true;
 		});
 
-	IG::WindowConfig winConf{ .title = ctx.applicationName };
+	IG::WindowConfig winConf{ .title = ApplicationMeta::name };
 	winConf.setFormat(windowDrawableConfig.pixelFormat);
 	ctx.makeWindow(winConf,
 		[this](IG::ApplicationContext ctx, IG::Window &win)
@@ -545,7 +535,7 @@ void WindowData::updateWindowViewport(const IG::Window &win, IG::Viewport viewpo
 {
 	windowRect = viewport.bounds();
 	contentRect = viewport.bounds().intersection(win.contentBounds());
-	projM = Gfx::Mat4::makePerspectiveFovRH(M_PI/4.0, viewport.realAspectRatio(), .1f, 100.f)
+	projM = Gfx::Mat4::makePerspectiveFovRH(std::numbers::pi / 4.0, viewport.realAspectRatio(), .1f, 100.f)
 		.projectionPlane(viewport, .5f, r.projectionRollAngle(win));
 }
 
@@ -778,7 +768,7 @@ void EmuApp::createSystemWithMedia(IO io, CStringView path, std::string_view dis
 	const Input::Event &e, EmuSystemCreateParams params, ViewAttachParams attachParams,
 	CreateSystemCompleteDelegate onComplete)
 {
-	assert(strlen(path));
+	assume(std::strlen(path));
 	if(!EmuApp::hasArchiveExtension(displayName) && !EmuSystem::defaultFsFilter(displayName))
 	{
 		postErrorMessage("File doesn't have a valid extension");
@@ -928,7 +918,7 @@ bool EmuApp::loadState(CStringView path)
 
 bool EmuApp::loadStateWithSlot(int slot)
 {
-	assert(slot != -1);
+	assume(slot != -1);
 	return loadState(system().statePath(slot));
 }
 
@@ -976,7 +966,7 @@ void EmuApp::resetInput()
 
 void EmuApp::setRunSpeed(double speed)
 {
-	assumeExpr(speed > 0.);
+	assume(speed > 0.);
 	auto _ = suspendEmulationThread();
 	system().frameRateMultiplier = speed;
 	audio.setSpeedMultiplier(speed);
@@ -1187,7 +1177,7 @@ void EmuApp::setEmuViewOnExtraWindow(bool on, IG::Screen &screen)
 	if(on && !hasExtraWindow(ctx))
 	{
 		log.info("setting emu view on extra window");
-		IG::WindowConfig winConf{ .title = ctx.applicationName };
+		IG::WindowConfig winConf{ .title = ApplicationMeta::name };
 		winConf.setScreen(screen);
 		winConf.setFormat(windowDrawableConfig.pixelFormat);
 		auto extraWin = ctx.makeWindow(winConf,
@@ -1370,7 +1360,7 @@ std::unique_ptr<View> EmuApp::makeView(ViewAttachParams attach, ViewID id)
 		case ViewID::SYSTEM_OPTIONS: return std::make_unique<SystemOptionView>(attach);
 		case ViewID::FILE_PATH_OPTIONS: return std::make_unique<FilePathOptionView>(attach);
 		case ViewID::GUI_OPTIONS: return std::make_unique<GUIOptionView>(attach);
-		default: bug_unreachable("Tried to make non-existing view ID:%d", (int)id);
+		default: unreachable();
 	}
 }
 

@@ -14,7 +14,6 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 module;
-
 #include <unistd.h>
 
 module cpuUtils;

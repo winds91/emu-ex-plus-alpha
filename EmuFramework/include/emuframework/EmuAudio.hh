@@ -16,19 +16,25 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuOptions.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/audio/OutputStream.hh>
 #include <imagine/audio/Manager.hh>
 #include <imagine/time/Time.hh>
 #include <imagine/util/container/RingBuffer.hh>
 #include <imagine/util/used.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <memory>
 #include <atomic>
+#endif
 
+#ifndef IG_USE_MODULE_IMAGINE
 namespace IG
 {
 class MapIO;
 class FileIO;
 }
+#endif
 
 namespace EmuEx
 {
@@ -53,7 +59,7 @@ struct AudioFlags
 	constexpr bool operator ==(AudioFlags const &) const = default;
 };
 
-constexpr AudioFlags defaultAudioFlags{.enabled = 1, .enabledDuringAltSpeed = 1};
+inline constexpr AudioFlags defaultAudioFlags{.enabled = 1, .enabledDuringAltSpeed = 1};
 
 class EmuAudio
 {

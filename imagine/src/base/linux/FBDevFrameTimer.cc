@@ -13,19 +13,20 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/base/linux/FBDevFrameTimer.hh>
+#include <imagine/base/Screen.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/fb.h>
 #include <sys/eventfd.h>
 #include <errno.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"FBDevFrameTimer"};
+static SystemLogger log{"FBDevFrameTimer"};
 
 static UniqueFileDescriptor openDevice()
 {
@@ -105,7 +106,7 @@ FBDevFrameTimer::~FBDevFrameTimer()
 
 void FBDevFrameTimer::scheduleVSync()
 {
-	assert(fdSrc.fd() != -1);
+	assume(fdSrc.fd() != -1);
 	cancelled = false;
 	if(requested)
 	{

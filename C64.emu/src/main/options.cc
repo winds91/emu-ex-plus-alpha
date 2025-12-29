@@ -13,12 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuApp.hh>
 #include "MainSystem.hh"
-#include <emuframework/Option.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
@@ -31,6 +26,9 @@ extern "C"
 	#include "vic20model.h"
 	#include "drive.h"
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

@@ -15,17 +15,10 @@
 
 #include <EventHandler.hxx>
 #include <OSystem.hxx>
-// TODO: Some Stella types collide with MacTypes.h
-#define Debugger DebuggerMac
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuViewController.hh>
-#include <emuframework/keyRemappingUtils.hh>
-#undef Debugger
 #include "MainSystem.hh"
 #include "MainApp.hh"
-#include <imagine/util/math.hh>
-#include <imagine/util/container/array.hh>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

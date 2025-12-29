@@ -29,8 +29,10 @@
 
 #include <imagine/pixmap/PixelFormat.hh>
 #include <imagine/util/concepts.hh>
+#ifndef IG_USE_MODULE_STD
 #include <optional>
 #include <type_traits>
+#endif
 
 namespace IG::GL
 {
@@ -157,13 +159,11 @@ public:
 	GLDisplay display() const;
 	GLDisplay getDefaultDisplay(NativeDisplayConnection) const;
 	std::optional<GLBufferConfig> tryBufferConfig(ApplicationContext, const GLBufferRenderConfigAttributes&) const;
-	GLBufferConfig makeBufferConfig(ApplicationContext, const GLBufferRenderConfigAttributes&) const;
-	GLBufferConfig makeBufferConfig(ApplicationContext, std::span<const GLBufferRenderConfigAttributes>) const;
 	NativeWindowFormat nativeWindowFormat(ApplicationContext, GLBufferConfig) const;
 	GLContext makeContext(GLContextAttributes, GLBufferConfig, NativeGLContext shareContext);
-	GLContext makeContext(GLContextAttributes, GLBufferConfig);
+	GLContext makeContext(GLContextAttributes attrs, GLBufferConfig config) { return makeContext(attrs, config, {}); }
 	static NativeGLContext currentContext();
-	void resetCurrentContext() const;
+	void resetCurrentContext() const { display().resetCurrentContext(); }
 	GLDrawable makeDrawable(Window &, GLDrawableAttributes) const;
 	static bool hasCurrentDrawable(NativeGLDrawable);
 	static bool hasCurrentDrawable();
@@ -177,6 +177,22 @@ public:
 	bool hasPresentationTime() const;
 	void setPresentationTime(NativeGLDrawable, SteadyClockTimePoint) const;
 	void logInfo() const;
+
+	GLBufferConfig makeBufferConfig(ApplicationContext ctx, const GLBufferRenderConfigAttributes& attrs) const
+	{
+		return makeBufferConfig(ctx, std::span{&attrs, 1});
+	}
+
+	GLBufferConfig makeBufferConfig(ApplicationContext ctx, std::span<const GLBufferRenderConfigAttributes> attrsSpan) const
+	{
+		for(const auto &attrs : attrsSpan)
+		{
+			auto config = tryBufferConfig(ctx, attrs);
+			if(config)
+				return *config;
+		}
+		throw std::runtime_error("Error finding a GL configuration");
+	}
 
 	static bool loadSymbol(Pointer auto &symPtr, const char *name)
 	{

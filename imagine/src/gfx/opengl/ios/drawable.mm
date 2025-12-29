@@ -15,12 +15,12 @@
 
 #include <imagine/gfx/Renderer.hh>
 #include <imagine/logger/SystemLogger.hh>
-#include "../utils.hh"
+#include <imagine/util/opengl/glUtils.hh>
 
 namespace IG::Gfx
 {
 	
-constexpr SystemLogger log{"Renderer"};
+static SystemLogger log{"Renderer"};
 
 static constexpr bool USE_DEPTH_BUFFER = false;
 
@@ -35,7 +35,7 @@ IG::Point2D<int> GLRendererTask::makeIOSDrawableRenderbuffer(void *layer, GLuint
 			{
 				glGenRenderbuffers(1, &colorRenderbuffer);
 			}
-			runGLChecked([&]()
+			GL::runChecked([&]()
 			{
 				glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
 			}, log, Renderer::checkGLErrors, "glBindRenderbuffer()");

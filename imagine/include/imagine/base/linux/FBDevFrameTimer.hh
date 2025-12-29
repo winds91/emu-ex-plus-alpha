@@ -16,8 +16,11 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/base/EventLoop.hh>
+#include <imagine/thread/Semaphore.hh>
+#ifndef IG_USE_MODULE_STD
 #include <semaphore>
 #include <thread>
+#endif
 
 namespace IG
 {

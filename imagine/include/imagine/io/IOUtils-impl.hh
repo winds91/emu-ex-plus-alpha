@@ -16,6 +16,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/io/IOUtils.hh>
+#include <imagine/util/utility.hh>
 
 namespace IG
 {
@@ -168,7 +169,6 @@ FILE *IOUtils<IO>::toFileStream([[maybe_unused]] const char* opentype)
 	};
 	auto f = fopencookie(ioPtr.release(), opentype, funcs);
 	#endif
-	assert(f);
 	return f;
 }
 
@@ -197,7 +197,7 @@ inline auto transformOffsetToAbsolute(IOSeekMode mode, auto offset, auto startPo
 		case IOSeekMode::End: return offset + endPos;
 		case IOSeekMode::Cur: return offset + currentPos;
 	}
-	bug_unreachable("IOSeekMode == %d", (int)mode);
+	unreachable();
 }
 
 }

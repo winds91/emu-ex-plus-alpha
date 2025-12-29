@@ -15,22 +15,28 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
+#include <imagine/gfx/defs.hh>
 #include <imagine/base/GLContext.hh>
 #include <imagine/base/MessagePort.hh>
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/thread/Semaphore.hh>
 #include <imagine/thread/Thread.hh>
-#include <imagine/util/utility.h>
+#include <imagine/util/utility.hh>
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <thread>
 #include <string_view>
+#include <utility>
+#endif
 
 namespace IG::Gfx
 {
-
 class Renderer;
 class GLRendererTask;
+}
+
+namespace IG::Gfx
+{
 
 struct GLTaskConfig
 {
@@ -55,7 +61,7 @@ public:
 		binary_semaphore* semPtr{};
 		FuncDelegate func{};
 
-		void setReplySemaphore(binary_semaphore* semPtr_) { assert(!semPtr); semPtr = semPtr_; };
+		void setReplySemaphore(binary_semaphore* semPtr_) { assume(!semPtr); semPtr = semPtr_; };
 	};
 
 	using CommandMessagePort = MessagePort<CommandMessage>;

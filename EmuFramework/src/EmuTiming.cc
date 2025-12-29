@@ -14,13 +14,12 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/EmuTiming.hh>
-#include <imagine/util/macros.h>
 import imagine;
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"EmuTiming"};
+static SystemLogger log{"EmuTiming"};
 
 EmuFrameTimingInfo EmuTiming::advanceFrames(FrameParams params)
 {
@@ -47,9 +46,9 @@ EmuFrameTimingInfo EmuTiming::advanceFrames(FrameParams params)
 			lastFrame = 0;
 			return {};
 		}
-		assumeExpr(videoFrameDuration.count() > 0);
-		assumeExpr(startFrameTime.time_since_epoch().count() > 0);
-		assumeExpr(params.time >= startFrameTime);
+		assume(videoFrameDuration.count() > 0);
+		assume(startFrameTime.time_since_epoch().count() > 0);
+		assume(params.time >= startFrameTime);
 		auto timeTotal = params.time - startFrameTime;
 		auto now = divRoundClosestPositive(timeTotal.count(), videoFrameDuration.count());
 		int elapsedFrames = now - lastFrame;

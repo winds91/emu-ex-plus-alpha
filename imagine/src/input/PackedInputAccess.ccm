@@ -1,5 +1,3 @@
-#pragma once
-
 /*  This file is part of Imagine.
 
 	Imagine is free software: you can redistribute it and/or modify
@@ -15,21 +13,28 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-#include <imagine/base/ApplicationContext.hh>
+export module packedInputAccess;
+import imagine;
 
-namespace IG::Audio
+export namespace IG::Input
 {
 
-class BasicManager
+struct PackedInputAccess
 {
-public:
-	static constexpr bool HAS_SOLO_MIX = false;
-	static constexpr bool SOLO_MIX_DEFAULT = false;
+	uint32_t byteOffset;
+	uint32_t mask;
+	Key key;
 
-	constexpr BasicManager(ApplicationContext) {};
+	int updateState(const uint8_t *prev, const uint8_t *curr) const
+	{
+		bool oldState = prev[byteOffset] & mask,
+			newState = curr[byteOffset] & mask;
+		if(oldState != newState)
+		{
+			return newState;
+		}
+		return -1; // no state change
+	}
 };
-
-using ManagerImpl = BasicManager;
 
 }

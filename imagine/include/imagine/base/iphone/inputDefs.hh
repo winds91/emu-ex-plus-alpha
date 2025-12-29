@@ -15,8 +15,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#if !defined __ARM_ARCH_6K__
-#define CONFIG_INPUT_APPLE_GAME_CONTROLLER 1
+#ifndef IG_USE_MODULE_STD
+#include <cstdint>
 #endif
 
 namespace IG::Input

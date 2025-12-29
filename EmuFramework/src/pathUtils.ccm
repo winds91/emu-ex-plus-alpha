@@ -13,17 +13,18 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuSystem.hh>
+export module pathUtils;
 import imagine;
+import std;
 
 namespace EmuEx
 {
 
 using namespace IG;
 
-constexpr SystemLogger log{"PathUtils"};
+inline constexpr SystemLogger log{"PathUtils"};
 
-std::vector<FS::PathString> subDirectoryStrings(ApplicationContext ctx, CStringView path)
+export std::vector<FS::PathString> subDirectoryStrings(ApplicationContext ctx, CStringView path)
 {
 	std::vector<FS::PathString> subDirs{};
 	ctx.forEachInDirectoryUri(path,
@@ -38,7 +39,7 @@ std::vector<FS::PathString> subDirectoryStrings(ApplicationContext ctx, CStringV
 	return subDirs;
 }
 
-void flattenSubDirectories(ApplicationContext ctx, const std::vector<FS::PathString> &subDirs, CStringView outPath)
+export void flattenSubDirectories(ApplicationContext ctx, const std::vector<FS::PathString>& subDirs, CStringView outPath)
 {
 	for(const auto &subDir : subDirs)
 	{
@@ -58,7 +59,7 @@ void flattenSubDirectories(ApplicationContext ctx, const std::vector<FS::PathStr
 	}
 }
 
-void updateLegacySavePathOnStoragePath(ApplicationContext ctx, EmuSystem &sys)
+export void updateLegacySavePathOnStoragePath(ApplicationContext ctx, auto& sys)
 {
 	try
 	{
@@ -80,7 +81,7 @@ void updateLegacySavePathOnStoragePath(ApplicationContext ctx, EmuSystem &sys)
 	}
 }
 
-bool hasWriteAccessToDir(CStringView path)
+export bool hasWriteAccessToDir(CStringView path)
 {
 	// on Android test file creation since
 	// access() can still claim emulated storage is writable
@@ -96,7 +97,7 @@ bool hasWriteAccessToDir(CStringView path)
 	}
 	else
 	{
-		assert(!IG::isUri(path));
+		assume(!IG::isUri(path));
 		return FS::access(path, FS::acc::w);
 	}
 }

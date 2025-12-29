@@ -18,6 +18,7 @@
 #include <mednafen/cdrom/CDAccess_Image.h>
 #include <mednafen/cdrom/CDAccess_CCD.h>
 #include <mednafen/cdrom/CDAccess_CHD.h>
+import imagine;
 
 namespace Mednafen
 {
@@ -82,13 +83,13 @@ static int readSector(auto &cdAccess, uint8 *buf, int32 lba, uint32 size)
 	switch(format)
 	{
 		case DI_FORMAT_AUDIO:
-		assert(size == 2352);
+		IG::assume(size == 2352);
 		memcpy(buf, data, size);
 		break;
 
 		case DI_FORMAT_MODE1:
 		case DI_FORMAT_MODE1_RAW:
-		assert(size == 2048);
+		IG::assume(size == 2048);
 		memcpy(buf, data + 12 + 3 + 1, size);
 		break;
 

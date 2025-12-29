@@ -17,11 +17,13 @@
 
 #include <imagine/input/inputDefs.hh>
 #include <imagine/time/Time.hh>
-#include <imagine/util/utility.h>
 #include <imagine/util/variant.hh>
+#ifndef IG_USE_MODULE_STD
 #include <string>
 #include <string_view>
 #include <span>
+#include <utility>
+#endif
 
 #ifdef CONFIG_PACKAGE_X11
 #include <imagine/base/x11/XInputDevice.hh>

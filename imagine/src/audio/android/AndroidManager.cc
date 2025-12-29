@@ -13,13 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/audio/Manager.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/native_activity.h>
-import imagine.audio;
 
 namespace IG::Audio
 {
 
-constexpr SystemLogger log{"AudioManager"};
+static SystemLogger log{"AudioManager"};
 constexpr int defaultOutputBufferFrames = 192; // default used in Google Oboe library
 constexpr int AUDIOFOCUS_GAIN = 1;
 constexpr int STREAM_MUSIC = 3;

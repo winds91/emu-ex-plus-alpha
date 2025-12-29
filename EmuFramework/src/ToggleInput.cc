@@ -20,6 +20,8 @@ import imagine;
 namespace EmuEx
 {
 
+using namespace IG;
+
 constexpr SystemLogger log{"ToggleInput"};
 
 void ToggleInput::updateEvent(EmuApp &app, KeyInfo key, Input::Action act)

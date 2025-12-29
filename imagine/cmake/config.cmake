@@ -379,11 +379,10 @@ endfunction()
 # C++ modules
 
 function(addCxxModules target mainModule)
-	set(moduleDir "${IMAGINE_SDK_PLATFORM_PATH}/share/${mainModule}")
-	set(mainModulePrefix "${moduleDir}/${mainModule}")
-	target_sources(${target} PRIVATE FILE_SET CXX_MODULES BASE_DIRS ${moduleDir} FILES "${mainModulePrefix}.ccm")
-	foreach(subModule ${ARGN})
-		target_sources(${target} PRIVATE FILE_SET CXX_MODULES BASE_DIRS ${moduleDir} FILES "${mainModulePrefix}.${subModule}.ccm")
+	set(moduleDir "${IMAGINE_SDK_PLATFORM_PATH}/share/modules")
+	target_sources(${target} PRIVATE FILE_SET CXX_MODULES BASE_DIRS ${moduleDir} FILES "${moduleDir}/${mainModule}.ccm")
+	foreach(extraModule ${ARGN})
+		target_sources(${target} PRIVATE FILE_SET CXX_MODULES BASE_DIRS ${moduleDir} FILES "${moduleDir}/${extraModule}.ccm")
 	endforeach()
 endfunction()
 

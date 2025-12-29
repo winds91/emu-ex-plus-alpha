@@ -2960,7 +2960,7 @@ int armExecute(ARM7TDMI &cpu)
               	break;
               default:
                 // ???
-              	bug_unreachable("invalid condition:0x%X", cond);
+                IG::unreachable();
                 break;
             }
         }

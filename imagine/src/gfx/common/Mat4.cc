@@ -13,15 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/glm/geometric.hpp>
-#include <imagine/glm/gtc/matrix_transform.hpp>
-#include <imagine/glm/gtc/matrix_inverse.hpp>
-import imagine.gfx;
+#include <imagine/gfx/Mat4.hh>
+#include <imagine/base/Viewport.hh>
+import glm;
 
 namespace glm
 {
 	template <typename T, typename U, precision P>
-	GLM_FUNC_QUALIFIER tvec3<T, P> unProjectWithInverse
+	inline tvec3<T, P> unProjectWithInverse
 	(
 		tvec3<T, P> const & win,
 		tmat4x4<T, P> const & inverse,

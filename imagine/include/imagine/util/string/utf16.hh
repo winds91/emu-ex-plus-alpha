@@ -15,11 +15,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/utility.h>
 #include <imagine/util/algorithm.h>
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <string>
 #include <string_view>
+#include <utility>
+#endif
 
 namespace IG
 {
@@ -65,7 +67,7 @@ public:
 		extraSize = srcStr.size() - 1;
 		switch(srcStr.size())
 		{
-			default: bug_unreachable("invalid UTF8CodeUnit string size");
+			default: unreachable();
 			case 1: copy_n(srcStr.data(), 1, c.data()); break;
 			case 2: copy_n(srcStr.data(), 2, c.data()); break;
 			case 3: copy_n(srcStr.data(), 3, c.data()); break;
@@ -83,7 +85,7 @@ public:
 		uint32_t utf32{};
 		switch(extraSize)
 		{
-			default: bug_unreachable("invalid UTF8CodeUnit string size");
+			default: unreachable();
 			case 0:
 				utf32 += c[0]; break;
 			case 1:

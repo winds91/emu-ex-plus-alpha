@@ -205,7 +205,7 @@ public:
 
 	void signalViceThreadAndWait()
 	{
-		assert(!viceThreadSignaled);
+		assume(!viceThreadSignaled);
 		viceThreadSignaled = true;
 		execSem.release();
 		execDoneSem.acquire();

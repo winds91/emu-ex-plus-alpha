@@ -13,14 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/Pipe.hh>
+#include <imagine/util/utility.hh>
 #include <imagine/util/fd-utils.h>
+#include <imagine/logger/SystemLogger.hh>
 #include <fcntl.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Pipe"};
+static SystemLogger log{"Pipe"};
 
 static auto makePipe()
 {

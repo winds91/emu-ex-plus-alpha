@@ -13,11 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/base/GLContext.hh>
+#include <imagine/base/Window.hh>
+#include <imagine/util/container/ArrayList.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/egl.hh>
+#include <imagine/util/utility.hh>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-import imagine;
 
 #ifndef EGL_OPENGL_ES3_BIT
 #define EGL_OPENGL_ES3_BIT 0x0040
@@ -38,7 +41,7 @@ import imagine;
 namespace IG
 {
 
-constexpr SystemLogger log{"EGL"};
+static SystemLogger log{"EGL"};
 constexpr bool HAS_DEBUG_CONTEXT = !Config::MACHINE_IS_PANDORA;
 constexpr bool HAS_NATIVE_WINDOW_TYPE = !Config::MACHINE_IS_PANDORA;
 using EGLSurfaceAttrList = StaticArrayList<int, 8>;
@@ -235,7 +238,7 @@ GLDisplay GLContext::display() const
 
 void GLContext::setCurrentContext(NativeGLDrawable surface) const
 {
-	assert((bool)context);
+	assume((bool)context);
 	if(!surface && dummyPbuffConfig)
 	{
 		if(Config::DEBUG_BUILD)
@@ -275,7 +278,7 @@ void GLContext::setCurrentDrawable(NativeGLDrawable drawable) const
 
 void GLContext::present(NativeGLDrawable drawable) const
 {
-	assert(drawable);
+	assume(drawable);
 	if(eglSwapBuffers(display(), drawable) == EGL_FALSE)
 	{
 		if(Config::DEBUG_BUILD)

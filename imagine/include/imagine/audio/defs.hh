@@ -23,9 +23,9 @@ namespace IG::Audio
 	namespace Config
 	{
 	#if (defined __linux__ && !defined CONFIG_MACHINE_PANDORA)
-	static constexpr bool MULTIPLE_SYSTEM_APIS = true;
+	inline constexpr bool MULTIPLE_SYSTEM_APIS = true;
 	#else
-	static constexpr bool MULTIPLE_SYSTEM_APIS = false;
+	inline constexpr bool MULTIPLE_SYSTEM_APIS = false;
 	#endif
 	}
 

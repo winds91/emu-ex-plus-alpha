@@ -15,21 +15,18 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/fs/FSDefs.hh>
 #include <imagine/util/concepts.hh>
 #include <imagine/util/used.hh>
+#ifndef IG_USE_MODULE_STD
 #include <format>
 #include <array>
+#endif
 
 namespace boost::static_strings
 {
 template<std::size_t N, typename CharT, typename Traits>
 class basic_static_string;
-}
-
-namespace IG::FS
-{
-class PathString;
-class FileString;
 }
 
 namespace IG

@@ -13,10 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with MD.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/Option.hh>
 #include "MainSystem.hh"
+import emuex;
 
 namespace EmuEx
 {

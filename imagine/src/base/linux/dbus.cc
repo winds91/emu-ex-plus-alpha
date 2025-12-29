@@ -13,15 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/Application.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <unistd.h>
 #include <sys/param.h>
 #include <gio/gio.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"DBus"};
+static SystemLogger log{"DBus"};
 constexpr const char *appObjectPath = "/com/explusalpha/imagine";
 constexpr uint32_t DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER = 1;
 

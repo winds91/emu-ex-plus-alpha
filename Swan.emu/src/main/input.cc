@@ -13,11 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Swan.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
+import emuex;
+import imagine;
 
 namespace MDFN_IEN_WSWAN
 {
@@ -308,7 +307,7 @@ void WsSystem::handleInputAction(EmuApp *, InputAction a)
 				case SwanKey::Y4X4: return Y4_BIT;
 			}
 		}
-		bug_unreachable("invalid key");
+		unreachable();
 	}();
 	WSButtonStatus = setOrClearBits(WSButtonStatus, gpBits, a.isPushed());
 }

@@ -15,8 +15,6 @@
 
 #include "PlaceVideoView.hh"
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuViewController.hh>
-#include <imagine/gfx/RendererCommands.hh>
 
 namespace EmuEx
 {

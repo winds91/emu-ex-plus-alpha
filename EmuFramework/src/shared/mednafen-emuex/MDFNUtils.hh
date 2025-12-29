@@ -71,7 +71,7 @@ inline FS::FileString stateFilenameMDFN(const Mednafen::MDFNGI &gameInfo, int sl
 		{
 			case -1: return autoChar;
 			case 0 ... 9: return '0' + slot;
-			default: bug_unreachable("slot == %d", slot);
+			default: unreachable();
 		}
 	}();
 	if(skipMD5)
@@ -94,7 +94,7 @@ inline FS::FileString saveExtMDFN(std::string_view ext, bool skipMD5)
 
 inline std::string savePathMDFN(const EmuApp &app, [[maybe_unused]] int id1, const char *cd1, bool skipMD5)
 {
-	assert(cd1);
+	assume(cd1);
 	IG::FileString ext{'.'};
 	if(!skipMD5)
 	{
@@ -159,7 +159,7 @@ inline void runFrame(EmuSystem &sys, Mednafen::MDFNGI &mdfnGameInfo, EmuSystemTa
 	mdfnGameInfo.Emulate(&espec);
 	if(audioPtr)
 	{
-		assert((unsigned)espec.SoundBufSize <= audioPtr->format().bytesToFrames(sizeof(audioBuff)));
+		assume((unsigned)espec.SoundBufSize <= audioPtr->format().bytesToFrames(sizeof(audioBuff)));
 		audioPtr->writeFrames((uint8_t*)audioBuff, espec.SoundBufSize);
 	}
 }

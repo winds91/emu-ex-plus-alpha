@@ -18,12 +18,15 @@
 #include <imagine/gfx/defs.hh>
 #include <imagine/gfx/Vertex.hh>
 #include <imagine/gfx/Buffer.hh>
+#include <imagine/gfx/RendererTask.hh>
 #include <imagine/util/rectangle2.h>
 #include <imagine/util/ranges.hh>
+#ifndef IG_USE_MODULE_STD
 #include <span>
 #include <array>
 #include <utility>
 #include <type_traits>
+#endif
 
 namespace IG::Gfx
 {

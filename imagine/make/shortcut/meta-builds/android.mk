@@ -1,6 +1,5 @@
 include $(IMAGINE_PATH)/make/config.mk
 -include $(projectPath)/config.mk
-include $(buildSysPath)/android-metadata.mk
 
 .PHONY: all
 all : android-bundle
@@ -8,6 +7,8 @@ all : android-bundle
 CONFIG ?= Release
 BUNDLETOOL_PATH ?= $(IMAGINE_PATH)/tools/bundletool-all-1.18.2.jar
 BUNDLETOOL := java -jar $(BUNDLETOOL_PATH)
+
+include $(buildSysPath)/android-metadata.mk
 
 # Code signing parameters used when generating APKs from the app bundle
 android_gradlePropertiesPath = $(HOME)/.gradle/gradle.properties

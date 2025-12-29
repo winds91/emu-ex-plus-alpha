@@ -13,15 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuVideo.hh>
 #include <emuframework/EmuSystemTask.hh>
-#include <emuframework/EmuViewController.hh>
-#include <imagine/util/macros.h>
+#include <emuframework/EmuApp.hh>
 import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"EmuSystemTask"};
 
@@ -70,7 +69,6 @@ void EmuSystemTask::start(Window& win)
 							removeOnFrame();
 							setWindowInternal(*cmd.winPtr);
 							addOnFrame();
-							assumeExpr(msg.semPtr);
 							msg.semPtr->release();
 							suspendSem.acquire();
 							return true;
@@ -79,7 +77,6 @@ void EmuSystemTask::start(Window& win)
 						{
 							//log.debug("got suspend command");
 							isSuspended = true;
-							assumeExpr(msg.semPtr);
 							msg.semPtr->release();
 							suspendSem.acquire();
 							return true;
@@ -110,7 +107,7 @@ void EmuSystemTask::start(Window& win)
 
 EmuSystemTask::SuspendContext EmuSystemTask::setWindow(Window& win)
 {
-	assert(!isSuspended);
+	assume(!isSuspended);
 	if(!isStarted())
 		return {};
 	commandPort.send({.command = SetWindowCommand{&win}}, MessageReplyMode::wait);
@@ -159,7 +156,7 @@ void EmuSystemTask::stop()
 	{
 		auto threadId = thisThreadId();
 		log.info("request stop emulation thread:{} from:{}", threadId_, threadId);
-		assert(threadId_ != thisThreadId());
+		assume(threadId_ != thisThreadId());
 	}
 	commandPort.send({.command = ExitCommand{}});
 	taskThread.join();
@@ -378,7 +375,7 @@ void EmuSystemTask::setIntendedFrameRate(FrameRateConfig config)
 
 bool EmuSystemTask::advanceFrames(FrameParams frameParams)
 {
-	assert(hasTime(frameParams.time));
+	assume(hasTime(frameParams.time));
 	auto &sys = app.system();
 	auto &viewCtrl = app.viewController();
 	auto *audioPtr = app.audio ? &app.audio : nullptr;
@@ -430,7 +427,7 @@ bool EmuSystemTask::advanceFrames(FrameParams frameParams)
 			viewCtrl.presentTime = {};
 		}
 	}
-	assumeExpr(frameInfo.advanced > 0);
+	assume(frameInfo.advanced > 0);
 	// cap advanced frames if we're falling behind
 	if(frameInfo.duration > Milliseconds{70})
 		frameInfo.advanced = std::min(frameInfo.advanced, 4);

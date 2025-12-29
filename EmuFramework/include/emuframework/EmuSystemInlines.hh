@@ -18,7 +18,6 @@
 #include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuVideo.hh>
 #include <main/MainSystem.hh>
-#include <imagine/io/IO.hh>
 
 namespace EmuEx
 {

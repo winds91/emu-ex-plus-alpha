@@ -9,6 +9,7 @@ project(
 printConfigInfo()
 configureAppTarget(msxemu)
 addPkgConfigDepMultiConfig(msxemu emuframework)
+addCxxModules(msxemu emuex imagine)
 evalPkgConfigFlags(msxemu all)
 target_include_directories(msxemu PRIVATE
 	src/blueMSX

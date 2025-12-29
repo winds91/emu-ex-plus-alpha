@@ -19,7 +19,9 @@
 #include <imagine/pixmap/Pixmap.hh>
 #include <imagine/font/FontSettings.hh>
 #include <imagine/util/jni.hh>
+#ifndef IG_USE_MODULE_STD
 #include <utility>
+#endif
 
 namespace IG
 {
@@ -29,9 +31,12 @@ class Application;
 
 namespace IG::Data
 {
-
 class FontManager;
 struct GlyphMetrics;
+}
+
+namespace IG::Data
+{
 
 class AndroidGlyphImage
 {

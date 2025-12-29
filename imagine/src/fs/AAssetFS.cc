@@ -13,14 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/fs/AAssetFS.hh>
+#include <imagine/util/format.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/asset_manager.h>
-import imagine;
 
 namespace IG::FS
 {
 
-constexpr SystemLogger log{"AAsset"};
+static SystemLogger log{"AAsset"};
 
 AAssetDirectory::AAssetDirectory(AAssetManager *mgr, CStringView path):
 	dir{AAssetManager_openDir(mgr, path)}
@@ -56,7 +57,7 @@ bool AAssetDirectory::hasEntry() const
 
 std::string_view AAssetDirectory::name() const
 {
-	assumeExpr(entryName);
+	assume(entryName);
 	return entryName;
 }
 
@@ -100,7 +101,7 @@ AAssetDirectory* AAssetIterator::operator->()
 
 void AAssetIterator::operator++()
 {
-	assumeExpr(impl); // incrementing end-iterator is undefined
+	assume(impl); // incrementing end-iterator is undefined
 	if(!impl->readNextDir())
 		impl.reset();
 }

@@ -23,7 +23,7 @@ static_assert(__has_feature(objc_arc), "This file requires ARC");
 
 namespace IG
 {
-constexpr SystemLogger log{"Screen"};
+static SystemLogger log{"Screen"};
 }
 
 using namespace IG;

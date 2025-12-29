@@ -16,7 +16,9 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/config/defs.hh>
+#ifndef IG_USE_MODULE_STD
 #include <format>
+#endif
 
 namespace IG::Log
 {

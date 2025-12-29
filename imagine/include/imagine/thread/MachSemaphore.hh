@@ -18,9 +18,10 @@
 #include <mach/semaphore.h>
 #include <mach/task.h>
 #include <mach/mach.h>
-#include <utility>
-#include <cassert>
+#include <imagine/util/utility.hh>
+#ifndef IG_USE_MODULE_STD
 #include <chrono>
+#endif
 
 // TODO: remove when <semaphore> is fully supported by Apple Clang
 
@@ -34,7 +35,7 @@ public:
 	MachSemaphore(unsigned startValue)
 	{
 		[[maybe_unused]] auto ret = semaphore_create(mach_task_self(), &sem, SYNC_POLICY_FIFO, startValue);
-		assert(ret == KERN_SUCCESS);
+		assume(ret == KERN_SUCCESS);
 	}
 
 	MachSemaphore(MachSemaphore &&o) noexcept
@@ -79,7 +80,7 @@ protected:
 		if(!sem)
 			return;
 		[[maybe_unused]] auto ret = semaphore_destroy(mach_task_self(), sem);
-		assert(ret == KERN_SUCCESS);
+		assume(ret == KERN_SUCCESS);
 		sem = {};
 	}
 };

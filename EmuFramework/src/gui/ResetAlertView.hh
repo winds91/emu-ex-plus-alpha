@@ -13,9 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/AlertView.hh>
 #include <emuframework/EmuApp.hh>
-#include <emuframework/EmuSystem.hh>
+#ifndef IG_USE_MODULE_IMAGINE
+#include <imagine/gui/AlertView.hh>
+#endif
 
 namespace EmuEx
 {

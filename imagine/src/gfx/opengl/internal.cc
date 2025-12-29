@@ -14,11 +14,16 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 module;
-#include <imagine/util/opengl/glUtils.hh>
+
+#include <imagine/base/GLContext.hh>
+#include <imagine/base/Window.hh>
+#include <imagine/gfx/defs.hh>
+#include <imagine/time/Time.hh>
+#include <imagine/util/opengl/glHeaders.h>
+#include <imagine/util/Interpolator.hh>
 #include <imagine/util/macros.h>
 
 export module imagine.internal.gfxOpengl;
-export import imagine.gfx;
 
 export namespace IG::Gfx
 {
@@ -26,7 +31,7 @@ export namespace IG::Gfx
 struct GLRendererWindowData
 {
 	constexpr GLRendererWindowData() = default;
-	GLDrawable drawable{};
+	GLDrawable drawable;
 	GLBufferConfig bufferConfig{};
 	InterpolatorValue<float, SteadyClockTimePoint, InterpolatorType::EASEOUTQUAD> projAngleM{};
 	GLColorSpace colorSpace{};
@@ -36,13 +41,11 @@ struct GLRendererWindowData
 
 GLRendererWindowData& winData(Window& win)
 {
-	assumeExpr(win.rendererData<GLRendererWindowData>());
 	return *win.rendererData<GLRendererWindowData>();
 }
 
 const GLRendererWindowData& winData(const Window& win)
 {
-	assumeExpr(win.rendererData<GLRendererWindowData>());
 	return *win.rendererData<GLRendererWindowData>();
 }
 
@@ -61,7 +64,7 @@ inline constexpr GLenum asGLType(AttribType type)
 		case AttribType::UShort: return GL_UNSIGNED_SHORT;
 		case AttribType::Float: return GL_FLOAT;
 	}
-	bug_unreachable("invalid AttribType");
+	unreachable();
 }
 
 }

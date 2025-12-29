@@ -13,16 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "sysfile"
-#include <array>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/FilePicker.hh>
 #include "MainSystem.hh"
-#include <imagine/io/IO.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
@@ -30,6 +21,9 @@ extern "C"
 	#include "lib.h"
 	#include "archdep.h"
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -94,7 +88,7 @@ static ArchiveIO *archiveIOForSysFile(C64System &system, IG::CStringView archive
 			if(complete_path_return)
 			{
 				*complete_path_return = strdup(name.data());
-				assert(*complete_path_return);
+				assume(*complete_path_return);
 			}
 			return true;
 		}))
@@ -122,7 +116,7 @@ static AssetIO assetIOForSysFile(IG::ApplicationContext ctx, std::string_view sy
 	if(complete_path_return)
 	{
 		*complete_path_return = strdup(fullPath.c_str());
-		assert(*complete_path_return);
+		assume(*complete_path_return);
 	}
 	return file;
 }
@@ -250,7 +244,7 @@ CLINK FILE *sysfile_open(const char *name, const char *subPath, char **complete_
 			if(complete_path_return)
 			{
 				*complete_path_return = strdup(fullPath.c_str());
-				assert(*complete_path_return);
+				assume(*complete_path_return);
 			}
 			return file;
 		}

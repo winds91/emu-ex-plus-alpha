@@ -1,13 +1,4 @@
-#define LOGTAG "main"
 #include <imagine/logger/logger.h>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/io/FileIO.hh>
-#include <imagine/io/IO.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <emuframework/EmuSystem.hh>
-#include <emuframework/EmuApp.hh>
 #include "MainSystem.hh"
 #include <sys/stat.h>
 #include <zlib.h>
@@ -20,6 +11,8 @@
 #endif
 #include <display.h>
 #include <memmap.h>
+import emuex;
+import imagine;
 
 using namespace EmuEx;
 
@@ -94,7 +87,7 @@ extern "C" void S9xLoadSDD1Data()
 
 const char *S9xGetFilenameInc(const char *e)
 {
-	assert(0); // not used yet
+	assume(0); // not used yet
 	return 0;
 }
 
@@ -276,7 +269,7 @@ bool S9xPollPointer(uint32, int16*, int16*)
 
 void S9xExit(void)
 {
-	bug_unreachable("should not be called");
+	unreachable();
 }
 
 void S9xToggleSoundChannel(int c)
@@ -293,8 +286,7 @@ void S9xToggleSoundChannel(int c)
 
 const char * S9xStringInput(const char*)
 {
-	bug_unreachable("should not be called");
-	return 0;
+	unreachable();
 }
 
 void _splitpath(const char *path, char *drive, char *dir, char *fname, char *ext)

@@ -13,58 +13,23 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/opengl/defs.hh>
-#include <imagine/util/macros.h>
+#include <imagine/config/macros.h>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/gfx/BasicEffect.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/opengl/glHeaders.h>
+#ifdef CONFIG_BASE_GL_PLATFORM_EGL
+	#ifndef EGL_NO_X11
+	#define EGL_NO_X11
+	#endif
+#include <EGL/egl.h>
+#endif
 import imagine.internal.gfxOpengl;
-
-#ifndef GL_DEBUG_TYPE_ERROR
-#define GL_DEBUG_TYPE_ERROR 0x824C
-#endif
-
-#ifndef GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR
-#define GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR 0x824D
-#endif
-
-#ifndef GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR
-#define GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR 0x824E
-#endif
-
-#ifndef GL_DEBUG_TYPE_PORTABILITY
-#define GL_DEBUG_TYPE_PORTABILITY 0x824F
-#endif
-
-#ifndef GL_DEBUG_TYPE_PERFORMANCE
-#define GL_DEBUG_TYPE_PERFORMANCE 0x8250
-#endif
-
-#ifndef GL_DEBUG_TYPE_OTHER
-#define GL_DEBUG_TYPE_OTHER 0x8251
-#endif
-
-#ifndef GL_DEBUG_SEVERITY_HIGH
-#define GL_DEBUG_SEVERITY_HIGH 0x9146
-#endif
-
-#ifndef GL_DEBUG_SEVERITY_MEDIUM
-#define GL_DEBUG_SEVERITY_MEDIUM 0x9147
-#endif
-
-#ifndef GL_DEBUG_SEVERITY_LOW
-#define GL_DEBUG_SEVERITY_LOW 0x9148
-#endif
-
-#ifndef EGL_SYNC_FENCE
-#define EGL_SYNC_FENCE 0x30F9
-#endif
-
-#ifndef GL_SYNC_GPU_COMMANDS_COMPLETE
-#define GL_SYNC_GPU_COMMANDS_COMPLETE 0x9117
-#endif
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"GLRenderer"};
+static SystemLogger log{"GLRenderer"};
 
 bool DrawContextSupport::hasSyncFences() const
 {
@@ -144,7 +109,7 @@ GLenum DrawContextSupport::clientWaitSync([[maybe_unused]] GLDisplay dpy, GLsync
 
 void DrawContextSupport::waitSync(GLDisplay, GLsync)
 {
-	bug_unreachable("waitSync() not currently used");
+	log.warn("waitSync() not currently used");
 	/*#ifdef CONFIG_BASE_GL_PLATFORM_EGL
 	if constexpr(Config::Gfx::OPENGL_ES)
 	{
@@ -243,8 +208,8 @@ void DrawContextSupport::setGLDebugOutput(bool on)
 	{
 		if(!glDebugMessageCallback) [[unlikely]]
 		{
-			log.warn("enabling debug output with {}", glDebugMessageCallbackName);
-			glDebugMessageCallback = (typeof(glDebugMessageCallback))GLManager::procAddress(glDebugMessageCallbackName);
+			log.warn("enabling debug output with {}", GL_DEBUG_MESSAGE_CALLBACK_NAME);
+			glDebugMessageCallback = (typeof(glDebugMessageCallback))GLManager::procAddress(GL_DEBUG_MESSAGE_CALLBACK_NAME);
 		}
 		glDebugMessageCallback(
 			GL_APIENTRY []([[maybe_unused]] GLenum source, GLenum type, [[maybe_unused]] GLuint id,
@@ -262,7 +227,7 @@ void DrawContextSupport::setGLDebugOutput(bool on)
 				}
 				log.print(severityToLogger(severity), "{}: {}", debugTypeToStr(type), message);
 				if(severity == GL_DEBUG_SEVERITY_HIGH && type != GL_DEBUG_TYPE_PERFORMANCE)
-					abort();
+					std::abort();
 			}, nullptr);
 		glEnable(GL_DEBUG_OUTPUT);
 	}

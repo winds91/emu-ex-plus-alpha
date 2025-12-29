@@ -13,18 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
-#include <imagine/logger/logger.h>
 
 extern "C"
 {
 	#include "kbd.h"
 	#include "joyport.h"
 }
+
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
@@ -652,7 +651,7 @@ void C64System::handleInputAction(EmuApp *app, InputAction a)
 						case C64Key::Down: return JS_S;
 						case C64Key::Left: return JS_W;
 						case C64Key::JSTrigger: return JS_FIRE;
-						default: bug_unreachable();
+						default: unreachable();
 					}
 				}();
 				joystick_value[player] = IG::setOrClearBits(joystick_value[player], jsBits, a.isPushed());

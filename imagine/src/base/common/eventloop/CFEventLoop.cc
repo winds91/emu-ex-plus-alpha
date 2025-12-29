@@ -13,14 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/base/EventLoop.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/utility.hh>
 #include <CoreFoundation/CoreFoundation.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"EventLoop"};
+static SystemLogger log{"EventLoop"};
 
 static void eventCallback(CFFileDescriptorRef fdRef, CFOptionFlags callbackEventTypes, void *infoPtr)
 {
@@ -97,7 +98,6 @@ bool FDEventSource::attach(EventLoop loop, PollEventFlags events)
 	{
 		log.info("adding fd:{} ({}) to run loop:{}", fd(), debugLabel(), (void*)loop.nativeObject());
 	}
-	assumeExpr(info);
 	events &= 0x3;
 	CFFileDescriptorEnableCallBacks(info->fdRef, events);
 	info->src = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, info->fdRef, 0);
@@ -124,7 +124,6 @@ void FDEventSource::setEvents(PollEventFlags events)
 		log.error("trying to set events while not attached to event loop");
 		return;
 	}
-	assumeExpr(info);
 	events &= 0x3;
 	auto disableEvents = ~events;
 	if(disableEvents)
@@ -135,13 +134,11 @@ void FDEventSource::setEvents(PollEventFlags events)
 
 void FDEventSource::dispatchEvents(PollEventFlags events)
 {
-	assumeExpr(info);
 	eventCallback(info->fdRef, events & 0x3, info.get());
 }
 
 void FDEventSource::setCallback(PollEventDelegate callback)
 {
-	assumeExpr(info);
 	info->callback = callback;
 }
 

@@ -15,10 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/TextEntry.hh>
 #include <imagine/gui/MenuItem.hh>
 #include <imagine/util/concepts.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <cstdio>
+#endif
 
 namespace EmuEx
 {
@@ -33,14 +37,14 @@ enum class ScanValueMode
 template <std::same_as<const char*> T>
 inline std::pair<T, int> scanValue(const char* str, ScanValueMode mode)
 {
-	return {str, mode == ScanValueMode::AllowBlank || strlen(str) ? 1 : 0};
+	return {str, mode == ScanValueMode::AllowBlank || std::strlen(str) ? 1 : 0};
 }
 
 template <std::integral T>
 inline std::pair<T, int> scanValue(const char* str, ScanValueMode)
 {
 	int val;
-	int items = sscanf(str, "%d", &val);
+	int items = std::sscanf(str, "%d", &val);
 	return {val, items};
 }
 
@@ -48,7 +52,7 @@ template <std::floating_point T>
 inline std::pair<T, int> scanValue(const char* str, ScanValueMode)
 {
 	T val, denom;
-	int items = sscanf(str, std::is_same_v<T, double> ? "%lf /%lf" : "%f /%f", &val, &denom);
+	int items = std::sscanf(str, std::is_same_v<T, double> ? "%lf /%lf" : "%f /%f", &val, &denom);
 	if(items > 1 && denom != 0)
 	{
 		val /= denom;
@@ -63,7 +67,7 @@ inline std::pair<T, int> scanValue(const char* str, ScanValueMode)
 	// special case for getting a fraction
 	using PairValue = typename T::first_type;
 	PairValue val, denom{};
-	int items = sscanf(str, std::is_same_v<PairValue, double> ? "%lf /%lf" : "%f /%f", &val, &denom);
+	int items = std::sscanf(str, std::is_same_v<PairValue, double> ? "%lf /%lf" : "%f /%f", &val, &denom);
 	if(denom == 0)
 	{
 		denom = 1.;
@@ -77,7 +81,7 @@ inline std::pair<T, int> scanValue(const char *str, ScanValueMode)
 {
 	using PairValue = typename T::first_type;
 	PairValue val, val2{};
-	int items = sscanf(str, "%d %d", &val, &val2);
+	int items = std::sscanf(str, "%d %d", &val, &val2);
 	return {{val, val2}, items};
 }
 
@@ -166,7 +170,7 @@ inline void pushAndShowNewCollectValuePairRangeInputView(ViewAttachParams attach
 		});
 }
 
-inline void pushAndShowNewYesNoAlertView(ViewAttachParams, const Input::Event&,
+void pushAndShowNewYesNoAlertView(ViewAttachParams, const Input::Event&,
 	const char* label, const char* choice1, const char* choice2,
 	TextMenuItem::SelectDelegate onYes, TextMenuItem::SelectDelegate onNo);
 

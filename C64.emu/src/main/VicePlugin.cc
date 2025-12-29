@@ -13,13 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/logger/logger.h>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/utility.h>
-#include <imagine/util/format.hh>
-#include <emuframework/EmuApp.hh>
 #include "VicePlugin.hh"
-import std;
 
 extern "C"
 {
@@ -33,6 +27,12 @@ extern "C"
 	#include "cartridge.h"
 	#include "resources.h"
 }
+
+import emuex;
+import imagine;
+import std;
+
+namespace EmuEx { static IG::SystemLogger log{"C64.emu"}; }
 
 constexpr const char *systemNameStr[]
 {
@@ -285,7 +285,7 @@ constexpr PluginConfig pluginConf[]
 
 static IG::PathString makePluginLibPath(const char *libName, const char *libBasePath)
 {
-	if(libBasePath && strlen(libBasePath))
+	if(libBasePath && std::strlen(libBasePath))
 		return IG::pathString(libBasePath, libName);
 	else
 		return libName;
@@ -295,12 +295,12 @@ template<class T>
 static void loadSymbolCheck(T &symPtr, IG::SharedLibraryRef lib, const char *name)
 {
 	if(!IG::loadSymbol(symPtr, lib, name))
-		logErr("symbol:%s missing from plugin", name);
+		EmuEx::log.error("symbol:{} missing from plugin", name);
 }
 
 void VicePlugin::init()
 {
-	assert(libHandle);
+	IG::assume(libHandle);
 	int (*vice_init)();
 	loadSymbolCheck(vice_init, libHandle, "vice_init");
 	vice_init();
@@ -311,7 +311,7 @@ void VicePlugin::deinit()
 	if(libHandle)
 	{
 		// TODO: doesn't fully clean up all VICE heap allocations, don't use for now
-		logMsg("doing machine_shutdown()");
+		EmuEx::log.info("doing machine_shutdown()");
 		void (*machine_shutdown)();
 		loadSymbolCheck(machine_shutdown, libHandle, "machine_shutdown");
 		machine_shutdown();
@@ -428,7 +428,6 @@ int VicePlugin::init_main()
 
 void VicePlugin::maincpu_mainloop()
 {
-	assert(maincpu_mainloop_);
 	maincpu_mainloop_();
 }
 
@@ -469,7 +468,7 @@ const char *VicePlugin::cartridge_get_file_name(int type)
 			resources_get_string("Cart6Name", &filename);
 			break;
 		default:
-			logErr("cartridge_get_file_name: unsupported type (%04x)", type);
+			EmuEx::log.error("cartridge_get_file_name: unsupported type ({})", type);
 	}
 	return filename;
 }
@@ -626,7 +625,7 @@ VicePlugin commonVicePlugin(void *lib, ViceSystem system)
 	loadSymbolCheck(plugin.machine_drive_get_type_info_list_, lib, "machine_drive_get_type_info_list");
 	loadSymbolCheck(plugin.interrupt_maincpu_trigger_trap_, lib, "interrupt_maincpu_trigger_trap");
 	loadSymbolCheck(plugin.init_main_, lib, "init_main");
-	assert(plugin.init_main_);
+	IG::assume(plugin.init_main_);
 	loadSymbolCheck(plugin.maincpu_mainloop_, lib, "maincpu_mainloop");
 	if(system == ViceSystem::PET)
 	{
@@ -704,7 +703,7 @@ VicePlugin commonVicePlugin(void *lib, ViceSystem system)
 VicePlugin loadVicePlugin(ViceSystem system, const char *libBasePath)
 {
 	auto libPath = makePluginLibPath(libName[std::to_underlying(system)], libBasePath);
-	logMsg("loading VICE plugin:%s", libPath.data());
+	EmuEx::log.info("loading VICE plugin:{}", libPath);
 	auto lib = IG::openSharedLibrary(libPath.data(), {.resolveAllSymbols = true});
 	if(!lib)
 	{

@@ -18,9 +18,11 @@
 #include <imagine/config/defs.hh>
 #include <imagine/util/bit.hh>
 #include <imagine/util/algorithm.h>
-#include <imagine/util/utility.h>
+#include <imagine/util/utility.hh>
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <array>
+#endif
 
 namespace IG
 {
@@ -58,10 +60,10 @@ public:
 
 	constexpr uint32_t build(float r_, float g_, float b_, float a_ = 1.) const
 	{
-		assumeExpr(r_ >= 0. && r_ <= 1.);
-		assumeExpr(g_ >= 0. && g_ <= 1.);
-		assumeExpr(b_ >= 0. && b_ <= 1.);
-		assumeExpr(a_ >= 0. && a_ <= 1.);
+		assume(r_ >= 0. && r_ <= 1.);
+		assume(g_ >= 0. && g_ <= 1.);
+		assume(b_ >= 0. && b_ <= 1.);
+		assume(a_ >= 0. && a_ <= 1.);
 		return build(
 			static_cast<uint32_t>(remap(r_, 0.f, 1.f, 0, bits(rBits))),
 			static_cast<uint32_t>(remap(g_, 0.f, 1.f, 0, bits(gBits))),

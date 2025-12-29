@@ -13,12 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Lynx.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuViewController.hh>
-#include <emuframework/Option.hh>
 #include "MainSystem.hh"
 #include <mednafen-emuex/MDFNUtils.hh>
 #include <mednafen/general.h>
+import emuex;
 
 void Lynx_SetLowpassFilter(bool);
 
@@ -108,12 +106,14 @@ namespace Mednafen
 {
 
 #define EMU_MODULE "lynx"
+constexpr IG::SystemLogger log{"Lynx.emu"};
 
 using namespace EmuEx;
 
 uint64 MDFN_GetSettingUI(const char *name_)
 {
-	bug_unreachable("unhandled settingUI %s", name_);
+	log.error("unhandled settingUI:{}", name_);
+	unreachable();
 }
 
 int64 MDFN_GetSettingI(const char *name_)
@@ -121,12 +121,14 @@ int64 MDFN_GetSettingI(const char *name_)
 	std::string_view name{name_};
 	if("filesys.state_comp_level" == name)
 		return 6;
-	bug_unreachable("unhandled settingI %s", name_);
+	log.error("unhandled settingI:{}", name_);
+	unreachable();
 }
 
 double MDFN_GetSettingF(const char *name)
 {
-	bug_unreachable("unhandled settingF %s", name);
+	log.error("unhandled settingF:{}", name);
+	unreachable();
 }
 
 bool MDFN_GetSettingB(const char *name_)
@@ -139,12 +141,14 @@ bool MDFN_GetSettingB(const char *name_)
 		return sys.lowpassFilter;
 	if("filesys.untrusted_fip_check" == name)
 		return false;
-	bug_unreachable("unhandled settingB %s", name_);
+	log.error("unhandled settingB:{}", name_);
+	unreachable();
 }
 
 std::string MDFN_GetSettingS(const char *name_)
 {
-	bug_unreachable("unhandled settingS %s", name_);
+	log.error("unhandled settingS:{}", name_);
+	unreachable();
 }
 
 std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
@@ -161,8 +165,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
 			auto &sys = static_cast<LynxSystem&>(gSystem());
 			return std::string{sys.biosPath};
 		}
-		default:
-			bug_unreachable("type == %d", type);
+		default: unreachable();
 	}
 }
 

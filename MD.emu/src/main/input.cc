@@ -13,10 +13,6 @@
 	You should have received a copy of the GNU General Public License
 	along with MD.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
-#include <imagine/util/math.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
 #include "input.h"
@@ -24,6 +20,8 @@
 #include "loadrom.h"
 #include "md_cart.h"
 #include "io_ctrl.h"
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

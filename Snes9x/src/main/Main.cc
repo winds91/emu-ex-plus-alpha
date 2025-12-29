@@ -1,12 +1,5 @@
-#define LOGTAG "main"
 #include <emuframework/EmuSystemInlines.hh>
 #include <emuframework/EmuAppInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/zlib.hh>
-#include <imagine/logger/logger.h>
 
 #include <memmap.h>
 #include <display.h>
@@ -17,6 +10,9 @@
 #else
 #include <soundux.h>
 #endif
+#include <zlib.h>
+
+import imagine;
 
 #ifdef SNES9X_VERSION_1_4
 bool8 S9xDeinitUpdate(int width, int height);
@@ -30,6 +26,7 @@ static bool S9xInterlaceField()
 namespace EmuEx
 {
 
+constexpr SystemLogger log{"Snes9x"};
 const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nSnes9x Team\nwww.snes9x.com";
 #if PIXEL_FORMAT == RGB565
 constexpr auto srcPixFmt = IG::PixelFmtRGB565;
@@ -94,7 +91,7 @@ void Snes9xSystem::renderFramebuffer(EmuVideo&)
 
 void Snes9xSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	if(mode == ResetMode::HARD)
 	{
 		S9xReset();
@@ -190,7 +187,7 @@ void Snes9xSystem::loadBackupMemory(EmuApp &app)
 {
 	if(!Memory.SRAMSize)
 		return;
-	logMsg("loading backup memory");
+	log.info("loading backup memory");
 	Memory.LoadSRAM(sramFilename(app).c_str());
 }
 
@@ -198,7 +195,7 @@ void Snes9xSystem::onFlushBackupMemory(EmuApp &app, BackupMemoryDirtyFlags)
 {
 	if(!Memory.SRAMSize)
 		return;
-	logMsg("saving backup memory");
+	log.info("saving backup memory");
 	Memory.SaveSRAM(sramFilename(app).c_str());
 }
 
@@ -231,7 +228,7 @@ IOBuffer Snes9xSystem::readSufamiTurboBios() const
 {
 	if(sufamiBiosPath.empty())
 		throw std::runtime_error{"No Sufami Turbo BIOS set"};
-	logMsg("loading Sufami Turbo BIOS:%s", sufamiBiosPath.data());
+	log.info("loading Sufami Turbo BIOS:{}", sufamiBiosPath);
 	if(EmuApp::hasArchiveExtension(appCtx.fileUriDisplayName(sufamiBiosPath)))
 	{
 		for(auto &entry : FS::ArchiveIterator{appCtx.openFileUri(sufamiBiosPath)})
@@ -285,7 +282,7 @@ void Snes9xSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDele
 	#ifndef SNES9X_VERSION_1_4
 	if(isSufamiTurboCart(buff)) // TODO: loading dual carts
 	{
-		logMsg("detected Sufami Turbo cart");
+		log.info("detected Sufami Turbo cart");
 		Memory.ROMFilename = contentFileName();
 		auto biosBuff = readSufamiTurboBios();
 		if(!Memory.LoadMultiCartMem((const uint8*)buff.data(), buff.size(),
@@ -317,14 +314,14 @@ void Snes9xSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 		return;
 	Settings.SoundPlaybackRate = outputRate;
 	Settings.SoundInputRate = inputRate;
-	logMsg("set sound input rate:%.2f output rate:%d", inputRate, outputRate);
+	log.info("set sound input rate:{} output rate:{}", inputRate, outputRate);
 	S9xUpdateDynamicRate(0, 10);
 	#else
 	int mixRate = std::round(audioMixRate(outputRate, outputFrameRate));
 	if(mixRate == Settings.SoundPlaybackRate)
 		return;
 	Settings.SoundPlaybackRate = mixRate;
-	logMsg("set sound mix rate:%d", mixRate);
+	log.info("set sound mix rate:{}", mixRate);
 	S9xSetPlaybackRate(Settings.SoundPlaybackRate);
 	#endif
 }
@@ -333,7 +330,7 @@ static void mixSamples(int samples, EmuAudio *audio)
 {
 	if(!samples) [[unlikely]]
 		return;
-	assumeExpr(samples % 2 == 0);
+	assume(samples % 2 == 0);
 	int16_t audioBuff[1800];
 	S9xMixSamples((uint8*)audioBuff, samples);
 	if(audio)
@@ -408,7 +405,6 @@ bool8 S9xDeinitUpdate (int width, int height)
 {
 	using namespace EmuEx;
 	auto &sys = gSnes9xSystem();
-	assumeExpr(emuVideo);
 	if((height == SNES_HEIGHT_EXTENDED || height == SNES_HEIGHT_EXTENDED_480i)
 		&& !sys.optionAllowExtendedVideoLines)
 	{

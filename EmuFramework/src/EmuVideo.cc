@@ -15,11 +15,12 @@
 
 #include <emuframework/EmuVideo.hh>
 #include <emuframework/EmuApp.hh>
-#include <imagine/util/macros.h>
-import imagine.gfx;
+import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"EmuVideo"};
 
@@ -110,7 +111,7 @@ void EmuVideo::startFrameWithAltFormat(EmuSystemTaskContext taskCtx, IG::PixmapV
 {
 	auto destFmt = renderPixelFormat();
 	auto srcFmt = pix.format();
-	assumeExpr(isValidRenderFormat(srcFmt));
+	assume(isValidRenderFormat(srcFmt));
 	if(srcFmt == destFmt)
 	{
 		startFrameWithFormat(taskCtx, pix);
@@ -118,8 +119,8 @@ void EmuVideo::startFrameWithAltFormat(EmuSystemTaskContext taskCtx, IG::PixmapV
 	else // down-convert to RGB565
 	{
 		auto img = startFrameWithFormat(taskCtx, {pix.size(), IG::PixelFmtRGB565});
-		assumeExpr(img.pixmap().format() == IG::PixelFmtRGB565);
-		assumeExpr(img.pixmap().size() == pix.size());
+		assume(img.pixmap().format() == IG::PixelFmtRGB565);
+		assume(img.pixmap().size() == pix.size());
 		img.pixmap().writeConverted(pix);
 		img.endFrame();
 	}
@@ -222,7 +223,7 @@ EmuVideoImage::operator bool() const
 
 void EmuVideoImage::endFrame()
 {
-	assumeExpr(texBuff);
+	assume(texBuff);
 	emuVideo->finishFrame(taskCtx, texBuff);
 }
 
@@ -268,11 +269,11 @@ bool EmuVideo::setRenderPixelFormat(EmuSystem &sys, IG::PixelFormat fmt, Gfx::Co
 		renderFmt = {}; // reset image
 		if(colorSpace == Gfx::ColorSpace::SRGB)
 		{
-			assert(renderer().supportedColorSpace(fmt, colorSpace) == colorSpace);
+			assume(renderer().supportedColorSpace(fmt, colorSpace) == colorSpace);
 		}
 	}
-	assert(fmt);
-	assert(bufferMode != Gfx::TextureBufferMode::DEFAULT);
+	assume(fmt);
+	assume(bufferMode != Gfx::TextureBufferMode::DEFAULT);
 	if(fmt == IG::PixelFmtRGBA8888 && renderer().hasBgraFormat(bufferMode))
 		fmt = IG::PixelFmtBGRA8888;
 	if(renderFmt == fmt)
@@ -290,7 +291,7 @@ bool EmuVideo::setRenderPixelFormat(EmuSystem &sys, IG::PixelFormat fmt, Gfx::Co
 
 IG::PixelFormat EmuVideo::renderPixelFormat() const
 {
-	assumeExpr(isValidRenderFormat(renderFmt));
+	assume(isValidRenderFormat(renderFmt));
 	return renderFmt;
 }
 

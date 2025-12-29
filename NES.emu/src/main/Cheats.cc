@@ -13,17 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with NES.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gui/TextEntry.hh>
-#include <imagine/util/string.h>
-#include <imagine/util/format.hh>
-#include <imagine/logger/logger.h>
-#include <emuframework/Cheats.hh>
-#include <emuframework/EmuApp.hh>
-#include <emuframework/viewUtils.hh>
 #include "EmuCheatViews.hh"
 #include "MainSystem.hh"
 #include <fceu/driver.h>
 #include <fceu/cheat.h>
+import emuex;
+import imagine;
 
 void EncodeGG(char *str, int a, int v, int c);
 void RebuildSubCheats();
@@ -114,7 +109,7 @@ bool NesSystem::addCheatCode(EmuApp& app, Cheat*& cheatPtr, CheatCodeDesc desc)
 
 bool NesSystem::modifyCheatCode(EmuApp& app, Cheat&, CheatCode& c, CheatCodeDesc desc)
 {
-	assert(desc.flags);
+	assume(desc.flags);
 	if(!isValidGGCodeLen(desc.str))
 	{
 		app.postMessage(true, "Invalid, must be 6 or 8 digits");

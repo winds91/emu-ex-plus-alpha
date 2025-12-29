@@ -15,9 +15,9 @@
 
 #include <mednafen/types.h>
 #include <mednafen/MThreading.h>
-#include <imagine/util/macros.h>
 #include <sched.h>
 import imagine;
+import std;
 
 namespace Mednafen::MThreading
 {
@@ -64,7 +64,6 @@ void Mutex_Destroy(Mutex* mutex) noexcept
 bool Mutex_Lock(Mutex* mutex) noexcept
 {
 	//logMsg("lock %p", mutex);
-	assumeExpr(mutex);
 	mutex->lock();
 	return true;
 }
@@ -72,7 +71,6 @@ bool Mutex_Lock(Mutex* mutex) noexcept
 bool Mutex_Unlock(Mutex* mutex) noexcept
 {
 	//logMsg("unlock %p", mutex);
-	assumeExpr(mutex);
 	mutex->unlock();
 	return true;
 }
@@ -89,7 +87,6 @@ void Cond_Destroy(Cond* cond) noexcept
 
 bool Cond_Signal(Cond* cond) noexcept
 {
-	assumeExpr(cond);
 	cond->notify_one();
 	return true;
 }
@@ -97,8 +94,6 @@ bool Cond_Signal(Cond* cond) noexcept
 bool Cond_Wait(Cond* cond, Mutex* mutex) noexcept
 {
 	//logMsg("waiting %p on mutex %p", cond, mutex);
-	assumeExpr(cond);
-	assumeExpr(mutex);
 	std::unique_lock<std::mutex> lock{*mutex, std::adopt_lock};
 	cond->wait(lock);
 	lock.release();
@@ -118,14 +113,12 @@ void Sem_Destroy(Sem* sem) noexcept
 
 bool Sem_Wait(Sem* sem) noexcept
 {
-	assumeExpr(sem);
 	sem->acquire();
 	return true;
 }
 
 bool Sem_TimedWait(Sem* sem, unsigned ms) noexcept
 {
-	assumeExpr(sem);
 	bool acquired = sem->try_acquire_for(std::chrono::milliseconds{ms});
 	if(!acquired)
 	{
@@ -136,7 +129,6 @@ bool Sem_TimedWait(Sem* sem, unsigned ms) noexcept
 
 bool Sem_Post(Sem* sem) noexcept
 {
-	assumeExpr(sem);
 	sem->release();
 	return true;
 }

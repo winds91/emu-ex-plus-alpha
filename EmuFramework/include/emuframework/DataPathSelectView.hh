@@ -19,10 +19,12 @@
 #include <emuframework/EmuApp.hh>
 #include <emuframework/EmuAppHelper.hh>
 #include <emuframework/FilePicker.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/TableView.hh>
 #include <imagine/gui/MenuItem.hh>
 #include <imagine/util/container/ArrayList.hh>
 #include <imagine/util/concepts.hh>
+#endif
 
 namespace EmuEx
 {
@@ -61,7 +63,7 @@ public:
 				auto &thisView = asThis(view);
 				fPicker->setPath(thisView.searchDir, e);
 				fPicker->setOnSelectPath(
-					[=](FSPicker &picker, CStringView path, [[maybe_unused]] std::string_view displayName, const Input::Event&)
+					[=](FSPicker &picker, CStringView path, [[maybe_unused]] std::string_view, const Input::Event&)
 					{
 						if(!onFileChange(path, FS::file_type::directory))
 							return;

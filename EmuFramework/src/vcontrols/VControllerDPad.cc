@@ -14,11 +14,13 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/VController.hh>
-#include <emuframework/EmuSystem.hh>
-import imagine.gui;
+#include <emuframework/EmuInput.hh>
+import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"VControllerGamepad"};
 

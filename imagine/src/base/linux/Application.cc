@@ -13,8 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/config/defs.hh>
-import imagine;
+#include <imagine/config/macros.h>
+#include <imagine/base/Application.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
@@ -51,9 +52,15 @@ bool LinuxApplication::registerInstance(ApplicationInitParams, char const*) { re
 void LinuxApplication::setAcceptIPC(bool, char const*) {}
 #endif
 
+void abort(const char* msg)
+{
+	std::fprintf(stderr, "%s\n", msg);
+	std::abort();
 }
 
-int main(int argc, char** argv)
+}
+
+extern "C" int main(int argc, char** argv)
 {
 	using namespace IG;
 	Log::setLogDirectoryPrefix(".");

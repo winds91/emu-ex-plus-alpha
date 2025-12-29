@@ -16,16 +16,18 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/config/defs.hh>
-#include <imagine/util/utility.h>
 #include <imagine/util/string/StaticString.hh>
 #include <imagine/util/string/CStringView.hh>
 #include <imagine/util/string/uri.hh>
+#include <unistd.h>
+#include <limits.h>
+#ifndef IG_USE_MODULE_STD
 #include <chrono>
 #include <array>
 #include <algorithm>
 #include <string_view>
-#include <unistd.h>
-#include <limits.h>
+#include <utility>
+#endif
 
 namespace IG::FS
 {
@@ -36,28 +38,16 @@ class AssetDirectoryIterator;
 using file_time_type = std::chrono::system_clock::time_point;
 
 inline constexpr size_t FILE_STRING_SIZE = std::max(512, NAME_MAX + 1);
-using FileStringImpl = StaticString<FILE_STRING_SIZE - 1>;
-class FileString : public FileStringImpl
-{
-public:
-	using FileStringImpl::FileStringImpl;
-	using FileStringImpl::operator=;
-};
+using FileString = StaticString<FILE_STRING_SIZE - 1>;
 
 inline constexpr size_t PATH_STRING_SIZE = std::max(1024, PATH_MAX);
-using PathStringImpl = StaticString<PATH_STRING_SIZE - 1>;
-class PathString : public PathStringImpl
-{
-public:
-	using PathStringImpl::PathStringImpl;
-	using PathStringImpl::operator=;
-};
+using PathString = StaticString<PATH_STRING_SIZE - 1>;
 
 using FileStringArray = std::array<char, FILE_STRING_SIZE>;
 using PathStringArray = std::array<char, PATH_STRING_SIZE>;
 
 template <class T>
-concept ConvertibleToPathString = std::convertible_to<T, PathStringImpl> || std::convertible_to<T, std::string_view>;
+concept ConvertibleToPathString = std::convertible_to<T, PathString> || std::convertible_to<T, std::string_view>;
 
 struct RootPathInfo
 {

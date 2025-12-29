@@ -13,11 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/config/macros.h>
 #include <emuframework/EmuApp.hh>
 #include <emuframework/Option.hh>
-#include <emuframework/EmuOptions.hh>
-#include "configFile.hh"
-#include <imagine/config/defs.hh>
+import configFile;
 import imagine;
 
 namespace EmuEx

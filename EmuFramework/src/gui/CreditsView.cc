@@ -15,10 +15,6 @@
 
 #include <emuframework/CreditsView.hh>
 #include <emuframework/EmuApp.hh>
-#include <imagine/base/Window.hh>
-#include <imagine/gfx/RendererCommands.hh>
-#include <imagine/util/math.hh>
-#include <imagine/util/variant.hh>
 
 namespace EmuEx
 {

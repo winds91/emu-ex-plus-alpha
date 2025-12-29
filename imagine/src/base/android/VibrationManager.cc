@@ -13,13 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/VibrationManager.hh>
+#include <imagine/base/ApplicationContext.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/native_activity.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"VibrationMgr"};
+static SystemLogger log{"VibrationMgr"};
 
 AndroidVibrationManager::AndroidVibrationManager(ApplicationContext ctx)
 {

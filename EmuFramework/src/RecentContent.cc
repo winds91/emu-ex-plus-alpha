@@ -22,6 +22,8 @@ import imagine;
 namespace EmuEx
 {
 
+using namespace IG;
+
 constexpr SystemLogger log{"RecentContent"};
 
 void RecentContent::add(std::string_view fullPath, std::string_view name)

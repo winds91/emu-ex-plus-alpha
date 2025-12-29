@@ -13,17 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
+#include <imagine/logger/SystemLogger.hh>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
-import imagine;
+import std;
 
 namespace IG
 {
-constexpr SystemLogger log{"fdUtils"};
+static SystemLogger log{"fdUtils"};
 }
 
 CLINK ssize_t fd_writeAll(int filedes, const void *buffer, size_t size)
@@ -95,7 +95,6 @@ CLINK int fd_bytesReadable(int fd)
 		IG::log.error("failed ioctl FIONREAD");
 		return 0;
 	}
-	assert(bytes >= 0);
 	return bytes;
 }
 

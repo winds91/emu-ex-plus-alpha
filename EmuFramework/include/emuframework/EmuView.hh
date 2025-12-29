@@ -17,10 +17,12 @@
 
 #include <emuframework/config.hh>
 #include <emuframework/EmuTiming.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/View.hh>
 #include <imagine/time/Time.hh>
 #include <imagine/gfx/GfxText.hh>
 #include <imagine/gfx/Quads.hh>
+#endif
 
 namespace EmuEx
 {

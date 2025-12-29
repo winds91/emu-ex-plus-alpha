@@ -13,21 +13,11 @@
 	You should have received a copy of the GNU General Public License
 	along with Saturn.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuViewController.hh>
-#include <emuframework/SystemOptionView.hh>
-#include <emuframework/AudioOptionView.hh>
-#include <emuframework/VideoOptionView.hh>
-#include <emuframework/FilePathOptionView.hh>
-#include <emuframework/DataPathSelectView.hh>
-#include <emuframework/SystemActionsView.hh>
-#include <emuframework/EmuInput.hh>
 #include <mednafen-emuex/MDFNUtils.hh>
 #include "MainApp.hh"
-#include <imagine/fs/FS.hh>
-#include <imagine/gui/AlertView.hh>
-#include <imagine/util/format.hh>
 #include <ss/cart.h>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {

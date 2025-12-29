@@ -15,11 +15,15 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/input/inputDefs.hh>
 #include <imagine/util/container/array.hh>
 #include <imagine/util/concepts.hh>
+#endif
+#ifndef IG_USE_MODULE_STD
 #include <array>
 #include <cstdint>
+#endif
 
 namespace EmuEx
 {
@@ -41,7 +45,7 @@ struct KeyFlags
 using KeyCode = uint8_t;
 using KeyCodeArray = ZArray<KeyCode, 3>;
 
-constexpr KeyCode comboKeyCode = 255;
+inline constexpr KeyCode comboKeyCode = 255;
 
 struct KeyInfo
 {

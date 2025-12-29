@@ -13,13 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/macros.h>
-import imagine.gfx;
+#include <imagine/gfx/GlyphTextureSet.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/data-type/image/PixmapSource.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG::Gfx
 {
 
-	constexpr SystemLogger log{"GlyphTextureSet"};
+static SystemLogger log{"GlyphTextureSet"};
 
 // definitions for the Unicode Basic Multilingual Plane (BMP)
 static constexpr int unicodeBmpChars = 0xFFFE;
@@ -136,7 +138,7 @@ bool GlyphTextureSet::setFontSettings(Renderer &r, Data::FontSettings set)
 
 bool GlyphTextureSet::cacheChar(Renderer &r, int c, int tableIdx)
 {
-	assert(settings);
+	assume(settings);
 	auto &[glyph, metrics] = glyphTable[tableIdx];
 	if(metrics.size.y == -1)
 	{
@@ -184,7 +186,7 @@ static int mapCharToTable(int c)
 // TODO: update for unicode
 int GlyphTextureSet::precache(Renderer &r, std::string_view string)
 {
-	assert(settings);
+	assume(settings);
 	int glyphsCached = 0;
 	for(auto c : string)
 	{
@@ -208,11 +210,11 @@ int GlyphTextureSet::precache(Renderer &r, std::string_view string)
 
 const GlyphEntry *GlyphTextureSet::glyphEntry(Renderer &r, int c, bool allowCache)
 {
-	assert(settings);
+	assume(settings);
 	int tableIdx = mapCharToTable(c);
 	if(tableIdx == -1)
 		return nullptr;
-	assert(tableIdx < glyphTableEntries);
+	assume(tableIdx < glyphTableEntries);
 	auto &entry = glyphTable[tableIdx];
 	if(!entry.glyph)
 	{

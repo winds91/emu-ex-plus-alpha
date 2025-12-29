@@ -15,13 +15,12 @@
 
 #include <emuframework/BundledGamesView.hh>
 #include <emuframework/EmuApp.hh>
-#include <imagine/logger/logger.h>
-#include <imagine/io/IO.hh>
-#include <imagine/fs/ArchiveFS.hh>
-#include <imagine/base/ApplicationContext.hh>
+import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"BundledGamesView"};
 

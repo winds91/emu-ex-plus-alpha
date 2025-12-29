@@ -13,13 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/Timer.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/utility.hh>
 #include <CoreFoundation/CoreFoundation.h>
-import imagine;
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Timer"};
+static SystemLogger log{"Timer"};
 
 CFTimer::CFTimer(TimerDesc desc, CallbackDelegate del):
 	debugLabel_{desc.debugLabel.size() ? desc.debugLabel : "unnamed"},

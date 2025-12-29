@@ -13,14 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/base/baseDefs.hh>
-#include <imagine/util/macros.h>
-import imagine;
+#include <imagine/base/Window.hh>
+#include <imagine/base/Screen.hh>
+#include <imagine/base/Application.hh>
+#include <imagine/util/enum.hh>
+#include <imagine/util/utility.hh>
+#include <imagine/logger/SystemLogger.hh>
 
 namespace IG
 {
 
-constexpr SystemLogger log{"Window"};
+static SystemLogger log{"Window"};
 
 BaseWindow::BaseWindow(ApplicationContext ctx, WindowConfig config):
 	onEvent{config.onEvent},
@@ -381,7 +384,7 @@ bool Window::updatePhysicalSize(IG::Point2D<float> surfaceSizeMM, IG::Point2D<fl
 	mmToPixelScaler = pixelSizeFloat / winSizeMM;
 	if constexpr(Config::envIsAndroid)
 	{
-		assert(surfaceSizeSMM.x && surfaceSizeSMM.y);
+		assume(surfaceSizeSMM.x && surfaceSizeSMM.y);
 		if(isSideways(softOrientation_))
 			std::swap(surfaceSizeSMM.x, surfaceSizeSMM.y);
 		auto oldSizeSMM = std::exchange(winSizeSMM, surfaceSizeSMM);
@@ -434,7 +437,7 @@ bool Window::updatePhysicalSizeWithCurrentSize()
 {
 	if(softOrientation_ != o)
 	{
-		log.info("setting orientation:{}", wise_enum::to_string(o));
+		log.info("setting orientation:{}", enumName(o));
 		int savedRealWidth = realWidth();
 		int savedRealHeight = realHeight();
 		softOrientation_ = o;

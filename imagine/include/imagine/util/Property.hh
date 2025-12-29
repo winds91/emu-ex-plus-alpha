@@ -16,9 +16,11 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/util/used.hh>
-#include <imagine/util/utility.h>
+#include <imagine/util/utility.hh>
+#ifndef IG_USE_MODULE_STD
 #include <type_traits>
 #include <concepts>
+#endif
 
 namespace IG
 {
@@ -58,7 +60,7 @@ public:
 
 	constexpr void setUnchecked(auto &&v)
 	{
-		assert(isValid(v));
+		assume(isValid(v));
 		value_ = IG_forward(v);
 	}
 
@@ -105,7 +107,5 @@ private:
 
 template<bool condition, class T, auto uid, PropertyDesc<T> desc = PropertyDesc<T>{}>
 using ConditionalPropertyImpl = std::conditional_t<condition, Property<T, uid, desc>, ConstantType<T, desc.defaultValue, uid>>;
-
-#define ConditionalProperty [[no_unique_address]] ConditionalPropertyImpl
 
 }

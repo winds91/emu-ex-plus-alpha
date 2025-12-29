@@ -13,7 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-import imagine.data;
+#include <imagine/font/Font.hh>
+#include <imagine/data-type/image/PixmapSource.hh>
 
 namespace IG::Data
 {

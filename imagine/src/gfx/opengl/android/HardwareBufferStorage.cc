@@ -13,14 +13,16 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/gfx/opengl/android/egl.hh>
+#include <imagine/config/macros.h>
+#include <imagine/gfx/opengl/android/HardwareBufferStorage.hh>
+#include <imagine/gfx/Renderer.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <android/hardware_buffer.h>
-import imagine.gfx;
 
 namespace IG::Gfx
 {
 
-constexpr SystemLogger log{"HardwareBuffStorage"};
+static SystemLogger log{"HardwareBuffStorage"};
 constexpr uint32_t allocateUsage = AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN | AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
 constexpr uint32_t lockUsage = AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN;
 

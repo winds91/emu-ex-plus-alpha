@@ -1,19 +1,14 @@
-#include <emuframework/EmuApp.hh>
-#include <emuframework/EmuInputView.hh>
-#include <emuframework/EmuInput.hh>
-#include <emuframework/keyRemappingUtils.hh>
-#include <imagine/input/DragTracker.hh>
-#include <imagine/util/math.hh>
-#include <imagine/base/Window.hh>
 #include "MainSystem.hh"
 #include "MainApp.hh"
 #include <memmap.h>
 #include <display.h>
-#include <imagine/logger/logger.h>
+import emuex;
+import imagine;
 
 namespace EmuEx
 {
 
+static SystemLogger log{"Snes9x"};
 const int EmuSystem::maxPlayers = 5;
 
 enum class SnesKey : KeyCode
@@ -234,7 +229,7 @@ static uint16 *S9xGetJoypadBits(unsigned idx)
 void Snes9xSystem::handleInputAction(EmuApp *, InputAction a)
 {
 	auto player = a.flags.deviceId;
-	assert(player < maxPlayers);
+	assume(player < maxPlayers);
 	auto &padData = *S9xGetJoypadBits(player);
 	padData = setOrClearBits(padData, bit(a.code), a.isPushed());
 }
@@ -324,26 +319,26 @@ void Snes9xSystem::setupSNESInput(VController &vCtrl)
 			}
 		}
 		if(inputSetup != SNES_JOYPAD)
-			logMsg("using automatic input %d", inputSetup);
+			log.info("using automatic input:{}", inputSetup);
 	}
 
 	if(inputSetup == SNES_MOUSE_SWAPPED)
 	{
 		S9xSetController(0, CTL_MOUSE, 0, 0, 0, 0);
 		S9xSetController(1, CTL_JOYPAD, 1, 0, 0, 0);
-		logMsg("setting mouse input");
+		log.info("setting mouse input");
 	}
 	else if(inputSetup == SNES_SUPERSCOPE)
 	{
 		S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
 		S9xSetController(1, CTL_SUPERSCOPE, 0, 0, 0, 0);
-		logMsg("setting superscope input");
+		log.info("setting superscope input");
 	}
 	else if(inputSetup == SNES_JUSTIFIER)
 	{
 		S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
 		S9xSetController(1, CTL_JUSTIFIER, 0, 0, 0, 0);
-		logMsg("setting justifier input");
+		log.info("setting justifier input");
 	}
 	else // Joypad
 	{
@@ -351,7 +346,7 @@ void Snes9xSystem::setupSNESInput(VController &vCtrl)
 		{
 			S9xSetController(0, CTL_JOYPAD, 0, 0, 0, 0);
 			S9xSetController(1, CTL_MP5, 1, 2, 3, 4);
-			logMsg("setting 5-player joypad input");
+			log.info("setting 5-player joypad input");
 		}
 		else
 		{
@@ -368,7 +363,7 @@ void Snes9xSystem::setupSNESInput(VController &vCtrl)
 	Settings.Justifier = Settings.SecondJustifier = 0;
 	if(snesInputPort == SNES_JOYPAD && optionMultitap)
 	{
-		logMsg("connected multitap");
+		log.info("connected multitap");
 		Settings.MultiPlayer5Master = Settings.MultiPlayer5 = 1;
 		Settings.ControllerOption = IPPU.Controller = SNES_MULTIPLAYER5;
 	}
@@ -376,25 +371,25 @@ void Snes9xSystem::setupSNESInput(VController &vCtrl)
 	{
 		if(snesInputPort == SNES_MOUSE_SWAPPED)
 		{
-			logMsg("connected mouse");
+			log.info("connected mouse");
 			Settings.MouseMaster = Settings.Mouse = 1;
 			Settings.ControllerOption = IPPU.Controller = SNES_MOUSE_SWAPPED;
 		}
 		else if(snesInputPort == SNES_SUPERSCOPE)
 		{
-			logMsg("connected superscope");
+			log.info("connected superscope");
 			Settings.SuperScopeMaster = Settings.SuperScope = 1;
 			Settings.ControllerOption = IPPU.Controller = SNES_SUPERSCOPE;
 		}
 		else if(snesInputPort == SNES_JUSTIFIER)
 		{
-			logMsg("connected justifier");
+			log.info("connected justifier");
 			Settings.Justifier = 1;
 			Settings.ControllerOption = IPPU.Controller = SNES_JUSTIFIER;
 		}
 		else
 		{
-			logMsg("connected joypads");
+			log.info("connected joypads");
 			IPPU.Controller = SNES_JOYPAD;
 		}
 	}
@@ -505,17 +500,17 @@ bool Snes9xSystem::onPointerInputUpdate(const Input::MotionEvent &e, Input::Drag
 					{
 						// in right-click time window
 						snesPointerBtns = 2;
-						logMsg("started drag with right-button");
+						log.info("started drag with right-button");
 					}
 					else
 					{
 						snesPointerBtns = 1;
-						logMsg("started drag with left-button");
+						log.info("started drag with left-button");
 					}
 				}
 				else
 				{
-					logMsg("started drag");
+					log.info("started drag");
 				}
 			}
 			else
@@ -563,20 +558,20 @@ bool Snes9xSystem::onPointerInputEnd(const Input::MotionEvent &e, Input::DragTra
 			mousePointerId = Input::NULL_POINTER_ID;
 			if(dragState.isDragging())
 			{
-				logMsg("stopped drag");
+				log.info("stopped drag");
 				snesPointerBtns = 0;
 			}
 			else
 			{
 				if(!rightClickFrames)
 				{
-					logMsg("right clicking mouse");
+					log.info("right clicking mouse");
 					snesPointerBtns = 2;
 					doubleClickFrames = 15; // allow extra time for a right-click & drag
 				}
 				else
 				{
-					logMsg("left clicking mouse");
+					log.info("left clicking mouse");
 					snesPointerBtns = 1;
 				}
 				snesMouseClick = 3;
@@ -644,7 +639,7 @@ CLINK bool8 S9xReadSuperScopePosition(int &x, int &y, uint32 &buttons)
 
 CLINK uint32 S9xReadJoypad(int which)
 {
-	assert(which < 5);
+	assume(which < 5);
 	//logMsg("reading joypad %d", which);
 	return 0x80000000 | gSnes9xSystem().joypadData[which];
 }

@@ -9,6 +9,7 @@ project(
 printConfigInfo()
 configureAppTarget(s9x)
 addPkgConfigDepMultiConfig(s9x emuframework)
+addCxxModules(s9x emuex imagine)
 evalPkgConfigFlags(s9x all)
 target_include_directories(s9x PRIVATE src/snes9x-1.43)
 target_compile_definitions(s9x PRIVATE

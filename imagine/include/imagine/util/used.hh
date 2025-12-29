@@ -15,8 +15,10 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#ifndef IG_USE_MODULE_STD
 #include <concepts>
 #include <cstddef>
+#endif
 
 namespace IG
 {
@@ -77,7 +79,7 @@ struct UnusedType
 	constexpr auto operator *(const auto& rhs) const { return T{} * T{rhs}; }
 	constexpr auto operator /(const auto& rhs) const { return T{} / T{rhs}; }
 	constexpr auto operator %(const auto& rhs) const { return T{} % T{rhs}; }
-	constexpr auto& operator[](this auto&& self, [[maybe_unused]] const auto& idx) { return self; }
+	constexpr auto& operator[](this auto&& self, [[maybe_unused]] const auto&) { return self; }
 	constexpr auto operator<=>(const T& o) const { return T{} <=> o; };
 };
 
@@ -121,7 +123,7 @@ constexpr bool used(Unused auto&) { return false; }
 
 // invoke func if v's type doesn't satisfy the Unused concept
 template<class R = int>
-constexpr auto doIfUsed(auto& v, auto&& func, [[maybe_unused]] R&& defaultReturn = R())
+constexpr auto doIfUsed(auto& v, auto&& func, [[maybe_unused]] R&& = R())
 {
 	return func(v);
 }

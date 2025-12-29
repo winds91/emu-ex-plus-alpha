@@ -13,13 +13,8 @@
 	You should have received a copy of the GNU General Public License
 	along with PCE.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#define LOGTAG "main"
 #include <emuframework/EmuSystemInlines.hh>
 #include <emuframework/EmuAppInlines.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/util/ScopeGuard.hh>
-#include <imagine/util/format.hh>
-#include <imagine/util/string.h>
 #include <mednafen/cdrom/CDInterface.h>
 #include <mednafen/state-driver.h>
 #include <mednafen/hash/md5.h>
@@ -29,11 +24,12 @@
 #include <pce_fast/vdc.h>
 #include <mednafen-emuex/MDFNUtils.hh>
 #include <mednafen-emuex/ArchiveVFS.hh>
-#include <imagine/logger/logger.h>
+import imagine;
 
 namespace EmuEx
 {
 
+static SystemLogger log{"PCE.emu"};
 const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nMednafen Team\nmednafen.github.io";
 bool EmuSystem::hasRectangularPixels = true;
 bool EmuSystem::stateSizeChangesAtRuntime = true;
@@ -74,7 +70,7 @@ EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter = hasPCEWithCDExtension;
 
 void PceSystem::loadBackupMemory(EmuApp &)
 {
-	logMsg("loading backup memory");
+	log.info("loading backup memory");
 	if(isUsingAccurateCore())
 		MDFN_IEN_PCE::HuC_LoadNV();
 	else
@@ -85,7 +81,7 @@ void PceSystem::onFlushBackupMemory(EmuApp &, BackupMemoryDirtyFlags)
 {
 	if(!hasContent())
 		return;
-	logMsg("saving backup memory");
+	log.info("saving backup memory");
 	if(isUsingAccurateCore())
 		MDFN_IEN_PCE::HuC_SaveNV();
 	else
@@ -113,7 +109,7 @@ WSize PceSystem::multiresVideoBaseSize() const { return {512, 0}; }
 void PceSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDelegate)
 {
 	mdfnGameInfo = resolvedCore() == EmuCore::Accurate ? EmulatedPCE : EmulatedPCE_Fast;
-	logMsg("using emulator core module:%s", asModuleString(resolvedCore()).data());
+	log.info("using emulator core module:{}", asModuleString(resolvedCore()));
 	if(hasCDExtension(contentFileName()))
 	{
 		bool isArchive = std::holds_alternative<ArchiveIO>(io);
@@ -186,7 +182,7 @@ void PceSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 	auto currMixRate = isUsingAccurateCore() ? MDFN_IEN_PCE::GetSoundRate() : MDFN_IEN_PCE_FAST::GetSoundRate();
 	if(mixRate == currMixRate)
 		return;
-	logMsg("set sound mix rate:%.2f for %s video lines", mixRate, isUsing263Lines() ? "263" : "262");
+	log.info("set sound mix rate:{} for {} video lines", mixRate, isUsing263Lines() ? "263" : "262");
 	if(isUsingAccurateCore())
 		MDFN_IEN_PCE::SetSoundRate(mixRate);
 	else
@@ -206,7 +202,7 @@ void PceSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio
 
 void PceSystem::reset(EmuApp &, ResetMode mode)
 {
-	assert(hasContent());
+	assume(hasContent());
 	mdfnGameInfo.DoSimpleCommand(MDFN_MSC_RESET);
 }
 
@@ -218,7 +214,7 @@ double PceSystem::videoAspectRatioScale() const
 {
 	double baseLines = 224.;
 	double lineCount = (visibleLines.last - visibleLines.first) + 1;
-	assumeExpr(lineCount >= 0);
+	assume(lineCount >= 0);
 	double lineAspectScaler = baseLines / lineCount;
 	return correctLineAspect ? lineAspectScaler : 1.;
 }
@@ -264,7 +260,7 @@ static void renderMultiresOutput(EmulateSpecStruct spec, IG::PixmapView srcPix, 
 			switch(width)
 			{
 				default:
-					bug_unreachable("width == %d", width);
+					IG::unreachable();
 				case 256:
 				{
 					for([[maybe_unused]] auto w : IG::iotaCount(256))
@@ -312,7 +308,7 @@ static void renderMultiresOutput(EmulateSpecStruct spec, IG::PixmapView srcPix, 
 			switch(width)
 			{
 				default:
-					bug_unreachable("width == %d", width);
+					IG::unreachable();
 				case 256:
 				{
 					for([[maybe_unused]] auto w : IG::iotaCount(256))
@@ -346,7 +342,7 @@ void MDFND_commitVideoFrame(EmulateSpecStruct *espec)
 	for(int i = spec.DisplayRect.y; i < spec.DisplayRect.y + pixHeight; i++)
 	{
 		int w = spec.LineWidths[i];
-		assumeExpr(w == 256 || w == 341 || w == 512);
+		IG::assume(w == 256 || w == 341 || w == 512);
 		switch(w)
 		{
 			case 256: uses256 = true; break;

@@ -13,9 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/bluetooth/BluetoothAdapter.hh>
 #include <imagine/util/fd-utils.h>
-#include "utils.hh"
+#include <imagine/util/jni.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <android/looper.h>
+#include <errno.h>
 import imagine.internal.android;
+#include "utils.hh"
 
 namespace IG
 {
@@ -36,7 +41,7 @@ struct asocket
 	int abort_fd[2];  /* pipe used to abort */
 };
 
-constexpr SystemLogger log{"Bluetooth"};
+static SystemLogger log{"Bluetooth"};
 static JNI::InstMethod<jint(jobject)> jStartScan;
 static JNI::InstMethod<jint(jbyteArray, jint, jint)> jInRead;
 static JNI::InstMethod<jint()> jGetFd;
@@ -67,7 +72,7 @@ static void JNICALL btScanStatus(JNIEnv*, jobject, jlong btaAddr, jint res)
 void AndroidBluetoothAdapter::handleScanStatus(BluetoothScanState)
 {
 	auto &bta = static_cast<BluetoothAdapter&>(*this);
-	assert(inDetect);
+	assume(inDetect);
 	log.info("scan complete");
 	if(scanCancelled)
 		bta.onScanStatus(bta, BluetoothScanState::Cancelled, 0);
@@ -165,17 +170,14 @@ bool BluetoothAdapter::openDefault()
 		jTurnOn = {env, baseActivityCls, "btTurnOn", "()V"};
 
 		jclass jBluetoothSocketCls = env->FindClass("android/bluetooth/BluetoothSocket");
-		assert(jBluetoothSocketCls);
 		jBtSocketClose = {env, jBluetoothSocketCls, "close", "()V"};
 		jBtSocketInputStream = {env, jBluetoothSocketCls, "getInputStream", "()Ljava/io/InputStream;"};
 		jBtSocketOutputStream = {env, jBluetoothSocketCls, "getOutputStream", "()Ljava/io/OutputStream;"};
 
 		jclass jInputStreamCls = env->FindClass("java/io/InputStream");
-		assert(jInputStreamCls);
 		jInRead = {env, jInputStreamCls, "read", "([BII)I"};
 
 		jclass jOutputStreamCls = env->FindClass("java/io/OutputStream");
-		assert(jOutputStreamCls);
 		jOutWrite = {env, jOutputStreamCls, "write", "([BII)V"};
 
 		if(ctx.androidSDK() < 17)
@@ -195,7 +197,7 @@ bool BluetoothAdapter::openDefault()
 			if(fdDataId)
 			{
 				auto parcelFileDescriptorCls = env->FindClass("android/os/ParcelFileDescriptor");
-				assert(parcelFileDescriptorCls);
+				assume(parcelFileDescriptorCls);
 				jGetFd = {env, parcelFileDescriptorCls, "getFd", "()I"};
 			}
 			else
@@ -224,10 +226,10 @@ bool BluetoothAdapter::openDefault()
 		return false;
 	}
 	adapter = env->NewGlobalRef(adapter);
-	assert(adapter);
+	assume(adapter);
 	{
 		[[maybe_unused]] int ret = pipe(statusPipe);
-		assert(ret == 0);
+		assume(ret == 0);
 		ret = ALooper_addFd(EventLoop::forThread().nativeObject(), statusPipe[0], ALOOPER_POLL_CALLBACK, ALOOPER_EVENT_INPUT,
 			[](int fd, int events, void* data)
 			{
@@ -247,7 +249,7 @@ bool BluetoothAdapter::openDefault()
 				}
 				return 1;
 			}, this);
-		assert(ret == 1);
+		assume(ret == 1);
 	}
 	return true;
 }
@@ -428,7 +430,7 @@ void AndroidBluetoothSocket::onStatusDelegateMessage(BluetoothAdapter& bta, Blue
 					int dataPipe[2];
 					{
 						[[maybe_unused]] int ret = pipe(dataPipe);
-						assert(ret == 0);
+						assume(ret == 0);
 						ret = ALooper_addFd(looper, dataPipe[0], ALOOPER_POLL_CALLBACK, ALOOPER_EVENT_INPUT,
 							[](int fd, int events, void* data)
 							{
@@ -455,7 +457,7 @@ void AndroidBluetoothSocket::onStatusDelegateMessage(BluetoothAdapter& bta, Blue
 								}
 								return 1;
 							}, this);
-						assert(ret == 1);
+						assume(ret == 1);
 					}
 
 					jbyteArray jData = env->NewByteArray(48);
@@ -484,13 +486,13 @@ void AndroidBluetoothSocket::onStatusDelegateMessage(BluetoothAdapter& bta, Blue
 						}
 						if(::write(dataPipe[1], &len, sizeof(len)) != sizeof(len))
 						{
-							log.error("unable to write message header to pipe:{}", strerror(errno));
+							log.error("unable to write message header to pipe:{}", std::strerror(errno));
 						}
 						if(usingArrayCopy)
 							data = env->GetByteArrayElements(jData, nullptr);
 						if(::write(dataPipe[1], data, len) != len)
 						{
-							log.error("unable to write bt data to pipe:{}", strerror(errno));
+							log.error("unable to write bt data to pipe:{}", std::strerror(errno));
 						}
 						if(usingArrayCopy)
 							env->ReleaseByteArrayElements(jData, data, JNI_ABORT);
@@ -577,7 +579,7 @@ void AndroidBluetoothSocket::openSocket(BluetoothAdapter &adapter, BluetoothAddr
 				else
 				{
 					outStream = jBtSocketOutputStream(env, socket);
-					assert(outStream);
+					assume(outStream);
 					log.info("opened output stream {}", (void*)outStream);
 					outStream = env->NewGlobalRef(outStream);
 				}

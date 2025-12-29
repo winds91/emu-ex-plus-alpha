@@ -13,20 +13,23 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/Application.hh>
+#include <imagine/fs/FS.hh>
+#include <imagine/util/format.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/fd-utils.h>
 #include <linux/input.h>
 #include <sys/inotify.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-import imagine;
 
 #define DEV_NODE_PATH "/dev/input"
 
 namespace IG::Input
 {
 
-constexpr SystemLogger log{"Evdev"};
+static SystemLogger log{"Evdev"};
 
 static Key toSysKey(Key key)
 {
@@ -196,7 +199,7 @@ bool EvdevInputDevice::setupJoystickBits()
 void EvdevInputDevice::addPollEvent(Device &dev, LinuxApplication &app)
 {
 	auto &evDev = getAs<EvdevInputDevice>(dev);
-	assert(evDev.fd() >= 0);
+	assume(evDev.fd() >= 0);
 	evDev.fdSrc.setCallback([&dev, &app](int fd, int pollEvents)
 	{
 		if(pollEvents & pollEventError) [[unlikely]]
@@ -315,7 +318,7 @@ static bool processDevNodeName(CStringView name, uint32_t &id)
 namespace IG
 {
 
-constexpr SystemLogger log{"Evdev"};
+static SystemLogger log{"Evdev"};
 
 void LinuxApplication::initEvdev(EventLoop loop)
 {

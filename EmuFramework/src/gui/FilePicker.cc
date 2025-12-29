@@ -14,13 +14,8 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <emuframework/FilePicker.hh>
-#include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuApp.hh>
-#include <imagine/base/ApplicationContext.hh>
-#include <imagine/gui/FSPicker.hh>
-#include <imagine/fs/FS.hh>
-#include <imagine/io/IO.hh>
-import std;
+import imagine;
 
 namespace EmuEx
 {

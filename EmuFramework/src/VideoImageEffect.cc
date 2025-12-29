@@ -15,10 +15,12 @@
 
 #include <emuframework/VideoImageEffect.hh>
 #include <emuframework/EmuApp.hh>
-import imagine.gfx;
+import imagine;
 
 namespace EmuEx
 {
+
+using namespace IG;
 
 constexpr SystemLogger log{"VideoImageEffect"};
 
@@ -86,7 +88,7 @@ static Gfx::Shader makeEffectFragmentShader(Gfx::Renderer &r, std::string_view s
 
 static PixelFormat effectFormat(IG::PixelFormat format, Gfx::ColorSpace colSpace)
 {
-	assert(format);
+	assume(format);
 	if(colSpace == Gfx::ColorSpace::SRGB)
 	{
 		return IG::PixelFmtRGBA8888;

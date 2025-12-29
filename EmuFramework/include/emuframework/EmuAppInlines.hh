@@ -18,11 +18,13 @@
 #include <meta.h>
 #include <imagine/config/version.h>
 #include <main/MainApp.hh>
+#ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/NavView.hh>
 #include <imagine/input/android/MogaManager.hh>
+#endif
 
-const char *const IG::ApplicationContext::applicationName{CONFIG_APP_NAME};
-const char *const IG::ApplicationContext::applicationId{CONFIG_APP_ID};
+const char *const IG::ApplicationMeta::name{CONFIG_APP_NAME};
+const char *const IG::ApplicationMeta::id{CONFIG_APP_ID};
 
 namespace EmuEx
 {
@@ -100,10 +102,10 @@ std::string_view EmuApp::systemKeyCodeToString(KeyCode c)
 namespace IG
 {
 
-void ApplicationContext::onInit(ApplicationInitParams initParams)
+void ApplicationMeta::onInit(ApplicationInitParams initParams, ApplicationContext& ctx)
 {
-	auto &app = initApplication<EmuEx::MainApp>(initParams, *this);
-	app.mainInitCommon(initParams, *this);
+	auto &app = ctx.initApplication<EmuEx::MainApp>(initParams);
+	app.mainInitCommon(initParams, ctx);
 }
 
 }

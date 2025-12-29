@@ -15,12 +15,8 @@
 
 #include <mednafen/mednafen.h>
 #include <mednafen/VirtualFS.h>
+import emuex;
 import imagine;
-
-namespace EmuEx
-{
-IG::ApplicationContext gAppContext();
-}
 
 namespace Mednafen
 {
@@ -31,7 +27,7 @@ NativeVFS NVFS{};
 
 FILE* NativeVFS::openAsStdio(const std::string& path, const uint32 mode)
 {
-	assert(mode == MODE_READ);
+	IG::assume(mode == MODE_READ);
 	return EmuEx::gAppContext().openFileUri(path, modeToAttribs(mode).first).toFileStream("rb");
 }
 

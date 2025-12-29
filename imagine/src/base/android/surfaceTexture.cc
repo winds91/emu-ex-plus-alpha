@@ -14,7 +14,8 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 module;
-#include <imagine/util/macros.h>
+
+#include <imagine/util/utility.hh>
 #include <jni.h>
 
 module imagine.internal.android:surface;
@@ -23,7 +24,7 @@ import imagine;
 namespace IG
 {
 
-constexpr SystemLogger log{"SurfaceTexture"};
+static SystemLogger log{"SurfaceTexture"};
 static jclass jSurfaceCls{}, jSurfaceTextureCls{};
 static JNI::InstMethod<void(jobject)> jSurface{};
 static JNI::InstMethod<void()> jSurfaceRelease{};
@@ -35,7 +36,7 @@ static JNI::InstMethod<void()> jSurfaceTextureRelease{};
 
 static void initSurfaceTextureJNI(ApplicationContext ctx, JNIEnv *env)
 {
-	assert(ctx.androidSDK() >= 14);
+	assume(ctx.androidSDK() >= 14);
 	if(jSurfaceTextureCls) [[likely]]
 		return;
 	jSurfaceTextureCls = (jclass)env->NewGlobalRef(env->FindClass("android/graphics/SurfaceTexture"));
@@ -83,7 +84,6 @@ jobject makeSurfaceTexture(ApplicationContext ctx, JNIEnv *env, jint texName, jb
 
 bool releaseSurfaceTextureImage(JNIEnv *env, jobject surfaceTexture)
 {
-	assumeExpr(jReleaseTexImage);
 	jReleaseTexImage(env, surfaceTexture);
 	if(env->ExceptionCheck()) [[unlikely]]
 	{
