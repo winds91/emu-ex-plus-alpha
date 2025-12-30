@@ -15,6 +15,10 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
+#include <imagine/base/sharedLibrary.hh>
+#include <span>
+#include <string_view>
+
 extern "C"
 {
 	#include "keyboard.h"
@@ -23,10 +27,6 @@ extern "C"
 	#include "sound.h"
 	#include "video.h"
 }
-
-#include <imagine/base/sharedLibrary.hh>
-#include <span>
-#include <string_view>
 
 struct keyboard_conv_t;
 
@@ -74,6 +74,7 @@ struct VicePlugin
 	int (*cart_getid_slotmain_)(){};
 	const char *(*cartridge_get_file_name_)(int type){};
 	int (*cartridge_attach_image_)(int type, const char *filename){};
+	int (*cartridge_attach_add_image_)(int type, const char *filename){};
 	void (*cartridge_detach_image_)(int type){};
 	int (*tape_image_attach_)(unsigned int unit, const char *name){};
 	int (*tape_image_detach_)(unsigned int unit){};
@@ -125,6 +126,7 @@ struct VicePlugin
 	int cart_getid_slotmain();
 	const char *cartridge_get_file_name(int type);
 	int cartridge_attach_image(int type, const char *filename);
+	int cartridge_attach_add_image(int type, const char *filename);
 	void cartridge_detach_image(int type);
 	int tape_image_attach(unsigned int unit, const char *name);
 	int tape_image_detach(unsigned int unit);

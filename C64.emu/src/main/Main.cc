@@ -422,7 +422,7 @@ void C64System::tryLoadingSplitVic20Cart()
 	if(extraCartPath.size())
 	{
 		log.info("loading extra cart image:{}", extraCartPath);
-		if(plugin.cartridge_attach_image(CARTRIDGE_VIC20_DETECT, extraCartPath.data()) != 0)
+		if(plugin.cartridge_attach_add_image(CARTRIDGE_VIC20_DETECT, extraCartPath.data()) != 0)
 		{
 			EmuSystem::throwFileReadError();
 		}

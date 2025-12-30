@@ -150,15 +150,15 @@ int C64System::reSidSampling() const
 void C64System::setVirtualDeviceTraps(bool on)
 {
 	assume(inCPUTrap);
-	setIntResource("VirtualDevice8", on);
-	setIntResource("VirtualDevice9", on);
-	setIntResource("VirtualDevice10", on);
-	setIntResource("VirtualDevice11", on);
+	setIntResource("TrapDevice8", on);
+	setIntResource("TrapDevice9", on);
+	setIntResource("TrapDevice10", on);
+	setIntResource("TrapDevice11", on);
 }
 
 bool C64System::virtualDeviceTraps() const
 {
-	return intResource("VirtualDevice8");
+	return intResource("TrapDevice8");
 }
 
 void C64System::setDriveTrueEmulation(bool on)

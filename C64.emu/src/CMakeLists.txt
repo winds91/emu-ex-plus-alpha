@@ -141,7 +141,9 @@ addObjectLib(libc64cart "vice/c64/cart"
 	magicdesk.c
 	magicformel.c
 	magicvoice.c
+	magicdesk16.c
 	maxbasic.c
+	megabyter.c
 	mikroass.c
 	mmcreplay.c
 	mmc64.c
@@ -150,6 +152,7 @@ addObjectLib(libc64cart "vice/c64/cart"
 	prophet64.c
 	pagefox.c
 	partner64.c
+	profidos.c
 	ramcart.c
 	ramlink.c
 	retroreplay.c
@@ -587,7 +590,6 @@ addViceSharedLib(c64dtv
 	$<TARGET_OBJECTS:librtcBase>
 	$<TARGET_OBJECTS:librs232drvBase>
 	${pluginObjs}
-	vice/ps2mouse.c
 )
 
 addViceSharedLib(c128

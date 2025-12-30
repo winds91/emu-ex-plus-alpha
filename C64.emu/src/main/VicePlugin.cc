@@ -480,6 +480,13 @@ int VicePlugin::cartridge_attach_image(int type, const char *filename)
 	return -1;
 }
 
+int VicePlugin::cartridge_attach_add_image(int type, const char *filename)
+{
+	if(cartridge_attach_add_image_)
+		return cartridge_attach_add_image_(type, filename);
+	return -1;
+}
+
 void VicePlugin::cartridge_detach_image(int type)
 {
 	if(cartridge_detach_image_)
@@ -668,6 +675,7 @@ VicePlugin commonVicePlugin(void *lib, ViceSystem system)
 			};
 		loadSymbolCheck(plugin.cartridge_get_file_name_, lib, "cartridge_get_file_name");
 		loadSymbolCheck(plugin.cartridge_attach_image_, lib, "cartridge_attach_image");
+		loadSymbolCheck(plugin.cartridge_attach_add_image_, lib, "cartridge_attach_add_image");
 		loadSymbolCheck(plugin.cartridge_detach_image_, lib, "cartridge_detach_image");
 	}
 	else

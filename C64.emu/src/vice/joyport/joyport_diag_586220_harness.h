@@ -1,10 +1,8 @@
 /*
- * ps2mouse.h - PS/2 mouse on userport emulation
+ * joyport_diag_586220_harness.h
  *
  * Written by
- *  Hannu Nuotio <hannu.nuotio@tut.fi>
- * Based on code by
- *  Andreas Boose <viceteam@t-online.de>
+ *  groepaz <groepaz@gmx.net>
  *
  * This file is part of VICE, the Versatile Commodore Emulator.
  * See README for copyright notice.
@@ -26,26 +24,11 @@
  *
  */
 
-#ifndef VICE_PS2MOUSE_H
-#define VICE_PS2MOUSE_H
+#ifndef VICE_JOYPORT_DIAG_586220_HARNESS_H
+#define VICE_JOYPORT_DIAG_586220_HARNESS_H
 
 #include "types.h"
 
-void ps2mouse_reset(void);
-
-uint8_t ps2mouse_read(void);
-void ps2mouse_store(uint8_t value);
-
-int ps2mouse_resources_init(void);
-int ps2mouse_cmdline_options_init(void);
-
-extern int ps2mouse_enabled;
-
-int mouse_ps2_resources_init(void);
-int mouse_ps2_cmdline_options_init(void);
-void mouse_ps2_init(void);
-void mouse_ps2_shutdown(void);
-
-extern int _mouse_enabled;
+int joyport_diag_586220_harness_resources_init(void);
 
 #endif
