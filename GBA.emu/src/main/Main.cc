@@ -32,6 +32,8 @@ bool patchApplyIPS(FILE* f, uint8_t** rom, int *size);
 bool patchApplyUPS(FILE* f, uint8_t** rom, int *size);
 bool patchApplyPPF(FILE* f, uint8_t** rom, int *size);
 
+GBASys gGba;
+
 namespace EmuEx
 {
 
@@ -41,6 +43,10 @@ bool EmuSystem::hasBundledGames = true;
 bool EmuSystem::hasCheats = true;
 bool EmuApp::needsGlobalInstance = true;
 constexpr WSize lcdSize{240, 160};
+
+constexpr size_t stateSizeVer10 = 734424;
+constexpr std::array validStateSizes{stateSizeVer10, stateSizeVer11};
+static_assert(SAVE_GAME_VERSION == 11, "Update valid state sizes for new state version");
 
 EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter =
 	[](std::string_view name)
@@ -87,9 +93,11 @@ void GbaSystem::readState(EmuApp &app, std::span<uint8_t> buff)
 	DynArray<uint8_t> uncompArr;
 	if(hasGzipHeader(buff))
 	{
-		uncompArr = uncompressGzipState(buff, saveStateSize);
+		uncompArr = uncompressGzipState(buff);
 		buff = uncompArr;
 	}
+	if(!std::ranges::contains(validStateSizes, buff.size()))
+		throw std::runtime_error("Invalid state size");
 	if(!CPUReadState(gGba, buff.data()))
 		throw std::runtime_error("Invalid state data");
 }
@@ -103,7 +111,6 @@ size_t GbaSystem::writeState(std::span<uint8_t> buff, SaveStateFlags flags)
 	}
 	else
 	{
-		assume(saveStateSize);
 		auto stateArr = DynArray<uint8_t>(saveStateSize);
 		CPUWriteState(gGba, stateArr.data());
 		return compressGzip(buff, stateArr, Z_DEFAULT_COMPRESSION);
@@ -211,7 +218,6 @@ void GbaSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDelegat
 	}
 	CPUInit(gGba, biosRom);
 	CPUReset(gGba);
-	saveStateSize = CPUWriteState(gGba, DynArray<uint8_t>{maxStateSize}.data());
 	readCheatFile();
 }
 
@@ -231,15 +237,15 @@ bool GbaSystem::onVideoRenderFormatChange(EmuVideo &video, IG::PixelFormat fmt)
 	log.info("updating system color maps");
 	video.setFormat({lcdSize, fmt});
 	if(fmt == PixelFmtRGB565)
-		updateColorMap(systemColorMap.map16, PixelDescRGB565);
+		updateColorMap(gGba.lcd.systemColorMap.map16, PixelDescRGB565);
 	else
-		updateColorMap(systemColorMap.map32, fmt.desc().nativeOrder());
+		updateColorMap(gGba.lcd.systemColorMap.map32, fmt.desc().nativeOrder());
 	return true;
 }
 
 void GbaSystem::renderFramebuffer(EmuVideo &video)
 {
-	systemDrawScreen({}, video);
+	systemDrawScreen(gGba.lcd, {}, video);
 }
 
 void GbaSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio *audio)
@@ -278,20 +284,20 @@ void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
 
 }
 
-void systemDrawScreen(EmuEx::EmuSystemTaskContext taskCtx, EmuEx::EmuVideo &video)
+void systemDrawScreen(const GBALCD& lcd, EmuEx::EmuSystemTaskContext taskCtx, EmuEx::EmuVideo &video)
 {
 	using namespace EmuEx;
 	auto img = video.startFrame(taskCtx);
-	IG::PixmapView framePix{{lcdSize, IG::PixelFmtRGB565}, gGba.lcd.pix};
+	IG::PixmapView framePix{{lcdSize, IG::PixelFmtRGB565}, lcd.pix};
 	assume(img.pixmap().size() == framePix.size());
 	if(img.pixmap().format() == IG::PixelFmtRGB565)
 	{
-		img.pixmap().writeTransformed([](uint16_t p){ return systemColorMap.map16[p]; }, framePix);
+		img.pixmap().writeTransformed([&](uint16_t p){ return lcd.systemColorMap.map16[p]; }, framePix);
 	}
 	else
 	{
 		assume(img.pixmap().format().bytesPerPixel() == 4);
-		img.pixmap().writeTransformed([](uint16_t p){ return systemColorMap.map32[p]; }, framePix);
+		img.pixmap().writeTransformed([&](uint16_t p){ return lcd.systemColorMap.map32[p]; }, framePix);
 	}
 	img.endFrame();
 }

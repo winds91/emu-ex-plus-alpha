@@ -48,15 +48,9 @@ int  oldreg[18];
 char oldbuffer[10];
 #endif
 
-// this is an optional hack to change the backdrop/background color:
-// -1: disabled
-// 0x0000 to 0x7FFF: set custom 15 bit color
-//int customBackdropColor = -1;
-
 extern int romSize;
 extern int pristineRomSize;
 int systemSaveUpdateCounter = SYSTEM_SAVE_NOT_UPDATED;
-SystemColorMap systemColorMap;
 int emulating{};
 CoreOptions coreOptions
 {
@@ -192,7 +186,7 @@ void setSaveType(int type, int size)
 	{
 		case GBA_SAVE_EEPROM:
 		case GBA_SAVE_EEPROM_SENSOR:
-			eepromSize = size == SIZE_EEPROM_8K ? SIZE_EEPROM_8K : SIZE_EEPROM_512;
+			eepromSetSize(size == SIZE_EEPROM_8K ? SIZE_EEPROM_8K : SIZE_EEPROM_512);
 			break;
 		case GBA_SAVE_SRAM:
 			g_flashSize = SIZE_SRAM;
@@ -465,7 +459,7 @@ void cheatsReadGame(const uint8_t*& data)
 {
   utilReadIntMem(data);
   CheatsData cheat{};
-	for([[maybe_unused]] auto i: IG::iotaCount(100))
+	for(auto _: IG::iotaCount(100))
 	{
 		utilReadMem(&cheat, data, sizeof(cheat));
 	}

@@ -334,6 +334,7 @@ static auto flashSaveData2(uint8_t *flashSaveMemory, int &flashSize)
   }};
 };
 
+#if 0
 void flashSaveGame(gzFile gzFile)
 {
     uint8_t flashSaveMemoryTemp[SIZE_FLASH1M]{};
@@ -373,3 +374,4 @@ void flashReadGameSkip(gzFile gzFile, int version)
         utilReadDataSkip(gzFile, flashSaveData3(flashSaveMemoryTemp, flashSizeTemp).data());
     }
 }
+#endif

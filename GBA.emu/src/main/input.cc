@@ -236,6 +236,7 @@ void GbaSystem::handleInputAction(EmuApp *app, InputAction a)
 			break;
 		}
 		default:
+			auto& P1 = gGba.mem.ioMem.P1;
 			P1 = setOrClearBits(P1, bit(a.code - 1), !a.isPushed());
 			break;
 	}
@@ -243,7 +244,7 @@ void GbaSystem::handleInputAction(EmuApp *app, InputAction a)
 
 void GbaSystem::clearInputBuffers(EmuInputView &)
 {
-	P1 = 0x03FF;
+	gGba.mem.ioMem.P1 = 0x03FF;
 	clearSensorValues();
 }
 

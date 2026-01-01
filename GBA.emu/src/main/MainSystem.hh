@@ -22,11 +22,6 @@
 #include <core/gba/gba.h>
 #include <core/gba/gbaCheats.h>
 
-namespace IG
-{
-class ApplicationContext;
-}
-
 struct GBASys;
 
 namespace EmuEx
@@ -65,11 +60,13 @@ enum class GbaSensorType: uint8_t
 	Auto, None, Accelerometer, Gyroscope, Light
 };
 
-constexpr float lightSensorScaleLuxDefault = 10000.f;
-constexpr uint8_t darknessLevelDefault = 0xee;
+inline constexpr float lightSensorScaleLuxDefault = 10000.f;
+inline constexpr uint8_t darknessLevelDefault = 0xee;
 
 class Cheat: public CheatsData {};
 class CheatCode: public CheatsData {};
+
+inline constexpr size_t stateSizeVer11 = 734456;
 
 class GbaSystem final: public EmuSystem
 {
@@ -83,8 +80,7 @@ public:
 	Property<uint32_t, CFGKEY_SAVE_TYPE_OVERRIDE,
 		PropertyDesc<uint32_t>{.defaultValue = GBA_SAVE_AUTO, .isValid = optionSaveTypeOverrideIsValid}> optionSaveTypeOverride;
 	FileIO saveFileIO;
-	static constexpr size_t maxStateSize{0x1FFFFF};
-	size_t saveStateSize{};
+	static constexpr size_t saveStateSize{stateSizeVer11};
 	int detectedSaveSize{};
 	int sensorX{}, sensorY{}, sensorZ{};
 	float lightSensorScaleLux{lightSensorScaleLuxDefault};
