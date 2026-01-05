@@ -58,7 +58,7 @@ jobs:
         echo "IMAGINE_PATH=${{ github.workspace }}/imagine" >> "$GITHUB_ENV_FILE"
         echo "IMAGINE_SDK_PATH=${{ github.workspace }}/imagine-sdk" >> "$GITHUB_ENV_FILE"
         echo "COMMIT_PREFIX=$(echo ${{ github.sha }} | cut -c1-8)" >> "$GITHUB_ENV_FILE"
-        echo "RELEASE_KEYSTORE_PATH=${{ github.workspace }}/release.keystore" >> "$GITHUB_ENV_FILE"
+        echo "KEYSTORE_PATH=${{ github.workspace }}/release.keystore" >> "$GITHUB_ENV_FILE"
         echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> "$GITHUB_ENV_FILE"
         echo "KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }}" >> "$GITHUB_ENV_FILE"
         echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> "$GITHUB_ENV_FILE"
