@@ -13,6 +13,38 @@ include $(buildSysPath)/android-metadata.mk
 # Code signing parameters used when generating APKs from the app bundle
 android_gradlePropertiesPath = $(HOME)/.gradle/gradle.properties
 -include $(android_gradlePropertiesPath)
+ifndef ANDROID_KEY_STORE
+    ifeq ($(KEYSTORE_PATH),)
+        ANDROID_KEY_STORE := ~/.android/debug.keystore
+    else
+        ANDROID_KEY_STORE := $(KEYSTORE_PATH)
+    endif
+endif
+
+ifndef ANDROID_KEY_STORE_PASSWORD
+    ifeq ($(KEYSTORE_PASSWORD),)
+        ANDROID_KEY_STORE_PASSWORD := android
+    else
+        ANDROID_KEY_STORE_PASSWORD := $(KEYSTORE_PASSWORD)
+    endif
+endif
+
+ifndef ANDROID_KEY_ALIAS
+    ifeq ($(KEYSTORE_ALIAS),)
+        ANDROID_KEY_ALIAS := androiddebugkey
+    else
+        ANDROID_KEY_ALIAS := $(KEYSTORE_ALIAS)
+    endif
+endif
+
+ifndef ANDROID_KEY_PASSWORD
+    ifeq ($(KEY_PASSWORD),)
+        ANDROID_KEY_PASSWORD := android
+    else
+        ANDROID_KEY_PASSWORD := $(KEY_PASSWORD)
+    endif
+endif
+
 ifdef ANDROID_KEY_STORE
  keySignParams := --ks-key-alias=$(ANDROID_KEY_ALIAS) --key-pass=pass:$(ANDROID_KEY_PASSWORD) --ks=$(ANDROID_KEY_STORE) --ks-pass=pass:$(ANDROID_KEY_STORE_PASSWORD)
 endif
@@ -455,7 +487,7 @@ android-install-only : $(android_projectDeps)
 	cd $(android_targetPath) && ./gradlew -Dimagine.path=$(IMAGINE_PATH) $(android_installTask)
 
 .PHONY: android-ready
-android-ready : 
+android-ready :
 	cp $(android_apkPath) $(IMAGINE_PATH)/../releases-bin/$(android_releaseReadySubdir)/$(android_metadata_project)-$(android_minSDK)-$(android_metadata_version).apk
 
 .PHONY: android-check
