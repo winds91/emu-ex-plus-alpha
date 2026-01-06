@@ -19,7 +19,7 @@ ifndef ANDROID_KEY_STORE
         @echo "DEBUG: KEYSTORE_PATH is empty, using default debug keystore"
         ANDROID_KEY_STORE := ~/.android/debug.keystore
     else
-        @echo "DEBUG: KEYSTORE_PATH found, using custom keystore: $(KEYSTORE_PATH)"
+        @echo "DEBUG: KEYSTORE_PATH found, using custom keystore $(KEYSTORE_PATH)"
         ANDROID_KEY_STORE := $(KEYSTORE_PATH)
     endif
 endif
@@ -27,7 +27,7 @@ endif
 ifndef ANDROID_KEY_STORE_PASSWORD
     @echo "DEBUG: ANDROID_KEY_STORE_PASSWORD not set, checking KEYSTORE_PASSWORD..."
     ifeq ($(KEYSTORE_PASSWORD),)
-        @echo "DEBUG: KEYSTORE_PASSWORD is empty, using default password: android"
+        @echo "DEBUG: KEYSTORE_PASSWORD is empty, using default password android"
         ANDROID_KEY_STORE_PASSWORD := android
     else
         @echo "DEBUG: KEYSTORE_PASSWORD found, using custom password"
@@ -38,10 +38,10 @@ endif
 ifndef ANDROID_KEY_ALIAS
     @echo "DEBUG: ANDROID_KEY_ALIAS not set, checking KEYSTORE_ALIAS..."
     ifeq ($(KEYSTORE_ALIAS),)
-        @echo "DEBUG: KEYSTORE_ALIAS is empty, using default alias: androiddebugkey"
+        @echo "DEBUG: KEYSTORE_ALIAS is empty, using default alias androiddebugkey"
         ANDROID_KEY_ALIAS := androiddebugkey
     else
-        @echo "DEBUG: KEYSTORE_ALIAS found, using custom alias: $(KEYSTORE_ALIAS)"
+        @echo "DEBUG: KEYSTORE_ALIAS found, using custom alias $(KEYSTORE_ALIAS)"
         ANDROID_KEY_ALIAS := $(KEYSTORE_ALIAS)
     endif
 endif
@@ -49,7 +49,7 @@ endif
 ifndef ANDROID_KEY_PASSWORD
     @echo "DEBUG: ANDROID_KEY_PASSWORD not set, checking KEY_PASSWORD..."
     ifeq ($(KEY_PASSWORD),)
-        @echo "DEBUG: KEY_PASSWORD is empty, using default key password: android"
+        @echo "DEBUG: KEY_PASSWORD is empty, using default key password android"
         ANDROID_KEY_PASSWORD := android
     else
         @echo "DEBUG: KEY_PASSWORD found, using custom key password"
