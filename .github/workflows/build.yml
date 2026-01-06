@@ -63,6 +63,12 @@ jobs:
         echo "KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }}" >> "$GITHUB_ENV_FILE"
         echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> "$GITHUB_ENV_FILE"
         cat "$GITHUB_ENV_FILE" >> $GITHUB_ENV
+    - name: Debug environment variables
+      run: |
+        echo "KEYSTORE_PATH: $KEYSTORE_PATH"
+        echo "KEYSTORE_PASSWORD: $KEYSTORE_PASSWORD"
+        echo "KEYSTORE_ALIAS: $KEYSTORE_ALIAS"
+        echo "KEY_PASSWORD: $KEY_PASSWORD"
     - name: Run script
       working-directory: imagine/bundle/all
       run: |
