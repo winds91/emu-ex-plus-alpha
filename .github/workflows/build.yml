@@ -58,10 +58,6 @@ jobs:
         echo "IMAGINE_PATH=${{ github.workspace }}/imagine" >> "$GITHUB_ENV_FILE"
         echo "IMAGINE_SDK_PATH=${{ github.workspace }}/imagine-sdk" >> "$GITHUB_ENV_FILE"
         echo "COMMIT_PREFIX=$(echo ${{ github.sha }} | cut -c1-8)" >> "$GITHUB_ENV_FILE"
-        echo "KEYSTORE_PATH=${{ github.workspace }}/release.keystore" >> "$GITHUB_ENV_FILE"
-        echo "KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> "$GITHUB_ENV_FILE"
-        echo "KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }}" >> "$GITHUB_ENV_FILE"
-        echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> "$GITHUB_ENV_FILE"
         cat "$GITHUB_ENV_FILE" >> $GITHUB_ENV
     - name: Configure Gradle user properties for signing
       run: |
@@ -121,14 +117,24 @@ jobs:
       run: |
         GITHUB_ENV_FILE=env.github
         cat "$GITHUB_ENV_FILE" >> $GITHUB_ENV
+    - name: Decode release keystore (build_images)
+      env:
+        RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+      run: |
+        if [ -z "$RELEASE_KEYSTORE" ]
+        then
+          echo 'No release keystore value'
+        else
+          echo "$RELEASE_KEYSTORE" | base64 --decode > release.keystore
+        fi
     - name: Configure Gradle user properties for signing (build_images)
       run: |
         mkdir -p ~/.gradle
         cat > ~/.gradle/gradle.properties <<EOF
-        ANDROID_KEY_STORE=$KEYSTORE_PATH
-        ANDROID_KEY_STORE_PASSWORD=$KEYSTORE_PASSWORD
-        ANDROID_KEY_ALIAS=$KEYSTORE_ALIAS
-        ANDROID_KEY_PASSWORD=$KEY_PASSWORD
+        ANDROID_KEY_STORE=${{ github.workspace }}/release.keystore
+        ANDROID_KEY_STORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}
+        ANDROID_KEY_ALIAS=${{ secrets.KEYSTORE_ALIAS }}
+        ANDROID_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
         EOF
     - name: Create EX-Emulators directory
       run: mkdir EX-Emulators
