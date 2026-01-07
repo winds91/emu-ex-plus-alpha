@@ -13,54 +13,8 @@ include $(buildSysPath)/android-metadata.mk
 # Code signing parameters used when generating APKs from the app bundle
 android_gradlePropertiesPath = $(HOME)/.gradle/gradle.properties
 -include $(android_gradlePropertiesPath)
-ifndef ANDROID_KEY_STORE
-    @echo "DEBUG: ANDROID_KEY_STORE not set, checking KEYSTORE_PATH..."
-    ifeq ($(KEYSTORE_PATH),)
-        @echo "DEBUG: KEYSTORE_PATH is empty, using default debug keystore"
-        ANDROID_KEY_STORE := ~/.android/debug.keystore
-    else
-        @echo "DEBUG: KEYSTORE_PATH found, using custom keystore $(KEYSTORE_PATH)"
-        ANDROID_KEY_STORE := $(KEYSTORE_PATH)
-    endif
-endif
-
-ifndef ANDROID_KEY_STORE_PASSWORD
-    @echo "DEBUG: ANDROID_KEY_STORE_PASSWORD not set, checking KEYSTORE_PASSWORD..."
-    ifeq ($(KEYSTORE_PASSWORD),)
-        @echo "DEBUG: KEYSTORE_PASSWORD is empty, using default password android"
-        ANDROID_KEY_STORE_PASSWORD := android
-    else
-        @echo "DEBUG: KEYSTORE_PASSWORD found, using custom password"
-        ANDROID_KEY_STORE_PASSWORD := $(KEYSTORE_PASSWORD)
-    endif
-endif
-
-ifndef ANDROID_KEY_ALIAS
-    @echo "DEBUG: ANDROID_KEY_ALIAS not set, checking KEYSTORE_ALIAS..."
-    ifeq ($(KEYSTORE_ALIAS),)
-        @echo "DEBUG: KEYSTORE_ALIAS is empty, using default alias androiddebugkey"
-        ANDROID_KEY_ALIAS := androiddebugkey
-    else
-        @echo "DEBUG: KEYSTORE_ALIAS found, using custom alias $(KEYSTORE_ALIAS)"
-        ANDROID_KEY_ALIAS := $(KEYSTORE_ALIAS)
-    endif
-endif
-
-ifndef ANDROID_KEY_PASSWORD
-    @echo "DEBUG: ANDROID_KEY_PASSWORD not set, checking KEY_PASSWORD..."
-    ifeq ($(KEY_PASSWORD),)
-        @echo "DEBUG: KEY_PASSWORD is empty, using default key password android"
-        ANDROID_KEY_PASSWORD := android
-    else
-        @echo "DEBUG: KEY_PASSWORD found, using custom key password"
-        ANDROID_KEY_PASSWORD := $(KEY_PASSWORD)
-    endif
-endif
-
 ifdef ANDROID_KEY_STORE
-    @echo "DEBUG: ANDROID_KEY_STORE is set, generating keySignParams..."
-    keySignParams := --ks-key-alias=$(ANDROID_KEY_ALIAS) --key-pass=pass:$(ANDROID_KEY_PASSWORD) --ks=$(ANDROID_KEY_STORE) --ks-pass=pass:$(ANDROID_KEY_STORE_PASSWORD)
-    @echo "DEBUG: keySignParams = $(keySignParams)"
+ keySignParams := --ks-key-alias=$(ANDROID_KEY_ALIAS) --key-pass=pass:$(ANDROID_KEY_PASSWORD) --ks=$(ANDROID_KEY_STORE) --ks-pass=pass:$(ANDROID_KEY_STORE_PASSWORD)
 endif
 
 ifdef android_deviceSerial
