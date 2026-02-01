@@ -2,8 +2,10 @@
 #include "shared.h"
 #include "mem.hh"
 import imagine;
+import system;
 
-namespace EmuEx { static IG::SystemLogger log{"MD.emu"}; }
+using namespace IG;
+using namespace EmuEx;
 
 uint8_t comFlagsSync[2] = { 0 };
 uint8_t comSync[0x20] = { 0 };
@@ -14,12 +16,12 @@ unsigned comPoll[0x20] = { 0 };
 
 static void syncSubCpu(int cycles, unsigned target)
 {
-	IG::assume(extraCpuSync);
+	assume(extraCpuSync);
 	doingSync = 1;
 	comWriteTarget = target;
-	EmuEx::log.info("syncing S cpu to cycle {} for target {:X} @ cycle {}, M @ {}", cycles, target, sCD.cpu.cycleCount, mm68k.cycleCount);
+	MdSystem::log.info("syncing S cpu to cycle {} for target {:X} @ cycle {}, M @ {}", cycles, target, sCD.cpu.cycleCount, mm68k.cycleCount);
 	scd_runSubCpu(std::min(cycles, mm68k.endCycles));
-	EmuEx::log.info("back from S CPU sync @ cycle {}", sCD.cpu.cycleCount);
+	MdSystem::log.info("back from S CPU sync @ cycle {}", sCD.cpu.cycleCount);
 	doingSync = 0;
 }
 
@@ -53,8 +55,8 @@ unsigned mainGateRead8(unsigned address)
 				}
 				return d;
 			}
-			case 6: EmuEx::log.info("read h-int 1"); break;
-			case 7: EmuEx::log.info("read h-int 2"); break;
+			case 6: MdSystem::log.info("read h-int 1"); break;
+			case 7: MdSystem::log.info("read h-int 2"); break;
 			case 0xe:
 				//logMsg("M read M-Com flags 0x%X", sCD.gate[0xe]);
 				return sCD.gate[0xe];
@@ -64,7 +66,7 @@ unsigned mainGateRead8(unsigned address)
 				{
 					if(comFlagsSync[1])
 					{
-						EmuEx::log.info("M read S-Com flags {:X}", sCD.gate[0xf]);
+						MdSystem::log.info("M read S-Com flags {:X}", sCD.gate[0xf]);
 						comFlagsPoll[1] = 0;
 					}
 					else if(comFlagsSync[0]) // M cpu has set M-Com flags
@@ -72,10 +74,10 @@ unsigned mainGateRead8(unsigned address)
 						comFlagsPoll[1]++;
 						if(comFlagsPoll[1] == 2)
 						{
-							EmuEx::log.info("M is polling S-Com flags");
+							MdSystem::log.info("M is polling S-Com flags");
 							syncSubCpu(mm68k.cycleCount, 1);
 							if(comFlagsSync[1])
-								EmuEx::log.info("M S-Com flags poll broken");
+								MdSystem::log.info("M S-Com flags poll broken");
 						}
 					}
 					comFlagsSync[1] = 0;
@@ -83,7 +85,7 @@ unsigned mainGateRead8(unsigned address)
 				return sCD.gate[0xf];
 			}
 			case 0x10 ... 0x1f: // comm command
-				//EmuEx::log.info("read comm cmd byte");
+				//MdSystem::log.info("read comm cmd byte");
 				return sCD.gate[subAddr];
 			case 0x20 ... 0x2F: // comm status
 			{
@@ -91,7 +93,7 @@ unsigned mainGateRead8(unsigned address)
 				{
 					if(comSync[subAddr-0x10])
 					{
-						EmuEx::log.info("M read8 Com status {:X} @ {:X}", sCD.gate[subAddr], subAddr);
+						MdSystem::log.info("M read8 Com status {:X} @ {:X}", sCD.gate[subAddr], subAddr);
 						comPoll[subAddr-0x10] = 0;
 					}
 					else
@@ -99,21 +101,21 @@ unsigned mainGateRead8(unsigned address)
 						comPoll[subAddr-0x10]++;
 						if(comPoll[subAddr-0x10] == 4)
 						{
-							EmuEx::log.info("M is polling Com status {:X}", subAddr);
+							MdSystem::log.info("M is polling Com status {:X}", subAddr);
 							syncSubCpu(mm68k.cycleCount, subAddr);
 							if(comSync[subAddr-0x10])
-								EmuEx::log.info("M Com status poll broken");
+								MdSystem::log.info("M Com status poll broken");
 						}
 						if(comSync[subAddr-0x10])
-							EmuEx::log.info("M read8 Com status after sync {:X} @ {:X}", sCD.gate[subAddr], subAddr);
+							MdSystem::log.info("M read8 Com status after sync {:X} @ {:X}", sCD.gate[subAddr], subAddr);
 					}
 					comSync[subAddr-0x10] = 0;
 				}
 				return sCD.gate[subAddr];
 			}
 			default:
-				EmuEx::log.error("bad GATE read8 {:X} ({:X})", address, m68k_get_reg (mm68k, M68K_REG_PC));
-				IG::unreachable();
+				MdSystem::log.error("bad GATE read8 {:X} ({:X})", address, m68k_get_reg (mm68k, M68K_REG_PC));
+				unreachable();
 		}
 		return 0;
 	}
@@ -125,7 +127,7 @@ unsigned mainGateRead16(unsigned address)
 {
 	if(((address >> 8) & 0xFF) == 0x20)
 	{
-		//EmuEx::log.info("GATE read16 {:X} ({:X})", address, m68k_get_reg (mm68k, M68K_REG_PC));
+		//MdSystem::log.info("GATE read16 {:X} ({:X})", address, m68k_get_reg (mm68k, M68K_REG_PC));
 		unsigned subAddr = address & 0x3f;
 		switch(subAddr)
 		{
@@ -140,23 +142,23 @@ unsigned mainGateRead16(unsigned address)
 				return d;
 			}
 			case 4:
-				EmuEx::log.error("gate reg 4");
-				IG::unreachable();
+				MdSystem::log.error("gate reg 4");
+				unreachable();
 				return sCD.gate[4]<<8;
 			case 6:
 				//logMsg("read h-int");
 				return *(uint16a *)(cart.rom + 0x72);
 			case 8:
-				EmuEx::log.error("gate reg 8");
-				IG::unreachable();
+				MdSystem::log.error("gate reg 8");
+				unreachable();
 				return Read_CDC_Host(0);
 			case 0xa:
-				EmuEx::log.info("m68k FIXME: reserved read");
+				MdSystem::log.info("m68k FIXME: reserved read");
 				return 0;
 			case 0xc:
 			{
 				unsigned d = sCD.stopwatchTimer >> 16;
-				EmuEx::log.info("M stopwatch timer read ({:X})", d);
+				MdSystem::log.info("M stopwatch timer read ({:X})", d);
 				return d;
 			}
 			case 0x10 ... 0x1e: // comm command
@@ -169,7 +171,7 @@ unsigned mainGateRead16(unsigned address)
 				{
 					if(comSync[subAddr-0x10] || comSync[subAddr-0xf])
 					{
-						EmuEx::log.info("M read16 Com status {:X} @ {:X}", sCD.gate[subAddr], subAddr);
+						MdSystem::log.info("M read16 Com status {:X} @ {:X}", sCD.gate[subAddr], subAddr);
 						comPoll[subAddr-0x10] = comPoll[subAddr-0xf] = 0;
 					}
 					else
@@ -177,10 +179,10 @@ unsigned mainGateRead16(unsigned address)
 						comPoll[subAddr-0x10]++;
 						if(comPoll[subAddr-0x10] == 4)
 						{
-							EmuEx::log.info("M is polling 16 Com status:{:X}", subAddr);
+							MdSystem::log.info("M is polling 16 Com status:{:X}", subAddr);
 							syncSubCpu(mm68k.cycleCount, subAddr);
 							if(comSync[subAddr-0x10])
-								EmuEx::log.info("M Com status poll broken");
+								MdSystem::log.info("M Com status poll broken");
 						}
 					}
 					comSync[subAddr-0x10] = comSync[subAddr-0xf] = 0;
@@ -189,8 +191,8 @@ unsigned mainGateRead16(unsigned address)
 				return data;
 			}
 			default:
-				EmuEx::log.error("bad GATE read16 {:X} ({:X})", address, m68k_get_reg (mm68k, M68K_REG_PC));
-				IG::unreachable();
+				MdSystem::log.error("bad GATE read16 {:X} ({:X})", address, m68k_get_reg (mm68k, M68K_REG_PC));
+				unreachable();
 		}
 		return 0;
 	}
@@ -208,13 +210,13 @@ static void writeMComFlags(unsigned data)
 			syncSubCpu(mm68k.cycleCount, 1);
 			if(comFlagsSync[0])
 			{
-				EmuEx::log.info("M write M-Com flags {:X}, S hasn't read", data);
+				MdSystem::log.info("M write M-Com flags {:X}, S hasn't read", data);
 			}
 			else
-				EmuEx::log.info("M write M-Com flags {:X}, S synced", data);
+				MdSystem::log.info("M write M-Com flags {:X}, S synced", data);
 		}
 		else
-			EmuEx::log.info("M write M-Com flags {:X}", data);
+			MdSystem::log.info("M write M-Com flags {:X}", data);
 		comFlagsSync[0] = 1;
 	}
 	sCD.gate[0xe] = data;
@@ -240,20 +242,20 @@ void mainGateWrite8(unsigned address, unsigned data)
 			case 1: //logMsg("write reset, 0x%X", data);
 				data &= 3;
 				if (!(data&1)) sCD.subResetPending = 1; // reset pending, needed to be sure we fetch the right vectors on reset
-				if ( (sCD.busreq&1) != (data&1)) EmuEx::log.info("sub 68k reset {}", !(data&1));
-				if ( (sCD.busreq&2) != (data&2)) EmuEx::log.info("sub 68k brq {}", (data&2)>>1);
+				if ( (sCD.busreq&1) != (data&1)) MdSystem::log.info("sub 68k reset {}", !(data&1));
+				if ( (sCD.busreq&2) != (data&2)) MdSystem::log.info("sub 68k brq {}", (data&2)>>1);
 				if (sCD.subResetPending && (data&3)==1)
 				{
 					scd_resetSubCpu(); // S68k comes out of RESET or BRQ state
 					sCD.subResetPending = 0;
-					EmuEx::log.info("resetting sub 68k");
+					MdSystem::log.info("resetting sub 68k");
 				}
 				sCD.busreq = data;
 				updateMainCpuPrgMap(sCD);
 				break;
 			case 2: //logMsg("write mem protect %d", data);
 				if(data != sCD.gate[0x2])
-					EmuEx::log.info("new mem protect {:X}", data);
+					MdSystem::log.info("new mem protect {:X}", data);
 				sCD.gate[0x2] = data;
 				break;
 			case 3: //logMsg("m write mem mode %d", data);
@@ -263,7 +265,7 @@ void mainGateWrite8(unsigned address, unsigned data)
 				unsigned newBank = (data>>6)&3, oldBank = (sCD.gate[0x3]>>6)&3;
 				if (oldBank != newBank)
 				{
-					EmuEx::log.info("prg bank: {} -> {}", oldBank, newBank);
+					MdSystem::log.info("prg bank: {} -> {}", oldBank, newBank);
 					updateMainCpuPrgMap(sCD, newBank);
 				}
 				if (dold & 4) // is 1M mode active
@@ -304,16 +306,16 @@ void mainGateWrite8(unsigned address, unsigned data)
 					if(comSync[subAddr-0x10])
 					{
 						syncSubCpu(mm68k.cycleCount, subAddr);
-						//scd_runSubCpu(IG::min(sCD.cpu.cycleCount + 800, mm68k.cycleCount));
+						//scd_runSubCpu(min(sCD.cpu.cycleCount + 800, mm68k.cycleCount));
 						if(comSync[subAddr-0x10])
 						{
-							EmuEx::log.info("M write Com command {:X} @ {:X}, S hasn't read", data, subAddr);
+							MdSystem::log.info("M write Com command {:X} @ {:X}, S hasn't read", data, subAddr);
 						}
 						else
-							EmuEx::log.info("M write Com command {:X} @ {:X}, S synced", data, subAddr);
+							MdSystem::log.info("M write Com command {:X} @ {:X}, S synced", data, subAddr);
 					}
 					else
-						EmuEx::log.info("M write Com command {:X} @ {:X}", data, subAddr);
+						MdSystem::log.info("M write Com command {:X} @ {:X}", data, subAddr);
 					comSync[subAddr-0x10] = 1;
 				}
 				sCD.gate[subAddr] = data;
@@ -321,8 +323,8 @@ void mainGateWrite8(unsigned address, unsigned data)
 				break;
 			}
 			default:
-				EmuEx::log.error("bad GATE write8 {:X} = {:X} ({:X})", address, data, m68k_get_reg (mm68k, M68K_REG_PC));
-				IG::unreachable();
+				MdSystem::log.error("bad GATE write8 {:X} = {:X} ({:X})", address, data, m68k_get_reg (mm68k, M68K_REG_PC));
+				unreachable();
 		}
 	}
 	else
@@ -352,13 +354,13 @@ void mainGateWrite16(unsigned address, unsigned data)
 						syncSubCpu(mm68k.cycleCount, a+1);
 						if(comSync[a-0x10] || comSync[a-0xf])
 						{
-							EmuEx::log.info("M write16 Com command {:X} @ {:X}, S hasn't read", data, a);
+							MdSystem::log.info("M write16 Com command {:X} @ {:X}, S hasn't read", data, a);
 						}
 						else
-							EmuEx::log.info("M write16 Com command {:X} @ {:X}, S synced", data, a);
+							MdSystem::log.info("M write16 Com command {:X} @ {:X}, S synced", data, a);
 					}
 					else
-						EmuEx::log.info("M write16 Com command {:X} @ {:X}", data, a);
+						MdSystem::log.info("M write16 Com command {:X} @ {:X}", data, a);
 					comSync[a-0x10] = comSync[a-0xf] = 1;
 				}
 				sCD.gate[a] = data >> 8;
@@ -382,7 +384,7 @@ void mainGateWrite16(unsigned address, unsigned data)
 
 unsigned mainReadWordDecoded8(unsigned address)
 {
-	EmuEx::log.info("Main read8 decoded {:X}", address);
+	MdSystem::log.info("Main read8 decoded {:X}", address);
 	address&=0xffffff;
 	unsigned bank = sCD.gate[3]&1;
 	address = (address&3) | (cell_map(address >> 2) << 2); // cell arranged
@@ -391,7 +393,7 @@ unsigned mainReadWordDecoded8(unsigned address)
 
 unsigned mainReadWordDecoded16(unsigned address)
 {
-	EmuEx::log.info("Main read16 decoded {:X}", address);
+	MdSystem::log.info("Main read16 decoded {:X}", address);
 	address&=0xfffffe;
 	unsigned bank = sCD.gate[3]&1;
 	address = (address&2) | (cell_map(address >> 2) << 2); // cell arranged
@@ -400,7 +402,7 @@ unsigned mainReadWordDecoded16(unsigned address)
 
 void mainWriteWordDecoded8(unsigned address, unsigned data)
 {
-	EmuEx::log.info("Main write8 decoded {:X} = {:X}", address, data);
+	MdSystem::log.info("Main write8 decoded {:X} = {:X}", address, data);
 	address&=0xffffff;
 	unsigned bank = sCD.gate[3]&1;
 	address = (address&3) | (cell_map(address >> 2) << 2); // cell arranged
@@ -409,7 +411,7 @@ void mainWriteWordDecoded8(unsigned address, unsigned data)
 
 void mainWriteWordDecoded16(unsigned address, unsigned data)
 {
-	EmuEx::log.info("Main write16 decoded {:X} = {:X}", address, data);
+	MdSystem::log.info("Main write16 decoded {:X} = {:X}", address, data);
 	address&=0xfffffe;
 	unsigned bank = sCD.gate[3]&1;
 	address = (address&2) | (cell_map(address >> 2) << 2); // cell arranged
@@ -445,13 +447,13 @@ unsigned bcramRegRead8(unsigned address)
 	if (address == 0x7fffff)
 	{
 		unsigned d = sCD.bcramReg;
-		EmuEx::log.info("BCRAM Reg read8 {:X} = {:X}", address, d);
+		MdSystem::log.info("BCRAM Reg read8 {:X} = {:X}", address, d);
 		return d;
 	}
 	else
 	{
-		EmuEx::log.error("Bad read8 {:X}", address);
-		IG::unreachable();
+		MdSystem::log.error("Bad read8 {:X}", address);
+		unreachable();
 		return 0;
 	}
 }
@@ -466,8 +468,8 @@ void bcramRegWrite8(unsigned address, unsigned data)
 	}
 	else
 	{
-		EmuEx::log.error("Bad write8 {:X}", address);
-		IG::unreachable();
+		MdSystem::log.error("Bad write8 {:X}", address);
+		unreachable();
 	}
 }
 
@@ -478,7 +480,7 @@ unsigned sramCartRegRead8(unsigned address)
 	//logMsg("SRAM read8 %X", address);
 	if(address==0x400001)
 	{
-		EmuEx::log.info("SRAM cart size read8");
+		MdSystem::log.info("SRAM cart size read8");
 		return 3;
 	}
 	return 0;//m68k_read_bus_8(address);
@@ -489,7 +491,7 @@ unsigned sramCartRegRead16(unsigned address)
 	//logMsg("SRAM read16 %X", address);
 	if(address==0x400000)
 	{
-		EmuEx::log.info("SRAM cart size read16");
+		MdSystem::log.info("SRAM cart size read16");
 		return 3;
 	}
 	return 0;//m68k_read_bus_16(address);
@@ -616,8 +618,8 @@ void updateMainCpuSramMap(SegaCD &sCD, unsigned bcramReg)
 {
 	if(bcramReg&1)
 	{
-		EmuEx::log.info("set SRAM read/write");
-		for(auto i : IG::iotaCount(2))
+		MdSystem::log.info("set SRAM read/write");
+		for(auto i: iotaCount(2))
 		{
 			mm68k.memory_map[0x60 + i].write8   = sramCartWrite8;
 			mm68k.memory_map[0x60 + i].write16  = sramCartWrite16;
@@ -625,8 +627,8 @@ void updateMainCpuSramMap(SegaCD &sCD, unsigned bcramReg)
 	}
 	else
 	{
-		EmuEx::log.info("set SRAM read-only");
-		for(auto i : IG::iotaCount(2))
+		MdSystem::log.info("set SRAM read-only");
+		for(auto i: iotaCount(2))
 		{
 			mm68k.memory_map[0x60 + i].write8   = m68k_unused_8_w;
 			mm68k.memory_map[0x60 + i].write16  = m68k_unused_16_w;

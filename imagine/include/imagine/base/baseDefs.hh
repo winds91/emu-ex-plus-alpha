@@ -187,9 +187,6 @@ enum class Rotation: uint8_t
 	ANY
 };
 
-template<>
-constexpr bool isValidProperty(const Rotation &v) { return enumIsValidUpToLast(v); }
-
 constexpr bool isSideways(Rotation r) { return r == Rotation::LEFT || r == Rotation::RIGHT; }
 
 inline constexpr int APP_ON_EXIT_PRIORITY = 0;

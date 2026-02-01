@@ -15,7 +15,9 @@
 
 #include <imagine/bluetooth/Wiimote.hh>
 #include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/util/ranges.hh>
+#include <imagine/util/variant.hh>
 #include <imagine/logger/SystemLogger.hh>
 import std;
 import packedInputAccess;
@@ -517,7 +519,7 @@ void Wiimote::processClassicButtons(Input::Device &dev, const uint8_t *packet, S
 	auto ccData = &packet[4];
 	int stickPos[4];
 	decodeCCSticks(ccData, stickPos[0], stickPos[1], stickPos[2], stickPos[3]);
-	for(auto i : iotaCount(4))
+	for(auto i: iotaCount(4))
 	{
 		if(axis[i].dispatchInputEvent(stickPos[i], Map::WII_CC, time, dev, ctx.mainWindow()))
 			ctx.endIdleByUserActivity();
@@ -543,7 +545,7 @@ void Wiimote::processProButtons(Input::Device &dev, const uint8_t *packet, Stead
 	const uint8_t *proData = &packet[4];
 	int stickPos[4];
 	decodeProSticks(proData, stickPos[0], stickPos[1], stickPos[2], stickPos[3]);
-	for(auto i : iotaCount(4))
+	for(auto i: iotaCount(4))
 	{
 		if(axis[i].dispatchInputEvent(stickPos[i], Map::WII_CC, time, dev, ctx.mainWindow()))
 			ctx.endIdleByUserActivity();
@@ -567,7 +569,7 @@ void Wiimote::processNunchukButtons(Input::Device &dev, const uint8_t *packet, S
 {
 	using namespace IG::Input;
 	const uint8_t *nunData = &packet[4];
-	for(auto i : iotaCount(2))
+	for(auto i: iotaCount(2))
 	{
 		if(axis[i].dispatchInputEvent(int(nunData[i]) - 127, Map::WIIMOTE, time, dev, ctx.mainWindow()))
 			ctx.endIdleByUserActivity();

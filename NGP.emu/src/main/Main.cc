@@ -13,47 +13,27 @@
 	You should have received a copy of the GNU General Public License
 	along with NGP.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuSystemInlines.hh>
-#include <emuframework/EmuAppInlines.hh>
+module;
+#include <mednafen/mednafen.h>
 #include <mednafen/state-driver.h>
 #include <mednafen/MemoryStream.h>
 #include <ngp/neopop.h>
 #include <ngp/flash.h>
 #include <ngp/sound.h>
-#include <mednafen-emuex/MDFNUtils.hh>
-import imagine;
 
-namespace MDFN_IEN_NGP
+module system;
+
+extern "C++" namespace MDFN_IEN_NGP
 {
-void SetPixelFormat(Mednafen::MDFN_PixelFormat);
-uint32 GetSoundRate();
+	void SetPixelFormat(Mednafen::MDFN_PixelFormat);
+	uint32 GetSoundRate();
 }
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"NGP.emu"};
-const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nMednafen Team\nmednafen.github.io";
-bool EmuApp::needsGlobalInstance = true;
-
-EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter =
-	[](std::string_view name)
-	{
-		return IG::endsWithAnyCaseless(name, ".ngc", ".ngp", ".npc", ".ngpc");
-	};
-
-NgpApp::NgpApp(ApplicationInitParams initParams, ApplicationContext &ctx):
-	EmuApp{initParams, ctx}, ngpSystem{ctx} {}
-
-const char *EmuSystem::shortSystemName() const
-{
-	return "NGP";
-}
-
-const char *EmuSystem::systemName() const
-{
-	return "Neo Geo Pocket";
-}
+extern "C++" std::string_view EmuSystem::shortSystemName() const { return "NGP"; }
+extern "C++" std::string_view EmuSystem::systemName() const { return "Neo Geo Pocket"; }
 
 void NgpSystem::reset(EmuApp &, ResetMode mode)
 {
@@ -104,7 +84,7 @@ void NgpSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDelegat
 	MDFN_IEN_NGP::SetPixelFormat(toMDFNSurface(mSurfacePix).format);
 }
 
-bool NgpSystem::onVideoRenderFormatChange(EmuVideo &, IG::PixelFormat fmt)
+bool NgpSystem::onVideoRenderFormatChange(EmuVideo &, PixelFormat fmt)
 {
 	mSurfacePix = {{vidBufferPx, fmt}, pixBuff};
 	if(!hasContent())
@@ -124,52 +104,40 @@ void NgpSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 
 void NgpSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio *audio)
 {
-	static constexpr size_t maxAudioFrames = 48000 / minFrameRate;
+	static constexpr size_t maxAudioFrames = 48000 / AppMeta::minFrameRate;
 	EmuEx::runFrame(*this, mdfnGameInfo, taskCtx, video, mSurfacePix, audio, maxAudioFrames);
 }
 
-void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
-{
-	const Gfx::LGradientStopDesc navViewGrad[] =
-	{
-		{ .0, Gfx::PackedColor::format.build((101./255.) * .4, (45./255.) * .4, (193./255.) * .4, 1.) },
-		{ .3, Gfx::PackedColor::format.build((101./255.) * .4, (45./255.) * .4, (193./255.) * .4, 1.) },
-		{ .97, Gfx::PackedColor::format.build((34./255.) * .4, (15./255.) * .4, (64./255.) * .4, 1.) },
-		{ 1., view.separatorColor() },
-	};
-	view.setBackgroundGradient(navViewGrad);
 }
 
-}
+using namespace EmuEx;
 
-namespace MDFN_IEN_NGP
+extern "C++" namespace MDFN_IEN_NGP
 {
 
 bool system_io_flash_read(uint8_t* buffer, uint32_t len)
 {
-	using namespace EmuEx;
 	auto saveStr = saveFilename(gApp());
-	return IG::FileUtils::readFromUri(gAppContext(), saveStr, {buffer, len}) > 0;
+	return FileUtils::readFromUri(gAppContext(), saveStr, {buffer, len}) > 0;
 }
 
 void system_io_flash_write(uint8_t* buffer, uint32 len)
 {
-	using namespace EmuEx;
 	if(!len)
 		return;
 	auto saveStr = saveFilename(gApp());
-	EmuEx::log.info("writing flash:{}", saveStr);
-	IG::FileUtils::writeToUri(gAppContext(), saveStr, {buffer, len});
+	NgpSystem::log.info("writing flash:{}", saveStr);
+	FileUtils::writeToUri(gAppContext(), saveStr, {buffer, len});
 }
 
 }
 
-namespace Mednafen
+extern "C++" namespace Mednafen
 {
 
 void MDFND_commitVideoFrame(EmulateSpecStruct *espec)
 {
-	espec->video->startFrameWithFormat(espec->taskCtx, static_cast<EmuEx::NgpSystem&>(*espec->sys).mSurfacePix);
+	espec->video->startFrameWithFormat(espec->taskCtx, static_cast<NgpSystem&>(*espec->sys).mSurfacePix);
 }
 
 }

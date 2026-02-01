@@ -68,7 +68,7 @@ public:
 	constexpr Input::Device& device() { return *dev; }
 	void setSavedPlayer(InputManager&, int);
 	void setSavedSessionPlayer(InputManager&, int);
-	int8_t savedPlayer() const { return savedConf ? savedConf->player : int8_t(dev->enumId() < EmuSystem::maxPlayers ? dev->enumId() : 0); }
+	int8_t savedPlayer() const { return savedConf ? savedConf->player : int8_t(dev->enumId() < AppMeta::maxPlayers ? dev->enumId() : 0); }
 	int8_t savedSessionPlayer() const { return sessionSavedConf ? sessionSavedConf->player : playerIndexUnset; }
 
 protected:

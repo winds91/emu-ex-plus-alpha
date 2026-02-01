@@ -25,7 +25,7 @@ constexpr SystemLogger log{"InputDevConf"};
 
 static StaticString<16> uniqueCustomConfigName(auto &customKeyConfigs)
 {
-	for(auto i : iotaCount(100)) // Try up to "Custom 99"
+	for(auto i: iotaCount(100)) // Try up to "Custom 99"
 	{
 		auto name = format<StaticString<16>>("Custom {}", i+1);
 		std::string_view nameStr{name};

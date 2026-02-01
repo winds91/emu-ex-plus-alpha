@@ -13,38 +13,23 @@
 	You should have received a copy of the GNU General Public License
 	along with NEO.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "MainApp.hh"
-
+module;
 extern "C"
 {
 	#include <gngeo/roms.h>
 	#include <gngeo/emu.h>
 }
 
-import imagine;
-import emuex;
+module system;
 
 namespace EmuEx
 {
-
-static IG::SystemLogger log{"NEO.emu"};
-const char *EmuSystem::configFilename = "NeoEmu.config";
-
-std::span<const AspectRatioInfo> NeoSystem::aspectRatioInfos()
-{
-	static constexpr AspectRatioInfo aspectRatioInfo[]
-	{
-		{"4:3 (Original)", {4, 3}},
-		EMU_SYSTEM_DEFAULT_ASPECT_RATIO_INFO_INIT
-	};
-	return aspectRatioInfo;
-}
 
 void NeoSystem::setTimerIntOption()
 {
 	if(optionTimerInt == 2)
 	{
-		bool needsTimer = hasContent() && IG::containsAny(contentDisplayName(),
+		bool needsTimer = hasContent() && containsAny(contentDisplayName(),
 			"Sidekicks 2", "Sidekicks 3", "Ultimate 11", "Neo-Geo Cup", "Spin Master", "Neo Turf Masters");
 		if(needsTimer) log.info("auto enabled timer interrupt");
 		conf.raster = needsTimer;

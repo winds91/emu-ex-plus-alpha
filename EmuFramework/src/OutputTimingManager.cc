@@ -27,7 +27,7 @@ bool OutputTimingManager::frameRateOptionIsValid(FrameDuration d)
 {
 	return d == OutputTimingManager::autoOption ||
 		d == OutputTimingManager::originalOption ||
-		EmuSystem::validFrameRateRange.contains(toHz(d));
+		AppMeta::validFrameRateRange.contains(toHz(d));
 }
 
 static FrameRateConfig bestOutputRateForScreen(std::span<const FrameRate> supportedFrameRates, FrameRate systemFrameRate)

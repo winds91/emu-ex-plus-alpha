@@ -18,7 +18,6 @@
 #ifndef IG_USE_MODULE_STD
 #include <algorithm>
 #include <iterator>
-#include <ranges>
 #include <optional>
 #endif
 

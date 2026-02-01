@@ -13,8 +13,11 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+module;
+
+#include <imagine/input/inputDefs.hh>
+
 export module packedInputAccess;
-import imagine;
 
 export namespace IG::Input
 {
@@ -25,7 +28,7 @@ struct PackedInputAccess
 	uint32_t mask;
 	Key key;
 
-	int updateState(const uint8_t *prev, const uint8_t *curr) const
+	int updateState(const uint8_t* prev, const uint8_t* curr) const
 	{
 		bool oldState = prev[byteOffset] & mask,
 			newState = curr[byteOffset] & mask;

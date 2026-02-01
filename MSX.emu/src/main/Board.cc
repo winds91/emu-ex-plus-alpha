@@ -13,26 +13,19 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <string.h>
-#include "MainApp.hh"
-
 extern "C"
 {
 	#include <blueMSX/Board/Board.h>
 	#include <blueMSX/IoDevice/Disk.h>
 	#include <blueMSX/Memory/MegaromCartridge.h>
 }
-
+import system;
 import emuex;
 import imagine;
+import std;
 
+using namespace IG;
 using namespace EmuEx;
-
-namespace EmuEx
-{
-static IG::SystemLogger log{"MSX.emu"};
-bool fdcActive = 0;
-}
 
 static HdType hdType[MAX_HD_COUNT]{};
 RomType currentRomType[2]{};
@@ -66,7 +59,7 @@ void boardChangeDiskette(int driveId, char* fileName, const char* fileInZipFile)
 static void onFdcDone(void* ref, UInt32 time)
 {
     fdcActive = 0;
-    EmuEx::log.info("ended FDC activity");
+    MsxSystem::log.info("ended FDC activity");
 }
 
 void boardSetFdcActive()
@@ -75,7 +68,7 @@ void boardSetFdcActive()
 	if(sys.optionSkipFdcAccess)
 	{
 		if(!fdcActive)
-			EmuEx::log.info("FDC active");
+			MsxSystem::log.info("FDC active");
 		boardTimerAdd(fdcTimer, boardSystemTime() + (UInt32)((UInt64)300 * boardFrequency() / 1000));
 		fdcActive = 1;
 	}
@@ -404,7 +397,7 @@ int boardChangeCartridge(int cartNo, RomType romType, const char* cart, const ch
     }
 
     if(hdType[cartNo] != HD_NONE)
-    	EmuEx::log.info("HD Type:{}", (int)hdType[cartNo]);
+    	MsxSystem::log.info("HD Type:{}", (int)hdType[cartNo]);
 
     bool success;
     if(cartNo < boardInfo.cartridgeCount)
@@ -413,7 +406,7 @@ int boardChangeCartridge(int cartNo, RomType romType, const char* cart, const ch
     }
     else
     {
-    	EmuEx::log.error("cart #{} exceeds max:{}", cartNo, boardInfo.cartridgeCount);
+    	MsxSystem::log.error("cart #{} exceeds max:{}", cartNo, boardInfo.cartridgeCount);
     	success = 0;
     }
 

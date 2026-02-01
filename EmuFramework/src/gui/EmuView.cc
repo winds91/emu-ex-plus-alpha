@@ -43,7 +43,7 @@ void EmuView::prepareDraw()
 
 void EmuView::draw(Gfx::RendererCommands&__restrict__ cmds, ViewDrawParams) const
 {
-	using namespace IG::Gfx;
+	using namespace Gfx;
 	if(layer && system().isStarted())
 	{
 		layer->draw(cmds);
@@ -56,7 +56,7 @@ void EmuView::drawStatsText(Gfx::RendererCommands &__restrict__ cmds)
 		return;
 	if(!statsDisplay.text.isVisible())
 		return;
-	using namespace IG::Gfx;
+	using namespace Gfx;
 	cmds.basicEffect().disableTexture(cmds);
 	cmds.set(BlendMode::ALPHA);
 	cmds.setColor({0., 0., 0., .25});

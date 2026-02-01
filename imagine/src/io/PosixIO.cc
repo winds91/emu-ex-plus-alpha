@@ -15,9 +15,11 @@
 
 #include <imagine/config/macros.h>
 #include <imagine/io/PosixIO.hh>
-#include <imagine/util/string/StaticString.hh>
+#include <imagine/io/IOUtils-impl.hh>
 #include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/string/StaticString.hh>
 #include <imagine/util/fd-utils.h>
+#include <imagine/util/format.hh>
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/stat.h>

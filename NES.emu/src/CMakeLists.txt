@@ -1,13 +1,18 @@
+target_sources(nesemu PRIVATE FILE_SET CXX_MODULES
+	BASE_DIRS main
+	FILES main/system.ccm main/io.ccm
+)
+
 file(GLOB boardSrcs "fceu/boards/*.cpp" "fceu/boards/*.c")
 
 target_sources(nesemu PRIVATE
 	main/Main.cc
+	main/AppMeta.cc
 	main/input.cc
 	main/options.cc
 	main/EmuMenuViews.cc
 	main/FceuApi.cc
 	main/Cheats.cc
-	main/EmuFileIO.cc
 	fceu/cart.cpp
 	fceu/cheat.cpp
 	fceu/emufile.cpp

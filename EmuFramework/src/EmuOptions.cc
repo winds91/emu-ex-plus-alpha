@@ -25,7 +25,7 @@ using namespace IG;
 
 constexpr SystemLogger log{"App"};
 
-void EmuApp::initOptions([[maybe_unused]] IG::ApplicationContext ctx)
+void EmuApp::initOptions([[maybe_unused]] ApplicationContext ctx)
 {
 	#ifdef CONFIG_OS_IOS
 	if(ctx.deviceIsIPad())
@@ -63,7 +63,7 @@ Data::FontSettings EmuApp::fontSettings(Window &win) const
 	return {win.heightScaledMMInPixels(size)};
 }
 
-IG::PixelFormat EmuApp::videoEffectPixelFormat() const
+PixelFormat EmuApp::videoEffectPixelFormat() const
 {
 	if(imageEffectPixelFormat.value() != PixelFormatId::Unset)
 		return imageEffectPixelFormat.value();
@@ -90,7 +90,7 @@ bool EmuApp::setMenuScale(int8_t val)
 	return true;
 }
 
-void EmuApp::setContentRotation(IG::Rotation r)
+void EmuApp::setContentRotation(Rotation r)
 {
 	contentRotation = r;
 	updateContentRotation();
@@ -139,7 +139,7 @@ float EmuApp::videoAspectRatio() const
 
 float EmuApp::defaultVideoAspectRatio() const
 {
-	return EmuSystem::aspectRatioInfos()[0].asFloat();
+	return AppMeta::aspectRatioInfo.asFloat();
 }
 
 void EmuApp::setShowsTitleBar(bool on)

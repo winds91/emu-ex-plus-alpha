@@ -50,7 +50,7 @@ static void system_frame_sms(EmuEx::EmuSystemTaskContext, EmuEx::EmuVideo *);
 static int pause_b;
 static EQSTATE eq;
 static int32 llp,rrp;
-constexpr size_t maxAudioFrames = 48000 / EmuEx::EmuSystem::minFrameRate;
+constexpr size_t maxAudioFrames = 48000 / EmuEx::AppMeta::minFrameRate;
 
 /****************************************************************
  * Audio subsystem

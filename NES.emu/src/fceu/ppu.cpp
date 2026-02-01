@@ -41,7 +41,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-import emuex;
+import system;
 
 #define VBlankON    (PPU[0] & 0x80)	//Generate VBlank NMI
 #define Sprite16    (PPU[0] & 0x20)	//Sprites 8x16/8x8
@@ -1770,12 +1770,7 @@ void FCEUPPU_Power(void) {
 	BWrite[0x4014] = B4014;
 }
 
-namespace EmuEx
-{
-void emulateSound(EmuAudio *audio);
-}
-
-int FCEUPPU_Loop(EmuEx::EmuSystemTaskContext taskCtx, EmuEx::NesSystem& sys, EmuEx::EmuVideo* video, EmuEx::EmuAudio* audio, int skip) {
+int FCEUPPU_Loop(EmuEx::EmuSystemTaskContext taskCtx, EmuEx::NesSystemHolder& sys, EmuEx::EmuVideo* video, EmuEx::EmuAudio* audio, int skip) {
 	if ((newppu) && (GameInfo->type != GIT_NSF)) {
 		int FCEUX_PPU_Loop(int skip);
 		return FCEUX_PPU_Loop(skip);
@@ -1930,7 +1925,7 @@ int FCEUPPU_Loop(EmuEx::EmuSystemTaskContext taskCtx, EmuEx::NesSystem& sys, Emu
 	}
 }
 
-int (*PPU_MASTER)(EmuEx::EmuSystemTaskContext, EmuEx::NesSystem&, EmuEx::EmuVideo*, EmuEx::EmuAudio*, int skip) = FCEUPPU_Loop;
+int (*PPU_MASTER)(EmuEx::EmuSystemTaskContext, EmuEx::NesSystemHolder&, EmuEx::EmuVideo*, EmuEx::EmuAudio*, int skip) = FCEUPPU_Loop;
 
 static uint16 TempAddrT, RefreshAddrT;
 

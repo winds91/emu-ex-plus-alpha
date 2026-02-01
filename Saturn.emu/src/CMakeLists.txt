@@ -1,5 +1,11 @@
+target_sources(saturnemu PRIVATE FILE_SET CXX_MODULES
+	BASE_DIRS main
+	FILES main/system.ccm
+)
+
 target_sources(saturnemu PRIVATE
 	main/Main.cc
+	main/AppMeta.cc
 	main/options.cc
 	main/input.cc
 	main/EmuMenuViews.cc

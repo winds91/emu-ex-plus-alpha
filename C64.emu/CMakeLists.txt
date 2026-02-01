@@ -103,5 +103,9 @@ target_compile_options(c64emuInterface INTERFACE
 	-Wno-unused-function
 )
 
+if(CMAKE_C_COMPILER_ID MATCHES "GNU")
+	target_compile_options(c64emuInterface INTERFACE $<$<COMPILE_LANGUAGE:CXX>:-Wno-global-module>)
+endif()
+
 target_link_libraries(c64emu PRIVATE c64emuInterface)
 add_subdirectory(src)

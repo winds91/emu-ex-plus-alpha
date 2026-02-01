@@ -11,6 +11,7 @@
 #include "core/gba/internal/gbaSram.h"
 
 import imagine;
+import system;
 
 #define FLASH_READ_ARRAY 0
 #define FLASH_CMD_1 1
@@ -24,7 +25,6 @@ import imagine;
 #define FLASH_SETBANK 9
 
 IG::ByteBuffer flashSaveMemory;
-namespace EmuEx { static IG::SystemLogger log{"GBA.emu"}; }
 
 int flashState = FLASH_READ_ARRAY;
 int flashReadState = FLASH_READ_ARRAY;
@@ -306,7 +306,7 @@ void flashReadGame(const uint8_t*& data)
   utilReadDataMem(data, flashSaveData3(flashSaveMemoryTemp, flashSizeTemp).data());
   if(flashSizeTemp != g_flashSize)
   {
-  	EmuEx::log.warn("expected flash size:{} but got {} from state", g_flashSize, flashSizeTemp);
+    EmuEx::GbaSystem::log.warn("expected flash size:{} but got {} from state", g_flashSize, flashSizeTemp);
   }
   IG::copy_n(flashSaveMemoryTemp, flashSaveMemory.size(), flashSaveMemory.data());
 }

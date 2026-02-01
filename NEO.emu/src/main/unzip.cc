@@ -19,10 +19,12 @@ extern "C"
 	#include <gngeo/state.h>
 }
 
+import system;
 import imagine;
 import std;
 
 using namespace IG;
+using namespace EmuEx;
 
 struct PKZIP : public FS::ArchiveIterator {};
 
@@ -31,8 +33,6 @@ struct ZFILE
 	ArchiveIO io;
 	FS::ArchiveIterator *arch;
 };
-
-namespace EmuEx { static IG::SystemLogger log{"MSX.emu"}; }
 
 ZFILE *gn_unzip_fopen(PKZIP *archPtr, const char *filename, uint32_t fileCRC)
 {
@@ -53,7 +53,7 @@ ZFILE *gn_unzip_fopen(PKZIP *archPtr, const char *filename, uint32_t fileCRC)
 			return new ZFILE{std::move(entry), archPtr};
 		}
 	}
-	EmuEx::log.info("file:{} crc32:{:X} not found in archive", filename, fileCRC);
+	NeoSystem::log.info("file:{} crc32:{:X} not found in archive", filename, fileCRC);
 	return nullptr;
 }
 
@@ -72,7 +72,7 @@ int gn_unzip_fread(ZFILE *z, uint8_t *data, unsigned int size)
 
 PKZIP *gn_open_zip(void *contextPtr, const char *path)
 {
-	auto &ctx = *((IG::ApplicationContext*)contextPtr);
+	auto &ctx = *((ApplicationContext*)contextPtr);
 	try
 	{
 		auto arch = std::make_unique<FS::ArchiveIterator>(ctx.openFileUri(path));
@@ -80,7 +80,7 @@ PKZIP *gn_open_zip(void *contextPtr, const char *path)
 	}
 	catch(...)
 	{
-		EmuEx::log.error("error opening archive:{}", path);
+		NeoSystem::log.error("error opening archive:{}", path);
 		return nullptr;
 	}
 }
@@ -97,12 +97,12 @@ uint8_t *gn_unzip_file_malloc(PKZIP *archPtr, const char *filename, uint32_t fil
 	{
 		return nullptr;
 	}
-	auto closeZ = IG::scopeGuard([&](){ gn_unzip_fclose(z); });
+	auto closeZ = scopeGuard([&](){ gn_unzip_fclose(z); });
 	unsigned int size = z->io.size();
 	auto buff = (uint8_t*)std::malloc(size);
 	if(gn_unzip_fread(z, buff, size) != (int)size)
 	{
-		EmuEx::log.error("read error in gn_unzip_file_malloc");
+		NeoSystem::log.error("read error in gn_unzip_file_malloc");
 		std::free(buff);
 		return nullptr;
 	}
@@ -134,7 +134,7 @@ struct PKZIP *open_rom_zip(void *contextPtr, char *romPath, char *name)
 
 gzFile gzopenHelper(void *contextPtr, const char *filename, const char *mode)
 {
-	auto &ctx = *((IG::ApplicationContext*)contextPtr);
+	auto &ctx = *((ApplicationContext*)contextPtr);
 	auto openFlags = std::string_view{mode}.contains('w') ? OpenFlags::newFile() : OpenFlags{};
 	return gzdopen(ctx.openFileUriFd(filename, openFlags | OpenFlags{.test = true}).release(), mode);
 }

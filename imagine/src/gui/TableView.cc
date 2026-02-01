@@ -55,7 +55,7 @@ void TableView::setAlign(_2DOrigin align)
 void TableView::prepareDraw()
 {
 	auto src = itemSrc;
-	for(auto i : iotaCount(cells()))
+	for(auto i: iotaCount(cells()))
 	{
 		item(src, i).prepareDraw();
 	}
@@ -167,7 +167,7 @@ void TableView::place()
 {
 	auto cells_ = cells();
 	auto src = itemSrc;
-	for(auto i : iotaCount(cells_))
+	for(auto i: iotaCount(cells_))
 	{
 		//log.debug("place item:{}", i);
 		item(src, i).place();
@@ -284,7 +284,7 @@ int TableView::nextSelectableElement(int start, int items)
 {
 	int elem = wrapMinMax(start, 0, items);
 	auto src = itemSrc;
-	for([[maybe_unused]] auto i : iotaCount(items))
+	for([[maybe_unused]] auto i: iotaCount(items))
 	{
 		if(item(src, elem).selectable())
 		{
@@ -299,7 +299,7 @@ int TableView::prevSelectableElement(int start, int items)
 {
 	int elem = wrapMinMax(start, 0, items);
 	auto src = itemSrc;
-	for([[maybe_unused]] auto i : iotaCount(items))
+	for([[maybe_unused]] auto i: iotaCount(items))
 	{
 		if(item(src, elem).selectable())
 		{

@@ -14,6 +14,8 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/base/Window.hh>
+#include <imagine/base/Screen.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/base/sharedLibrary.hh>
 #include <imagine/pixmap/PixelFormat.hh>
 #include <imagine/util/utility.hh>

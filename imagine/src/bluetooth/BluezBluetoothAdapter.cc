@@ -151,7 +151,7 @@ bool BluezBluetoothAdapter::doScan(const BTOnScanDeviceClassDelegate &onDeviceCl
 	}
 	else
 		sendBTScanStatusDelegate(BluetoothScanState::Processing, devices);
-	for(auto i : iotaCount(devices))
+	for(auto i: iotaCount(devices))
 	{
 		if(!onDeviceClass(bta, std::to_array(deviceInfo[i].dev_class)))
 		{

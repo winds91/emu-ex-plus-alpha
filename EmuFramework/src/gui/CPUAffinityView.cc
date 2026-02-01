@@ -47,7 +47,7 @@ CPUAffinityView::CPUAffinityView(ViewAttachParams attach, int cpuCount):
 	menuItems.emplace_back(&affinityMode);
 	menuItems.emplace_back(&cpusHeading);
 	cpuAffinityItems.reserve(cpuCount);
-	for(int i : iotaCount(cpuCount))
+	for(int i: iotaCount(cpuCount))
 	{
 		auto &item = cpuAffinityItems.emplace_back([&]
 			{

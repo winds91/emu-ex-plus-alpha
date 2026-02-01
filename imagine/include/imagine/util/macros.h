@@ -23,6 +23,17 @@
 	#define ConditionalProperty [[no_unique_address]] ConditionalPropertyImpl
 	#define ConditionalMemberOr [[no_unique_address]] IG::UseIfOrConstantTagInjector<__LINE__>::Type
 	#define ConditionalMember [[no_unique_address]] IG::UseIfTagInjector<__LINE__>::Type
+
+	#define IG_MemberTypeReflection(member) \
+	template <class T, class Fallback, class U = void> struct member##Reflection \
+	{ using Type = Fallback; }; \
+	\
+	template <class T, class Fallback> \
+	struct member##Reflection<T, Fallback, std::void_t<decltype(std::declval<T>().member)>> \
+	{ using Type = decltype(std::declval<T>().member); }; \
+	\
+	template <class T, class Fallback> \
+	using member##ReflectionType = typename member##Reflection<T, Fallback>::Type
 #else
 	#define CLINK
 	#define BEGIN_C_DECLS

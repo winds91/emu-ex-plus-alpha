@@ -17,11 +17,12 @@
 
 #include <emuframework/AppKeyCode.hh>
 #include <imagine/config/macros.h>
-#ifndef IG_USE_MODULE_IMAGINE
+#ifdef IG_USE_MODULES
+import imagine;
+import std;
+#else
 #include <imagine/input/inputDefs.hh>
 #include <imagine/input/bluetoothInputDefs.hh>
-#endif
-#ifndef IG_USE_MODULE_STD
 #include <ranges>
 #endif
 
@@ -135,7 +136,7 @@ template<const auto &pcKeyboardBaseMap, const auto &genericGamepadBaseMap, const
 	const auto &gamepadAppKeyCodeMap = genericGamepadAppKeyCodeMap>
 constexpr std::span<const KeyConfigDesc> genericKeyConfigs()
 {
-	using namespace IG::Input;
+	using namespace Input;
 
 	static constexpr auto pcKeyboardMap = concatToArrayNow<genericKeyboardAppKeyCodeMap, pcKeyboardBaseMap>;
 

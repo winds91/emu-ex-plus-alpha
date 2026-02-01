@@ -15,7 +15,9 @@
 
 #include <imagine/bluetooth/IControlPad.hh>
 #include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/util/ranges.hh>
+#include <imagine/util/variant.hh>
 #include <imagine/logger/SystemLogger.hh>
 import std;
 import packedInputAccess;
@@ -201,7 +203,7 @@ bool IControlPad::dataHandler(Input::Device &dev, const char *packetPtr, size_t 
 			if(inputBufferPos == 6)
 			{
 				auto time = SteadyClock::now();
-				for(auto i : iotaCount(4))
+				for(auto i: iotaCount(4))
 				{
 					if(axis[i].dispatchInputEvent(inputBuffer[i], Input::Map::ICONTROLPAD, time, dev, ctx.mainWindow()))
 						ctx.endIdleByUserActivity();

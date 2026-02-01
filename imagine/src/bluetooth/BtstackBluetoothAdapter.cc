@@ -222,7 +222,7 @@ public:
 inline void sprintBTAddr(char *addrStr, bd_addr_t &addr)
 {
 	std::strcpy(addrStr, "");
-	for(auto i : iotaCount(6))
+	for(auto i: iotaCount(6))
 	{
 		if(i != 0)
 			std::strcat(addrStr, ":");
@@ -431,7 +431,7 @@ void BtstackBluetoothAdapter::packetHandler(uint8_t packet_type, uint16_t channe
 				{
 					uint32_t responses = scanResponses = packet[2];
 					log.info("got HCI_EVENT_INQUIRY_RESULT, {} responses", responses);
-					for(auto i : iotaCount(responses))
+					for(auto i: iotaCount(responses))
 					{
 						bd_addr_t addr;
 						bt_flip_addr(addr, &packet[3+i*6]);

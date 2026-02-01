@@ -6,8 +6,14 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	target_compile_options(neoemu PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fconstexpr-steps=10000000>)
 endif()
 
+target_sources(neoemu PRIVATE FILE_SET CXX_MODULES
+	BASE_DIRS main
+	FILES main/system.ccm
+)
+
 target_sources(neoemu PRIVATE
 	main/Main.cc
+	main/AppMeta.cc
 	main/input.cc
 	main/options.cc
 	main/state.cc

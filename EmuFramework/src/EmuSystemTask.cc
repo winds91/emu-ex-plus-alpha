@@ -186,9 +186,9 @@ void EmuSystemTask::sendScreenshotReply(bool success)
 	});
 }
 
-IG::OnFrameDelegate EmuSystemTask::onFrameCalibrate()
+OnFrameDelegate EmuSystemTask::onFrameCalibrate()
 {
-	return [this](IG::FrameParams params)
+	return [this](FrameParams params)
 	{
 		if(app.system().frameRateMultiplier != 1.)
 			return true;
@@ -211,9 +211,9 @@ IG::OnFrameDelegate EmuSystemTask::onFrameCalibrate()
 	};
 }
 
-IG::OnFrameDelegate EmuSystemTask::onFrameDelayed(uint16_t delay)
+OnFrameDelegate EmuSystemTask::onFrameDelayed(uint16_t delay)
 {
-	return [this, delay](IG::FrameParams params)
+	return [this, delay](FrameParams params)
 	{
 		if(params.isFromRenderer() || app.video.image())
 		{
@@ -231,7 +231,7 @@ IG::OnFrameDelegate EmuSystemTask::onFrameDelayed(uint16_t delay)
 	};
 }
 
-void EmuSystemTask::addOnFrameDelegate(IG::OnFrameDelegate onFrame)
+void EmuSystemTask::addOnFrameDelegate(OnFrameDelegate onFrame)
 {
 	window().addOnFrame(onFrame, window().toFrameClockMode(app.frameClockSource, FrameClockUsage::fixedRate));
 }

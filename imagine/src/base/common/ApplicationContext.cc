@@ -417,7 +417,7 @@ void ApplicationContext::setSwappedConfirmKeys(std::optional<bool> opt)
 		return 0;
 	struct CPUFreqInfo{int freq, cpuIdx;};
 	StaticArrayList<CPUFreqInfo, maxCPUs> cpuFreqInfos;
-	for(int i : iotaCount(cpus))
+	for(int i: iotaCount(cpus))
 	{
 		auto freq = maxCPUFrequencyKHz(i);
 		if(freq > 0)

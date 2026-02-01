@@ -16,7 +16,9 @@
 #include <imagine/config/macros.h>
 #include <imagine/bluetooth/Zeemote.hh>
 #include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/util/ranges.hh>
+#include <imagine/util/variant.hh>
 #include <imagine/logger/SystemLogger.hh>
 import std;
 import packedInputAccess;
@@ -154,7 +156,7 @@ bool Zeemote::dataHandler(Input::Device &dev, const char *packet, size_t size)
 				}
 				case RID_8BA_2A_JS_REPORT:
 					//logMsg("got analog report %d %d", (int8_t)inputBuffer[4], (int8_t)inputBuffer[5]);
-				for(auto i : iotaCount(2))
+				for(auto i: iotaCount(2))
 					{
 						if(axis[i].dispatchInputEvent((int8_t)inputBuffer[4+i], Input::Map::ZEEMOTE, time, dev, ctx.mainWindow()))
 							ctx.endIdleByUserActivity();
@@ -186,13 +188,13 @@ void Zeemote::processBtnReport(Input::Device &dev, const uint8_t *btnData, Stead
 {
 	using namespace IG::Input;
 	uint8_t btnPush[4] {0};
-	for(auto i : iotaCount(4))
+	for(auto i: iotaCount(4))
 	{
 		if(btnData[i] >= 4)
 			break;
 		btnPush[btnData[i]] = 1;
 	}
-	for(auto i : iotaCount(4))
+	for(auto i: iotaCount(4))
 	{
 		if(prevBtnPush[i] != btnPush[i])
 		{

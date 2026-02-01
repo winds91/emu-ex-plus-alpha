@@ -288,7 +288,7 @@ void ViewStack::pop()
 void ViewStack::popViews(size_t num)
 {
 	auto win = view.size() ? &top().window() : nullptr;
-	for([[maybe_unused]] auto i : iotaCount(num))
+	for([[maybe_unused]] auto i: iotaCount(num))
 	{
 		pop();
 	}

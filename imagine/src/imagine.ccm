@@ -171,6 +171,8 @@ export namespace Config
 	using Config::TRANSLUCENT_SYSTEM_UI;
 	using Config::windowFocus;
 	using Config::BASE_CAN_BACKGROUND_APP;
+	using Config::freeformWindows;
+	using Config::SENSORS;
 }
 
 export namespace Config::Input
@@ -194,6 +196,8 @@ export namespace IG
 	using IG::ApplicationContext;
 	using IG::ApplicationInitParams;
 	using IG::ApplicationMeta;
+	using IG::ApplicationEvent;
+	using IG::CommandArgs;
 	using IG::DocumentPickerEvent;
 	using IG::OnExit;
 	using IG::ResumeDelegate;
@@ -213,7 +217,6 @@ export namespace IG
 	using IG::SystemUIStyleFlags;
 	using IG::ActivityState;
 	using IG::Permission;
-	using IG::InputDeviceTypeFlags;
 	using IG::asString;
 	using IG::CallbackDelegate;
 	using IG::TextFieldDelegate;
@@ -376,10 +379,12 @@ export namespace IG
 	using IG::PixmapDesc;
 	using IG::MutablePixmapView;
 	using IG::MemPixmap;
+	using IG::PixmapUnits;
 
 	// pixel format
 	using IG::PixelFormat;
 	using IG::PixelFormatId;
+	using IG::PixelDesc;
 	using IG::PixelDescA8;
 	using IG::PixelDescBGRA8888;
 	using IG::PixelDescBGRA8888Native;
@@ -431,6 +436,7 @@ export namespace IG
 	using IG::ThreadId;
 	using IG::thisThreadId;
 	using IG::CPUMask;
+	using IG::setThreadCPUAffinityMask;
 	using IG::WorkThread;
 	using IG::ThreadStop;
 	using IG::makeDetachedThread;
@@ -580,7 +586,7 @@ export namespace IG
 	using IG::lastEnum;
 	using IG::enumName;
 	using IG::enumCount;
-	using IG::enumIsValidUpToLast;
+	using IG::enumIsValid;
 
 	// util.math
 	using IG::radians;
@@ -769,6 +775,7 @@ export namespace IG::Input
 	using IG::Input::AxisSetId;
 	using IG::Input::toAxisIds;
 	using IG::Input::Map;
+	using IG::Input::validateMap;
 	using IG::Input::virtualDeviceFlags;
 	using IG::Input::DeviceChange;
 	using IG::Input::DevicesEnumeratedEvent;
@@ -816,7 +823,6 @@ export namespace IG::FS
 	using IG::FS::PathLocation;
 	using IG::FS::RootPathInfo;
 	using IG::FS::RootedPath;
-	using IG::FS::makeAppPathFromLaunchCommand;
 	using IG::FS::uriPathSegmentTreeName;
 	using IG::FS::uriPathSegmentDocumentName;
 	using IG::FS::dirnameUri;
@@ -931,6 +937,15 @@ export namespace IG::Audio::SampleFormats
 	using IG::Audio::SampleFormats::i32;
 	using IG::Audio::SampleFormats::f32;
 	using IG::Audio::SampleFormats::none;
+}
+
+export namespace Config::Bluetooth
+{
+	using Config::Bluetooth::scanTime;
+	using Config::Bluetooth::scanCache;
+	using Config::Bluetooth::server;
+	using Config::Bluetooth::driver;
+	using Config::Bluetooth::Driver;
 }
 
 export namespace IG::Bluetooth
@@ -1076,6 +1091,8 @@ export namespace IG::Gfx
 	using IG::Gfx::ILitTexFanQuads;
 	using IG::Gfx::BaseQuad;
 	using IG::Gfx::ObjectVertexArray;
+	using IG::Gfx::mapFanQuadIndices;
+	using IG::Gfx::QuadIndexArray;
 }
 
 export namespace IG::Gfx::SamplerConfigs
@@ -1129,7 +1146,6 @@ export namespace IG
 	using IG::MultiChoiceMenuItem;
 	using IG::BaseDualTextMenuItem;
 	using IG::DualTextMenuItem;
-	using IG::MenuItemI;
 	using IG::MenuItemDrawAttrs;
 	using IG::MenuId;
 	using IG::defaultMenuId;
@@ -1144,9 +1160,11 @@ export namespace boost::static_strings
 
 export namespace IG
 {
-	// access common types without qualification
+	// access common types/functions without qualification
+	using ::realpath;
 	using std::size_t;
 	using ::ssize_t;
+	using ::off_t;
 	using std::uint8_t;
 	using std::uint16_t;
 	using std::uint32_t;

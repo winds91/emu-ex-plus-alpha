@@ -18,12 +18,13 @@ import imagine;
 import tests;
 import std;
 
-using namespace tests;
+export namespace frameRateTest
+{
 
-export class TestPicker : public IG::TableView
+class TestPicker : public TableView
 {
 public:
-	TestPicker(IG::ViewAttachParams attach):
+	TestPicker(ViewAttachParams attach):
 		TableView{attach,	testEntry} {}
 
 	template<class App>
@@ -52,7 +53,7 @@ public:
 							auto &entry = testEntry[i];
 							auto fps = double(test.frames-1) / duration_cast<FloatSeconds>(diff).count();
 							entry.set2ndName(std::format("{:.2f}", fps).data());
-							entry.text2Color = test.droppedFrames ? IG::Gfx::ColorName::RED : IG::Gfx::ColorName::WHITE;
+							entry.text2Color = test.droppedFrames ? Gfx::ColorName::RED : Gfx::ColorName::WHITE;
 						};
 				});
 			testParam.emplace_back(desc.params);
@@ -62,7 +63,9 @@ public:
 	}
 
 private:
-	static constexpr IG::SystemLogger log{"TestPicker"};
-	std::vector<IG::DualTextMenuItem> testEntry;
+	static constexpr SystemLogger log{"TestPicker"};
+	std::vector<DualTextMenuItem> testEntry;
 	std::vector<TestParams> testParam;
 };
+
+}

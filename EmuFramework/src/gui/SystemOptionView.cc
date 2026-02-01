@@ -57,7 +57,7 @@ SystemOptionView::SystemOptionView(ViewAttachParams attach, bool customMenu):
 				t.resetString(std::format("{}", app().autosaveManager.saveTimer.frequency));
 				return true;
 			},
-			.defaultItemOnSelect = [this](TextMenuItem &item) { app().autosaveManager.saveTimer.frequency = IG::Minutes{item.id}; }
+			.defaultItemOnSelect = [this](TextMenuItem &item) { app().autosaveManager.saveTimer.frequency = Minutes{item.id}; }
 		},
 	},
 	autosaveLaunchItem

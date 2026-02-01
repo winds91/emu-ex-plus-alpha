@@ -14,12 +14,12 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 module;
-
+#include <imagine/base/ApplicationContext.hh>
+#include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/utility.hh>
-#include <jni.h>
+#include <imagine/util/jni.hh>
 
 module imagine.internal.android:surface;
-import imagine;
 
 namespace IG
 {

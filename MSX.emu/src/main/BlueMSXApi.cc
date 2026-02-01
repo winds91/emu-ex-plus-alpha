@@ -36,17 +36,16 @@ extern "C"
 	#include <blueMSX/Emulator/AppConfig.h>
 	#include <blueMSX/Z80/R800Debug.h>
 }
-
+import system;
 import imagine;
 import std;
 
-namespace EmuEx { static IG::SystemLogger log{"MSX.emu"}; }
-
 using namespace IG;
+using namespace EmuEx;
 
 int archCreateDirectory(const char* pathname)
 {
-    if(!IG::FS::create_directory(pathname))
+    if(!FS::create_directory(pathname))
     	return -1;
     return 0;
 }
@@ -54,7 +53,7 @@ int archCreateDirectory(const char* pathname)
 // needed by machineGetAvailable(), should never be called
 const char* appConfigGetString(const char* key, const char* defVal)
 {
-	IG::unreachable();
+	unreachable();
 	return 0;
 }
 
@@ -73,24 +72,24 @@ UInt32 archGetHiresTimer()
 	return std::chrono::duration_cast<Milliseconds>(SteadyClock::now().time_since_epoch()).count();
 }
 
-Properties* propGetGlobalProperties() { IG::unreachable(); return 0; }; // TODO: needed in Casette.c
+Properties* propGetGlobalProperties() { unreachable(); return 0; }; // TODO: needed in Casette.c
 
-ArchGlob* archGlob(const char* pattern, int flags) { IG::unreachable(); return 0; } //TODO
+ArchGlob* archGlob(const char* pattern, int flags) { unreachable(); return 0; } //TODO
 void archGlobFree(ArchGlob* globHandle) { }
 
-void archVideoOutputChange() { EmuEx::log.info("called archVideoOutputChange"); }
+void archVideoOutputChange() { MsxSystem::log.info("called archVideoOutputChange"); }
 
 void* archSemaphoreCreate(int initCount) { return 0; }
-void archSemaphoreWait(void* semaphore, int timeout) { IG::unreachable(); }
-void archSemaphoreSignal(void* semaphore) { IG::unreachable(); }
+void archSemaphoreWait(void* semaphore, int timeout) { unreachable(); }
+void archSemaphoreSignal(void* semaphore) { unreachable(); }
 void archSemaphoreDestroy(void* semaphore) { }
 
 int archMidiGetNoteOn() { return 0; }
 void archMidiUpdateVolume(int left, int right) {}
-ArchMidi* archMidiInCreate(int device, ArchMidiInCb cb, void* ref) { IG::unreachable(); return NULL; }
+ArchMidi* archMidiInCreate(int device, ArchMidiInCb cb, void* ref) { unreachable(); return NULL; }
 void archMidiInDestroy(ArchMidi* archMidi) {}
 int archMidiInGetNoteOn(ArchMidi* archMidi, int note) { return 0; }
-ArchMidi* archMidiOutCreate(int device) { IG::unreachable(); return NULL; }
+ArchMidi* archMidiOutCreate(int device) { unreachable(); return NULL; }
 void archMidiOutDestroy(ArchMidi* archMidi) {}
 void archMidiOutTransmit(ArchMidi* archMidi, UInt8 value) {}
 void archMidiLoadState(void) {}

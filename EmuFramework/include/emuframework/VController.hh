@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/config.hh>
+#include <emuframework/defs.hh>
 #include <emuframework/EmuAppHelper.hh>
 #include <emuframework/inputDefs.hh>
 #include <emuframework/EmuViewController.hh>
@@ -138,12 +138,6 @@ public:
 	bool isHighlighted[4]{};
 
 	void updateBoundingAreaGfx(Gfx::Renderer &);
-};
-
-enum class VControllerKbMode: uint8_t
-{
-	LAYOUT_1,
-	LAYOUT_2
 };
 
 class VControllerKeyboard

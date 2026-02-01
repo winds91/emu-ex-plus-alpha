@@ -13,26 +13,17 @@
 	You should have received a copy of the GNU General Public License
 	along with MSX.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "MainSystem.hh"
-import emuex;
-import imagine;
+module;
+extern "C"
+{
+	#include <blueMSX/SoundChips/AudioMixer.h>
+}
+#include <imagine/util/macros.h>
+
+module system;
 
 namespace EmuEx
 {
-
-constexpr SystemLogger log{"MSX.emu"};
-const char *EmuSystem::configFilename = "MsxEmu.config";
-int EmuSystem::forcedSoundRate = 44100;
-
-std::span<const AspectRatioInfo> MsxSystem::aspectRatioInfos()
-{
-	static constexpr AspectRatioInfo aspectRatioInfo[]
-	{
-		{"4:3 (Original)", {4, 3}},
-		EMU_SYSTEM_DEFAULT_ASPECT_RATIO_INFO_INIT
-	};
-	return aspectRatioInfo;
-}
 
 bool MsxSystem::mixerEnableOption(MixerAudioType type)
 {

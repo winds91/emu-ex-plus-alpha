@@ -50,7 +50,7 @@ bool NavView::selectNextLeftButton()
 	if(selected == -1)
 		selected = 1;
 	int elem = IG::wrapMinMax(selected - 1, 0, controls);
-	for([[maybe_unused]] auto i : iotaCount(controls))
+	for([[maybe_unused]] auto i: iotaCount(controls))
 	{
 		if(control[elem].isActive)
 		{
@@ -68,7 +68,7 @@ bool NavView::selectNextRightButton()
 	if(selected == -1)
 		selected = controls - 2;
 	int elem = IG::wrapMinMax(selected + 1, 0, controls);
-	for([[maybe_unused]] auto i : iotaCount(controls))
+	for([[maybe_unused]] auto i: iotaCount(controls))
 	{
 		if(control[elem].isActive)
 		{

@@ -58,7 +58,7 @@ static void handledFailedBTAdapterInit(ViewT& view, [[maybe_unused]] ViewAttachP
 }
 
 MainMenuView::MainMenuView(ViewAttachParams attach, bool customMenu):
-	TableView{EmuApp::mainViewName(), attach, item},
+	TableView{AppMeta::mainViewName, attach, item},
 	loadGame
 	{
 		"Open Content", attach,
@@ -216,7 +216,7 @@ MainMenuView::MainMenuView(ViewAttachParams attach, bool customMenu):
 		"About", attach,
 		[this](const Input::Event &e)
 		{
-			pushAndShow(makeView<CreditsView>(EmuSystem::creditsViewStr), e);
+			pushAndShow(makeView<CreditsView>(AppMeta::creditsViewStr), e);
 		}
 	},
 	exitApp
@@ -301,7 +301,7 @@ void MainMenuView::loadFileBrowserItems()
 {
 	item.emplace_back(&loadGame);
 	item.emplace_back(&recentGames);
-	if(EmuSystem::hasBundledGames && app().showsBundledGames)
+	if(AppMeta::hasBundledGames() && app().showsBundledGames)
 	{
 		item.emplace_back(&bundledGames);
 	}
@@ -341,7 +341,7 @@ OptionCategoryView::OptionCategoryView(ViewAttachParams attach):
 		{
 			return msg.visit(overloaded
 			{
-				[&](const ItemsMessage&) -> ItemReply { return EmuApp::hasGooglePlayStoreFeatures() ? std::size(subConfig) : std::size(subConfig)-1; },
+				[&](const ItemsMessage&) -> ItemReply { return AppMeta::hasGooglePlayStoreFeatures ? std::size(subConfig) : std::size(subConfig)-1; },
 				[&](const GetItemMessage& m) -> ItemReply { return &subConfig[m.idx]; },
 			});
 		}
@@ -399,7 +399,7 @@ OptionCategoryView::OptionCategoryView(ViewAttachParams attach):
 		}
 	}
 {
-	if(EmuApp::hasGooglePlayStoreFeatures())
+	if(AppMeta::hasGooglePlayStoreFeatures)
 	{
 		subConfig[lastIndex(subConfig)] =
 		{

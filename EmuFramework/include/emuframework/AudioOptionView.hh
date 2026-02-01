@@ -46,10 +46,10 @@ protected:
 	BoolMenuItem addSoundBuffersOnUnderrun;
 	StaticArrayList<TextMenuItem, 5> audioRateItem;
 	MultiChoiceMenuItem audioRate;
-	ConditionalMember<IG::Audio::Manager::HAS_SOLO_MIX, BoolMenuItem> audioSoloMix;
+	ConditionalMember<Audio::Manager::HAS_SOLO_MIX, BoolMenuItem> audioSoloMix;
 	using ApiItemContainer = StaticArrayList<TextMenuItem, Audio::systemApis.size() + 1>;
-	ConditionalMember<IG::Audio::Config::MULTIPLE_SYSTEM_APIS, ApiItemContainer> apiItem;
-	ConditionalMember<IG::Audio::Config::MULTIPLE_SYSTEM_APIS, MultiChoiceMenuItem> api;
+	ConditionalMember<Audio::Config::MULTIPLE_SYSTEM_APIS, ApiItemContainer> apiItem;
+	ConditionalMember<Audio::Config::MULTIPLE_SYSTEM_APIS, MultiChoiceMenuItem> api;
 	StaticArrayList<MenuItem*, 22> item;
 };
 

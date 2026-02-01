@@ -15,6 +15,7 @@
 
 #include <emuframework/VController.hh>
 #include <emuframework/EmuInput.hh>
+#include <emuframework/InputManager.hh>
 import imagine;
 
 namespace EmuEx
@@ -37,8 +38,8 @@ void VControllerDPad::updateBoundingAreaGfx(Gfx::Renderer &r)
 	MemPixmap mapMemPix{{padArea.size(), PixelFmtRGB565}};
 	auto mapPix = mapMemPix.view();
 	auto pixels = mapPix.mdspan<uint16_t>();
-	for(auto y : iotaCount(pixels.extent(0)))
-		for(auto x : iotaCount(pixels.extent(1)))
+	for(auto y: iotaCount(pixels.extent(0)))
+		for(auto x: iotaCount(pixels.extent(1)))
 		{
 			auto input = getInput({padArea.xPos(LT2DO) + int(x), padArea.yPos(LT2DO) + int(y)});
 			//log.info("got input {}", input);

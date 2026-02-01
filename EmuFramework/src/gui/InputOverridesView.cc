@@ -129,10 +129,10 @@ InputOverridesDeviceView::InputOverridesDeviceView(UTF16String name, ViewAttachP
 	{
 		[&]
 		{
-			DynArray<TextMenuItem> items{EmuSystem::maxPlayers + 2uz};
+			DynArray<TextMenuItem> items{AppMeta::maxPlayers + 2uz};
 			items[0] = {"Default", attach, {.id = playerIndexUnset}};
 			items[1] = {"Multiple", attach, {.id = playerIndexMulti}};
-			for(auto i : iotaCount(EmuSystem::maxPlayers))
+			for(auto i: iotaCount(AppMeta::maxPlayers))
 			{
 				items[i + 2] = {playerNumStrings[i], attach, {.id = i}};
 			}
@@ -189,7 +189,7 @@ InputOverridesDeviceView::InputOverridesDeviceView(UTF16String name, ViewAttachP
 void InputOverridesDeviceView::loadItems()
 {
 	items.clear();
-	if(EmuSystem::maxPlayers > 1)
+	if(AppMeta::maxPlayers > 1)
 	{
 		items.emplace_back(&player);
 	}

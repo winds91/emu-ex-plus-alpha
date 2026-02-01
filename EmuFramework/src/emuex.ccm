@@ -14,8 +14,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 module;
-
-#include <emuframework/config.hh>
+#include <emuframework/defs.hh>
 #include <emuframework/AssetManager.hh>
 #include <emuframework/AutosaveManager.hh>
 #include <emuframework/EmuApp.hh>
@@ -43,31 +42,24 @@ module;
 #include <emuframework/OutSizeTracker.hh>
 #include <emuframework/keyRemappingUtils.hh>
 
+#if __has_include (<mednafen-emuex/MDFNUtils.hh>)
+	#ifndef HAVE_CONFIG_H
+	#define HAVE_CONFIG_H
+	#endif
+	#define MDFN_UTILS
+	#include <mednafen-emuex/MDFNUtils.hh>
+	#include <mednafen-emuex/ArchiveVFS.hh>
+#endif
+
 export module emuex;
 
 export namespace EmuEx
 {
-	using EmuEx::VCONTROLS_GAMEPAD;
-	using EmuEx::HAS_MULTIPLE_WINDOW_PIXEL_FORMATS;
-	using EmuEx::MOGA_INPUT;
-	using EmuEx::CAN_HIDE_TITLE_BAR;
-	using EmuEx::enableFullFrameTimingStats;
-	using EmuEx::hasICadeInput;
 	using EmuEx::AssetManager;
 	using EmuEx::AssetDesc;
 	using EmuEx::AssetFileID;
 	using EmuEx::AssetID;
 	using EmuEx::SaveStateFlags;
-	using EmuEx::AutosaveManager;
-	using EmuEx::AutosaveActionSource;
-	using EmuEx::AutosaveLaunchMode;
-	using EmuEx::LoadAutosaveMode;
-	using EmuEx::defaultAutosaveFilename;
-	using EmuEx::noAutosaveName;
-	using EmuEx::maxAutosaveSaveFreq;
-	using EmuEx::RewindManager;
-	using EmuEx::RecentContent;
-	using EmuEx::RecentContentInfo;
 	using EmuEx::ConfigType;
 	using EmuEx::ConfigKey;
 	using EmuEx::readOptionValue;
@@ -80,56 +72,39 @@ export namespace EmuEx
 	using EmuEx::writeStringOptionValueIfNotDefault;
 	using EmuEx::writeSizedData;
 	using EmuEx::sizedDataBytes;
-	using EmuEx::windowPixelFormatIsValid;
-	using EmuEx::isValidAspectRatio;
-	using EmuEx::optionContentScaleIntegerOnly;
-	using EmuEx::optionContentScaleIntegerOnlyY;
 	using EmuEx::optionSavePathDefaultToken;
 	using EmuEx::optionUserPathContentToken;
-	using EmuEx::defaultAudioFlags;
+	using EmuEx::isValidWithMax;
+	using EmuEx::isValidWithMinMax;
+	using EmuEx::isValidProperty;
+	using EmuEx::AutoTristate;
 	using EmuEx::InEmuTristate;
+	using EmuEx::AppMeta;
+	using EmuEx::NameFilterFunc;
 	using EmuEx::EmuApp;
 	using EmuEx::EmuAppHelper;
+	using EmuEx::EmuAppHelperBase;
 	using EmuEx::gApp;
 	using EmuEx::gAppContext;
-	using EmuEx::menuVideoBrightnessScale;
 	using EmuEx::EmuSystem;
 	using EmuEx::EmuSystemTask;
 	using EmuEx::EmuSystemTaskContext;
 	using EmuEx::EmuSystemCreateParams;
 	using EmuEx::gSystem;
-	using EmuEx::EmuFrameTimingInfo;
 	using EmuEx::EmuTiming;
 	using EmuEx::EmuAudio;
 	using EmuEx::EmuVideo;
 	using EmuEx::EmuVideoImage;
 	using EmuEx::EmuVideoLayer;
-	using EmuEx::EmuViewController;
-	using EmuEx::EmuView;
-	using EmuEx::AltSpeedMode;
-	using EmuEx::ImageChannel;
+	using EmuEx::AspectRatioInfo;
+	using EmuEx::DeinterlaceMode;
 	using EmuEx::VideoSystem;
-	using EmuEx::OutputTimingManager;
-	using EmuEx::OutputFrameRateMode;
-	using EmuEx::FrameTimingStatEvent;
 	using EmuEx::FrameDuration;
-	using EmuEx::FrameRateConfig;
-	using EmuEx::FrameRateDetector;
 	using EmuEx::InputManager;
 	using EmuEx::InputAction;
 	using EmuEx::VController;
-	using EmuEx::BaseVControllerButtonGroup;
-	using EmuEx::VControllerButtonGroup;
-	using EmuEx::VControllerUIButtonGroup;
-	using EmuEx::VControllerDPad;
 	using EmuEx::VControllerKeyboard;
-	using EmuEx::VControllerButton;
-	using EmuEx::VControllerButtonGroup;
-	using EmuEx::VControllerElement;
-	using EmuEx::VControllerState;
-	using EmuEx::VControllerVisibility;
 	using EmuEx::VControllerKbMode;
-	using EmuEx::defaultButtonSpacingMM;
 	using EmuEx::KeyConfig;
 	using EmuEx::KeyConfigDesc;
 	using EmuEx::KeyCode;
@@ -142,23 +117,13 @@ export namespace EmuEx
 	using EmuEx::genericGamepadModifierAppKeyCodeMap;
 	using EmuEx::SystemKeyInputFlags;
 	using EmuEx::KeyInfo;
-	using EmuEx::MappedKeys;
-	using EmuEx::playerIndexMulti;
-	using EmuEx::playerIndexUnset;
-	using EmuEx::playerNumStrings;
-	using EmuEx::InputDeviceSavedConfig;
-	using EmuEx::InputDeviceSavedSessionConfig;
-	using EmuEx::InputDeviceConfig;
-	using EmuEx::TurboInput;
-	using EmuEx::ToggleInput;
+	using EmuEx::SystemInputDeviceDesc;
+	using EmuEx::InputComponentDesc;
+	using EmuEx::InputComponent;
 	using EmuEx::AxisAsDpadFlags;
+	using EmuEx::BundledGameInfo;
 	using EmuEx::toString;
-	using EmuEx::VideoImageEffect;
-	using EmuEx::ImageEffectId;
-	using EmuEx::VideoImageOverlay;
-	using EmuEx::ImageOverlayId;
-	using EmuEx::ButtonConfigView;
-	using EmuEx::InputManagerView;
+	using EmuEx::AppNavView;
 	using EmuEx::LoadProgressView;
 	using EmuEx::EmuInputView;
 	using EmuEx::MainMenuView;
@@ -186,4 +151,33 @@ export namespace EmuEx
 	using EmuEx::turbo;
 	using EmuEx::transpose;
 	using EmuEx::genericKeyConfigs;
+	using EmuEx::Cheat;
+	using EmuEx::CheatCode;
+	using EmuEx::CheatCodeDesc;
+	using EmuEx::BaseEditCheatView;
+	using EmuEx::BaseEditCheatsView;
+	using EmuEx::CheatsView;
+
+	#ifdef MDFN_UTILS
+	using EmuEx::toMDFNSurface;
+	using EmuEx::stateFilenameMDFN;
+	using EmuEx::saveExtMDFN;
+	using EmuEx::savePathMDFN;
+	using EmuEx::saveFilenameTypeMenuItem;
+	using EmuEx::loadContent;
+	using EmuEx::runFrame;
+	using EmuEx::stateSizeMDFN;
+	using EmuEx::readStateMDFN;
+	using EmuEx::writeStateMDFN;
+	using EmuEx::writeCDMD5;
+	using EmuEx::clearCDInterfaces;
+	#endif
 }
+
+#ifdef MDFN_UTILS
+export namespace Mednafen
+{
+	using Mednafen::DriveMediaStatus;
+	using Mednafen::ArchiveVFS;
+}
+#endif

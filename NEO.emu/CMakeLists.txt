@@ -20,4 +20,7 @@ target_compile_definitions(neoemu PRIVATE
 	$<$<COMPILE_LANGUAGE:C,CXX>:HAVE_CONFIG_H LSB_FIRST>
 )
 target_compile_options(neoemu PRIVATE $<$<COMPILE_LANGUAGE:C,CXX>:-Wno-sign-compare -Wno-unused-parameter -Wno-unused-function>)
+if(CMAKE_C_COMPILER_ID MATCHES "GNU")
+	target_compile_options(neoemu PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wno-global-module>)
+endif()
 add_subdirectory(src)

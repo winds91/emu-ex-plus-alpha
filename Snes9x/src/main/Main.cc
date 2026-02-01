@@ -1,35 +1,34 @@
-#include <emuframework/EmuSystemInlines.hh>
-#include <emuframework/EmuAppInlines.hh>
+/*  This file is part of Snes9x EX.
 
+	Please see COPYING file in root directory for license information. */
+
+module;
+#include <snes9x.h>
 #include <memmap.h>
 #include <display.h>
 #include <snapshot.h>
 #include <cheats.h>
 #ifndef SNES9X_VERSION_1_4
 #include <apu/bapu/snes/snes.hpp>
+#include <apu/apu.h>
 #else
 #include <soundux.h>
 #endif
 #include <zlib.h>
 
-import imagine;
+module system;
 
 #ifdef SNES9X_VERSION_1_4
-bool8 S9xDeinitUpdate(int width, int height);
-bool8 S9xDeinitUpdate(int width, int height, bool8) { return S9xDeinitUpdate(width, height); }
-static bool S9xInterlaceField()
-{
-	return (Memory.FillRAM[0x213F] & 0x80) >> 7;
-}
+extern "C++" bool8 S9xDeinitUpdate(int width, int height);
+extern "C" bool8 S9xDeinitUpdate(int width, int height, bool8) { return S9xDeinitUpdate(width, height); }
+static bool S9xInterlaceField() { return (Memory.FillRAM[0x213F] & 0x80) >> 7; }
 #endif
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"Snes9x"};
-const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nSnes9x Team\nwww.snes9x.com";
 #if PIXEL_FORMAT == RGB565
-constexpr auto srcPixFmt = IG::PixelFmtRGB565;
+constexpr auto srcPixFmt = PixelFmtRGB565;
 #else
 #error "incompatible PIXEL_FORMAT value"
 #endif
@@ -37,41 +36,9 @@ static EmuSystemTaskContext emuSysTask{};
 static EmuVideo *emuVideo{};
 constexpr auto SNES_HEIGHT_480i = SNES_HEIGHT * 2;
 constexpr auto SNES_HEIGHT_EXTENDED_480i = SNES_HEIGHT_EXTENDED * 2;
-bool EmuSystem::hasCheats = true;
-bool EmuSystem::hasPALVideoSystem = true;
-bool EmuSystem::hasResetModes = true;
-bool EmuSystem::canRenderRGBA8888 = false;
-bool EmuSystem::hasRectangularPixels = true;
-bool EmuApp::needsGlobalInstance = true;
 
-EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter =
-	[](std::string_view name)
-	{
-		return IG::endsWithAnyCaseless(name, ".smc", ".sfc", ".swc", ".bs", ".st", ".fig", ".mgd");
-	};
-
-Snes9xApp::Snes9xApp(ApplicationInitParams initParams, ApplicationContext &ctx):
-	EmuApp{initParams, ctx}, snes9xSystem{ctx} {}
-
-const BundledGameInfo &EmuSystem::bundledGameInfo(int) const
-{
-	static constexpr BundledGameInfo info[]
-	{
-		{"Bio Worm", Config::envIsLinux ? "BioWorm.7z" : "Bio Worm.7z"}
-	};
-
-	return info[0];
-}
-
-const char *EmuSystem::shortSystemName() const
-{
-	return "SFC-SNES";
-}
-
-const char *EmuSystem::systemName() const
-{
-	return "Super Famicom (SNES)";
-}
+extern "C++" std::string_view EmuSystem::shortSystemName() const { return "SFC-SNES"; }
+extern "C++" std::string_view EmuSystem::systemName() const { return "Super Famicom (SNES)"; }
 
 MutablePixmapView Snes9xSystem::fbPixmapView(WSize size, bool useInterlaceFields)
 {
@@ -110,7 +77,7 @@ void Snes9xSystem::reset(EmuApp &, ResetMode mode)
 
 FS::FileString Snes9xSystem::stateFilename(int slot, std::string_view name) const
 {
-	return IG::format<FS::FileString>("{}.0{}." FREEZE_EXT, name, saveSlotCharUpper(slot));
+	return format<FS::FileString>("{}.0{}." FREEZE_EXT, name, saveSlotCharUpper(slot));
 }
 
 std::string_view Snes9xSystem::stateFilenameExt() const { return "." FREEZE_EXT; }
@@ -221,7 +188,7 @@ static bool isSufamiTurboBios(const IOBuffer &buff)
 
 bool Snes9xSystem::hasBiosExtension(std::string_view name)
 {
-	return IG::endsWithAnyCaseless(name, ".bin", ".bios");
+	return endsWithAnyCaseless(name, ".bin", ".bios");
 }
 
 IOBuffer Snes9xSystem::readSufamiTurboBios() const
@@ -259,7 +226,7 @@ void Snes9xSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDele
 		throw std::runtime_error("ROM is too large");
 	}
 	#ifndef SNES9X_VERSION_1_4
-	IG::fill(Memory.NSRTHeader);
+	fill(Memory.NSRTHeader);
 	#endif
 	Memory.HeaderCount = 0;
 	auto forceVideoSystemSettings = [&]() -> std::pair<bool, bool> // ForceNTSC, ForcePAL
@@ -387,20 +354,10 @@ void Snes9xSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAu
 	#endif
 }
 
-void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
+}
+
+extern "C++"
 {
-	const Gfx::LGradientStopDesc navViewGrad[] =
-	{
-		{ .0, Gfx::PackedColor::format.build((139./255.) * .4, (149./255.) * .4, (230./255.) * .4, 1.) },
-		{ .3, Gfx::PackedColor::format.build((139./255.) * .4, (149./255.) * .4, (230./255.) * .4, 1.) },
-		{ .97, Gfx::PackedColor::format.build((46./255.) * .4, (50./255.) * .4, (77./255.) * .4, 1.) },
-		{ 1., view.separatorColor() },
-	};
-	view.setBackgroundGradient(navViewGrad);
-}
-
-}
-
 bool8 S9xDeinitUpdate (int width, int height)
 {
 	using namespace EmuEx;
@@ -426,3 +383,4 @@ bool8 S9xContinueUpdate(int width, int height)
 	return S9xDeinitUpdate(width, height);
 }
 #endif
+}

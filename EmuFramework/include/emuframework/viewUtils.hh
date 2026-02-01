@@ -15,12 +15,13 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#ifndef IG_USE_MODULE_IMAGINE
+#ifdef IG_USE_MODULES
+import imagine;
+import std;
+#else
 #include <imagine/gui/TextEntry.hh>
 #include <imagine/gui/MenuItem.hh>
 #include <imagine/util/concepts.hh>
-#endif
-#ifndef IG_USE_MODULE_STD
 #include <cstdio>
 #endif
 
@@ -104,7 +105,7 @@ inline void pushAndShowNewCollectTextInputView(ViewAttachParams attach, const In
 
 template<class T, ScanValueMode mode = ScanValueMode::Normal>
 inline void pushAndShowNewCollectValueInputView(ViewAttachParams attach, const Input::Event& e,
-	CStringView msgText, CStringView initialContent, IG::Callable<bool, CollectTextInputView&, T> auto&& collectedValueFunc)
+	CStringView msgText, CStringView initialContent, Callable<bool, CollectTextInputView&, T> auto&& collectedValueFunc)
 {
 	pushAndShowNewCollectTextInputView(attach, e, msgText, initialContent,
 		[collectedValueFunc](CollectTextInputView& view, const char* str)
@@ -134,7 +135,7 @@ inline void pushAndShowNewCollectValueInputView(ViewAttachParams attach, const I
 
 template<class T, auto low, auto high>
 inline void pushAndShowNewCollectValueRangeInputView(ViewAttachParams attach, const Input::Event& e,
-	CStringView msgText, CStringView initialContent, IG::Callable<bool, CollectTextInputView&, T> auto&& collectedValueFunc)
+	CStringView msgText, CStringView initialContent, Callable<bool, CollectTextInputView&, T> auto&& collectedValueFunc)
 {
 	pushAndShowNewCollectValueInputView<T>(attach, e, msgText, initialContent,
 		[collectedValueFunc](CollectTextInputView& view, auto val)

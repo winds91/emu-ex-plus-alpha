@@ -15,9 +15,11 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuInput.hh>
+#include <emuframework/inputDefs.hh>
 #include <emuframework/EmuSystem.hh>
-#ifndef IG_USE_MODULE_STD
+#ifdef IG_USE_MODULES
+import std;
+#else
 #include <array>
 #include <string_view>
 #endif
@@ -76,8 +78,6 @@ inline constexpr struct AppKeys
 	constexpr const KeyInfo *data() const { return &openMenu; }
 	static constexpr size_t size() { return sizeof(AppKeys) / sizeof(KeyInfo); }
 } appKeys;
-
-inline constexpr KeyCategory appKeyCategory{"In-Emulation Actions", appKeys};
 
 inline constexpr std::array genericGamepadAppKeyCodeMap
 {

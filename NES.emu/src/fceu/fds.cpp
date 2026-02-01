@@ -228,7 +228,7 @@ void FCEU_FDSSelect(void)
 	FCEU_DispMessage("Disk %d Side %c Selected", 0, SelectDisk >> 1, (SelectDisk & 1) ? 'B' : 'A');
 }
 
-void FCEU_FDSSetDisk(uint8 side, EmuEx::NesSystem &sys)
+void FCEU_FDSSetDisk(uint8 side, EmuEx::NesSystemHolder& sys)
 {
 	if(side >= TotalSides)
 		return;

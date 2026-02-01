@@ -15,6 +15,7 @@
 
 #include "InputDeviceData.hh"
 #include <emuframework/EmuInput.hh>
+#include <emuframework/InputManager.hh>
 import imagine;
 
 namespace EmuEx

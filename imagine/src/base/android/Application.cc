@@ -14,8 +14,10 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/base/Application.hh>
+#include <imagine/fs/FS.hh>
 #include <imagine/util/ScopeGuard.hh>
 #include <imagine/util/utility.hh>
+#include <imagine/util/format.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <android/window.h>
 #include <android/configuration.h>

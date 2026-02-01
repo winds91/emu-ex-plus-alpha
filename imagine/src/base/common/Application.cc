@@ -20,7 +20,7 @@
 namespace IG
 {
 
-const char *copyright = "Imagine is Copyright 2010-2025 Robert Broglia";
+const char *copyright = "Imagine is Copyright 2010-2026 Robert Broglia";
 static SystemLogger log{"App"};
 
 BaseApplication::BaseApplication(ApplicationContext ctx)

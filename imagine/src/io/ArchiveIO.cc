@@ -13,9 +13,13 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <imagine/util/utility.hh>
 #include <imagine/io/ArchiveIO.hh>
+#include <imagine/io/FileIO.hh>
+#include <imagine/io/IO.hh>
+#include <imagine/io/IOUtils-impl.hh>
+#include <imagine/fs/FSDefs.hh>
 #include <imagine/util/variant.hh>
+#include <imagine/util/utility.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <archive.h>
 #include <archive_entry.h>

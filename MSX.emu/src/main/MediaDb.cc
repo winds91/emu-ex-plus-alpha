@@ -43,9 +43,10 @@ extern "C" {
 #define BOOST_STATIC_ASSERT( ... ) static_assert(__VA_ARGS__, #__VA_ARGS__)
 #include "../uuid/sha1.hpp"
 import imagine;
+import system;
 import std;
 
-namespace EmuEx { static IG::SystemLogger log{"MSX.emu"}; }
+using namespace EmuEx;
 
 struct RomDBInfo
 {
@@ -554,7 +555,7 @@ extern "C" MediaType* mediaDbLookupRom(const void *buffer, int size)
 		sha1.process_bytes(buffer, size);
 		unsigned int digest[5];
 		sha1.get_digest(digest);
-		EmuEx::log.info("rom sha1 {:X} {:X} {:X} {:X} {:X}", digest[0], digest[1], digest[2], digest[3], digest[4]);
+		MsxSystem::log.info("rom sha1 {:X} {:X} {:X} {:X} {:X}", digest[0], digest[1], digest[2], digest[3], digest[4]);
 
 		for(auto e : romDB)
 		{
@@ -567,13 +568,13 @@ extern "C" MediaType* mediaDbLookupRom(const void *buffer, int size)
 			}
 			if(match == 5)
 			{
-				EmuEx::log.info("found match with type:{}", romTypeToString(e.romType));
+				MsxSystem::log.info("found match with type:{}", romTypeToString(e.romType));
 				staticMediaType = e.romType;
 				return &staticMediaType;
 			}
 		}
 
-		EmuEx::log.info("rom not in DB");
+		MsxSystem::log.info("rom not in DB");
 		return nullptr;
 
     /*MediaType* mediaType = mediaDbLookup(romdb, buffer, size);
@@ -624,7 +625,7 @@ extern "C" MediaType* mediaDbGuessRom(const void *buffer, int size)
         return mediaType;
     }
 
-    EmuEx::log.info("detecting ROM type");
+    MsxSystem::log.info("detecting ROM type");
 
     BoardType boardType = boardGetType();
 
