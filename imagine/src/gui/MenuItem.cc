@@ -327,7 +327,7 @@ int MultiChoiceMenuItem::idxOfId(MenuId id)
 	auto count = items();
 	auto src = itemSrc;
 	MenuId lastId{};
-	for(auto i : iotaCount(count))
+	for(auto i: iotaCount(count))
 	{
 		lastId = item(src, i).id;
 		if(lastId == id)

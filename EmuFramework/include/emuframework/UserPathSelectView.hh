@@ -41,7 +41,7 @@ public:
 			"Select Folder", attach,
 			[=](View &view, const Input::Event &e)
 			{
-				auto fPicker = view.makeView<FilePicker>(FSPicker::Mode::DIR, EmuSystem::NameFilterFunc{}, e);
+				auto fPicker = view.makeView<FilePicker>(FSPicker::Mode::DIR, NameFilterFunc{}, e);
 				auto &thisView = asThis(view);
 				fPicker->setPath(thisView.searchDir, e);
 				fPicker->setOnSelectPath(
@@ -92,7 +92,7 @@ protected:
 	static UserPathSelectView &asThis(View &view) { return static_cast<UserPathSelectView&>(view); }
 };
 
-inline FS::FileString userPathToDisplayName(IG::ApplicationContext ctx, std::string_view userPathStr)
+inline FS::FileString userPathToDisplayName(ApplicationContext ctx, std::string_view userPathStr)
 {
 	if(userPathStr.size())
 	{
@@ -107,17 +107,17 @@ inline FS::FileString userPathToDisplayName(IG::ApplicationContext ctx, std::str
 	}
 }
 
-inline auto cheatsMenuName(IG::ApplicationContext ctx, std::string_view userPath)
+inline auto cheatsMenuName(ApplicationContext ctx, std::string_view userPath)
 {
 	return std::format("Cheats: {}", std::string_view{userPathToDisplayName(ctx, userPath)});
 }
 
-inline auto patchesMenuName(IG::ApplicationContext ctx, std::string_view userPath)
+inline auto patchesMenuName(ApplicationContext ctx, std::string_view userPath)
 {
 	return std::format("Patches: {}", std::string_view{userPathToDisplayName(ctx, userPath)});
 }
 
-inline auto palettesMenuName(IG::ApplicationContext ctx, std::string_view userPath)
+inline auto palettesMenuName(ApplicationContext ctx, std::string_view userPath)
 {
 	return std::format("Palettes: {}", std::string_view{userPathToDisplayName(ctx, userPath)});
 }

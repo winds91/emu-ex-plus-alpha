@@ -13,8 +13,9 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "MainSystem.hh"
-
+module;
+#include <cstdlib>
+#include <imagine/util/macros.h>
 extern "C"
 {
 	#include "c64model.h"
@@ -25,28 +26,16 @@ extern "C"
 	#include "plus4model.h"
 	#include "vic20model.h"
 	#include "drive.h"
+	#include "vicii.h"
+	#include "sid.h"
 }
 
-import emuex;
-import imagine;
+module system;
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"C64.emu"};
-const char *EmuSystem::configFilename = "C64Emu.config";
-
-std::span<const AspectRatioInfo> C64System::aspectRatioInfos()
-{
-	static constexpr AspectRatioInfo aspectRatioInfo[]
-	{
-		{"4:3 (Original)", {4, 3}},
-		EMU_SYSTEM_DEFAULT_ASPECT_RATIO_INFO_INIT
-	};
-	return aspectRatioInfo;
-}
-
-void C64System::setPaletteResources(const char *palName)
+void C64System::setPaletteResources(const char* palName)
 {
 	if(palName && strlen(palName))
 	{
@@ -66,12 +55,12 @@ bool C64System::usingExternalPalette() const
 	return intResource(externalPaletteResStr.data());
 }
 
-const char *C64System::externalPaletteName() const
+const char* C64System::externalPaletteName() const
 {
 	return stringResource(paletteFileResStr.data());
 }
 
-const char *C64System::paletteName() const
+const char* C64System::paletteName() const
 {
 	if(usingExternalPalette())
 		return externalPaletteName();
@@ -115,12 +104,12 @@ void C64System::onOptionsLoaded()
 	setReSidSampling(defaultReSidSampling);
 }
 
-void C64System::onSessionOptionsLoaded(EmuApp &)
+void C64System::onSessionOptionsLoaded(EmuApp&)
 {
 	setJoystickMode(joystickMode);
 }
 
-bool C64System::resetSessionOptions(EmuApp &)
+bool C64System::resetSessionOptions(EmuApp&)
 {
 	if(initC64(EmuApp::get(appContext())))
 	{
@@ -238,7 +227,7 @@ bool C64System::readConfig(ConfigType type, MapIO &io, unsigned key)
 	return false;
 }
 
-void C64System::writeConfig(ConfigType type, FileIO &io)
+void C64System::writeConfig(ConfigType type, FileIO& io)
 {
 	if(type == ConfigType::MAIN)
 	{

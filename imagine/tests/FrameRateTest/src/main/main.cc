@@ -25,14 +25,13 @@ namespace frameRateTest
 
 using namespace IG;
 using namespace cpuUtils;
-using namespace tests;
 
 constexpr SystemLogger log{"main"};
 constexpr unsigned framesToRun = 60*60;
 
 struct WindowData
 {
-	WindowData(IG::ViewAttachParams attachParams):picker{attachParams} {}
+	WindowData(ViewAttachParams attachParams):picker{attachParams} {}
 
 	Gfx::Mat4 projM;
 	WRect testRect{};
@@ -40,30 +39,30 @@ struct WindowData
 	std::unique_ptr<TestFramework> activeTest{};
 };
 
-static WindowData &windowData(const IG::Window &win)
+static WindowData &windowData(const Window &win)
 {
 	return *win.appData<WindowData>();
 }
 
-class FrameRateTestApplication final: public IG::Application
+class FrameRateTestApplication final: public Application
 {
 public:
-	FrameRateTestApplication(IG::ApplicationInitParams initParams, IG::ApplicationContext& ctx):
+	FrameRateTestApplication(ApplicationInitParams initParams, ApplicationContext& ctx):
 		Application{initParams},
 		fontManager{ctx},
 		renderer{ctx}
 	{
-		IG::WindowConfig winConf{ .title = ApplicationMeta::name };
+		WindowConfig winConf{ .title = ApplicationMeta::name };
 
 		ctx.makeWindow(winConf,
-			[this](IG::ApplicationContext ctx, IG::Window &win)
+			[this](ApplicationContext ctx, Window &win)
 			{
 				renderer.initMainTask(&win);
 				Gfx::GlyphTextureSet defaultFace{renderer, fontManager.makeSystem(), win.heightScaledMMInPixels(2.5)};
 				defaultFace.precacheAlphaNum(renderer);
 				defaultFace.precache(renderer, ":.%()");
 				viewManager.defaultFace = std::move(defaultFace);
-				auto &winData = win.makeAppData<WindowData>(IG::ViewAttachParams{viewManager, win, renderer.task()});
+				auto &winData = win.makeAppData<WindowData>(ViewAttachParams{viewManager, win, renderer.task()});
 				std::vector<TestDesc> testDescs;
 				testDescs.emplace_back(TestID::Clear, "Clear");
 				WSize pixmapSize{256, 256};
@@ -79,14 +78,14 @@ public:
 				setPickerHandlers(win);
 
 				ctx.addOnResume(
-					[&win](IG::ApplicationContext, [[maybe_unused]] bool focused)
+					[&win](ApplicationContext, [[maybe_unused]] bool focused)
 					{
 						windowData(win).picker.prepareDraw();
 						return true;
 					});
 
 				ctx.addOnExit(
-					[this, &win](IG::ApplicationContext, [[maybe_unused]] bool backgrounded)
+					[this, &win](ApplicationContext, [[maybe_unused]] bool backgrounded)
 					{
 						if(backgrounded)
 						{
@@ -115,7 +114,7 @@ public:
 		#endif
 	}
 
-	TestFramework *startTest(IG::Window& win, const TestParams& t)
+	TestFramework *startTest(Window& win, const TestParams& t)
 	{
 		auto ctx = win.appContext();
 		#ifdef __ANDROID__
@@ -144,16 +143,16 @@ public:
 	}
 
 private:
-	IG::Data::FontManager fontManager;
+	Data::FontManager fontManager;
 	Gfx::Renderer renderer;
-	IG::ViewManager viewManager;
+	ViewManager viewManager;
 	#ifdef __ANDROID__
-	std::optional<IG::RootCpufreqParamSetter> cpuFreq{};
+	std::optional<RootCpufreqParamSetter> cpuFreq{};
 	#endif
 
-	void setActiveTestHandlers(IG::Window& win)
+	void setActiveTestHandlers(Window& win)
 	{
-		win.addOnFrame([this, &win](IG::FrameParams params)
+		win.addOnFrame([this, &win](FrameParams params)
 		{
 			auto atOnFrame = SteadyClock::now();
 			auto &activeTest = windowData(win).activeTest;
@@ -195,7 +194,7 @@ private:
 				[&](const DrawEvent& e)
 				{
 					auto xIndent = viewManager.tableXIndentPx;
-					return task.draw(win, e.params, {}, [xIndent](IG::Window &win, Gfx::RendererCommands &cmds)
+					return task.draw(win, e.params, {}, [xIndent](Window &win, Gfx::RendererCommands &cmds)
 					{
 						auto &winData = windowData(win);
 						auto &activeTest = winData.activeTest;
@@ -229,7 +228,7 @@ private:
 								activeTest->shouldEndTest = true;
 								return true;
 							}
-							else if(keyEv.pushed(IG::Input::Keycode::D))
+							else if(keyEv.pushed(Input::Keycode::D))
 							{
 								log.info("posting extra draw");
 								win.postDraw();
@@ -244,7 +243,7 @@ private:
 		};
 	}
 
-	void setPickerHandlers(IG::Window& win)
+	void setPickerHandlers(Window& win)
 	{
 		win.onEvent = [this, &task = renderer.task()](Window& win, const WindowEvent& winEvent)
 		{
@@ -282,7 +281,7 @@ private:
 		};
 	}
 
-	void placeElements(const IG::Window& win)
+	void placeElements(const Window& win)
 	{
 		auto &winData = windowData(win);
 		auto &picker = winData.picker;

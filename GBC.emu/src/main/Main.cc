@@ -13,47 +13,28 @@
 	You should have received a copy of the GNU General Public License
 	along with GBC.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuAppInlines.hh>
-#include <emuframework/EmuSystemInlines.hh>
+module;
 #include <resample/resampler.h>
 #include <resample/resamplerinfo.h>
 #include <libgambatte/src/mem/cartridge.h>
-import emuex;
-import imagine;
+#include <libgambatte/src/video/lcddef.h>
+
+module system;
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"GBC.emu"};
-const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\n\nPortions (c) the\nGambatte Team\ngambatte.sourceforge.net";
-bool EmuSystem::hasCheats = true;
 constexpr WSize lcdSize{gambatte::lcd_hres, gambatte::lcd_vres};
 
-EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter =
-	[](std::string_view name)
-	{
-		return IG::endsWithAnyCaseless(name, ".gb", ".gbc", ".dmg");
-	};
-
-GbcApp::GbcApp(ApplicationInitParams initParams, ApplicationContext &ctx):
-	EmuApp{initParams, ctx}, gbcSystem{ctx} {}
-
-const char *EmuSystem::shortSystemName() const
-{
-	return "GB";
-}
-
-const char *EmuSystem::systemName() const
-{
-	return "Game Boy";
-}
+extern "C++" std::string_view EmuSystem::shortSystemName() const { return "GB"; }
+extern "C++" std::string_view EmuSystem::systemName() const { return "Game Boy"; }
 
 uint_least32_t GbcSystem::makeOutputColor(uint_least32_t rgb888) const
 {
 	unsigned b = rgb888       & 0xFF;
 	unsigned g = rgb888 >>  8 & 0xFF;
 	unsigned r = rgb888 >> 16 & 0xFF;
-	auto desc = useBgrOrder ? IG::PixelDescBGRA8888Native : IG::PixelDescRGBA8888Native;
+	auto desc = useBgrOrder ? PixelDescBGRA8888Native : PixelDescRGBA8888Native;
 	return desc.build(r, g, b, 0u);
 }
 
@@ -67,11 +48,11 @@ void GbcSystem::applyGBPalette()
 	else
 		log.info("using palette index:{}", idx);
 	const GBPalette &pal = useBuiltin ? *gameBuiltinPalette : gbPalettes()[idx];
-	for(auto i : iotaCount(4))
+	for(auto i: iotaCount(4))
 		gbEmu.setDmgPaletteColor(0, i, makeOutputColor(pal.bg[i]));
-	for(auto i : iotaCount(4))
+	for(auto i: iotaCount(4))
 		gbEmu.setDmgPaletteColor(1, i, makeOutputColor(pal.sp1[i]));
-	for(auto i : iotaCount(4))
+	for(auto i: iotaCount(4))
 		gbEmu.setDmgPaletteColor(2, i, makeOutputColor(pal.sp2[i]));
 }
 
@@ -84,7 +65,7 @@ void GbcSystem::reset(EmuApp& app, ResetMode)
 
 FS::FileString GbcSystem::stateFilename(int slot, std::string_view name) const
 {
-	return IG::format<FS::FileString>("{}.0{}.gqs", name, saveSlotCharUpper(slot));
+	return format<FS::FileString>("{}.0{}.gqs", name, saveSlotCharUpper(slot));
 }
 
 void GbcSystem::readState(EmuApp&, std::span<uint8_t> buff)
@@ -185,14 +166,14 @@ void GbcSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDelegat
 	gbEmu.saveState(frameBuffer, gambatte::lcd_hres, stream);
 }
 
-bool GbcSystem::onVideoRenderFormatChange(EmuVideo &video, IG::PixelFormat fmt)
+bool GbcSystem::onVideoRenderFormatChange(EmuVideo &video, PixelFormat fmt)
 {
 	video.setFormat({lcdSize, fmt});
-	auto isBgrOrder = fmt == IG::PixelFmtBGRA8888;
+	auto isBgrOrder = fmt == PixelFmtBGRA8888;
 	if(isBgrOrder != useBgrOrder)
 	{
 		useBgrOrder = isBgrOrder;
-		IG::MutablePixmapView frameBufferPix{{lcdSize, IG::PixelFmtRGBA8888}, frameBuffer};
+		MutablePixmapView frameBufferPix{{lcdSize, PixelFmtRGBA8888}, frameBuffer};
 		frameBufferPix.transformInPlace(
 			[](uint32_t srcPixel) // swap red/blue values
 			{
@@ -218,8 +199,8 @@ void GbcSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 	}
 }
 
-size_t GbcSystem::runUntilVideoFrame(gambatte::uint_least32_t *videoBuf, std::ptrdiff_t pitch,
-	EmuAudio *audio, gambatte::VideoFrameDelegate videoFrameCallback)
+size_t GbcSystem::runUntilVideoFrame(uint_least32_t *videoBuf, std::ptrdiff_t pitch,
+	EmuAudio *audio, VideoFrameDelegate videoFrameCallback)
 {
 	size_t samplesEmulated = 0;
 	constexpr unsigned samplesPerRun = 2064;
@@ -244,14 +225,14 @@ size_t GbcSystem::runUntilVideoFrame(gambatte::uint_least32_t *videoBuf, std::pt
 
 void GbcSystem::renderVideo(const EmuSystemTaskContext &taskCtx, EmuVideo &video)
 {
-	auto fmt = video.renderPixelFormat() == IG::PixelFmtBGRA8888 ? IG::PixelFmtBGRA8888 : IG::PixelFmtRGBA8888;
-	IG::PixmapView frameBufferPix{{lcdSize, fmt}, frameBuffer};
+	auto fmt = video.renderPixelFormat() == PixelFmtBGRA8888 ? PixelFmtBGRA8888 : PixelFmtRGBA8888;
+	PixmapView frameBufferPix{{lcdSize, fmt}, frameBuffer};
 	video.startFrameWithAltFormat(taskCtx, frameBufferPix);
 }
 
 void GbcSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio *audio)
 {
-	auto incFrameCountOnReturn = IG::scopeGuard([&](){ totalFrames++; });
+	auto incFrameCountOnReturn = scopeGuard([&](){ totalFrames++; });
 	auto currentFrame = totalSamples / 35112;
 	if(totalFrames < currentFrame)
 	{
@@ -279,18 +260,6 @@ void GbcSystem::renderFramebuffer(EmuVideo &video)
 	renderVideo({}, video);
 }
 
-void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
-{
-	const Gfx::LGradientStopDesc navViewGrad[] =
-	{
-		{ .0, Gfx::PackedColor::format.build((8./255.) * .4, (232./255.) * .4, (222./255.) * .4, 1.) },
-		{ .3, Gfx::PackedColor::format.build((8./255.) * .4, (232./255.) * .4, (222./255.) * .4, 1.) },
-		{ .97, Gfx::PackedColor::format.build((0./255.) * .4, (77./255.) * .4, (74./255.) * .4, 1.) },
-		{ 1., view.separatorColor() },
-	};
-	view.setBackgroundGradient(navViewGrad);
-}
-
 void GbcSystem::updateColorConversionFlags()
 {
 	unsigned flags{};
@@ -311,7 +280,10 @@ void GbcSystem::refreshPalettes()
 
 }
 
-uint_least32_t gbcToRgb32(unsigned const bgr15, unsigned flags)
+extern "C++"
+{
+
+EmuEx::uint_least32_t gbcToRgb32(unsigned const bgr15, unsigned flags)
 {
 	unsigned r = bgr15       & 0x1F;
 	unsigned g = bgr15 >>  5 & 0x1F;
@@ -335,9 +307,9 @@ uint_least32_t gbcToRgb32(unsigned const bgr15, unsigned flags)
 
 namespace gambatte
 {
-
-// no-ops, all save data is explicitly loaded/saved
-void Cartridge::loadSavedata() {}
-void Cartridge::saveSavedata() {}
+	// no-ops, all save data is explicitly loaded/saved
+	void Cartridge::loadSavedata() {}
+	void Cartridge::saveSavedata() {}
+}
 
 }

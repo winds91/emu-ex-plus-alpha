@@ -14,6 +14,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/font/Font.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <android/bitmap.h>
 import imagine.internal.android;

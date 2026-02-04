@@ -15,13 +15,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
-#ifdef IG_USE_MODULE_IMAGINE
+#ifdef IG_USE_MODULES
 #define MAGIC_ENUM_USE_STD_MODULE
+import std;
+#else
+#include <utility>
+#include <type_traits>
 #endif
 #include <imagine/util/magic_enum/magic_enum.hpp>
-#ifndef IG_USE_MODULE_STD
-#include <utility>
-#endif
 
 namespace IG
 {
@@ -30,21 +31,21 @@ namespace IG
 using std::to_underlying;
 #endif
 
-template <class Enum>
-constexpr auto lastEnum = magic_enum::enum_values<Enum>().back();
+template <class T>
+concept Enum = std::is_enum_v<T>;
 
-template <class Enum>
-constexpr auto enumCount = magic_enum::enum_count<Enum>();
+template <Enum T>
+constexpr auto lastEnum = magic_enum::enum_values<T>().back();
 
-constexpr auto enumName(auto e) { return magic_enum::enum_name(e); }
+template <Enum T>
+constexpr auto enumCount = magic_enum::enum_count<T>();
 
-template<class T>
-constexpr bool isValidProperty(const T&);
+constexpr auto enumName(Enum auto e) { return magic_enum::enum_name(e); }
 
-template<class T>
-constexpr bool enumIsValidUpToLast(const T &v)
+template<Enum T>
+constexpr bool enumIsValid(T v)
 {
-	return v <= lastEnum<T>;
+	return magic_enum::enum_contains<T>(v);
 }
 
 }

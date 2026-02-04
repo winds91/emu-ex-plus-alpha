@@ -78,7 +78,7 @@ struct SystemUIStyleFlags
 	constexpr bool operator ==(SystemUIStyleFlags const &) const = default;
 };
 
-extern "C++" struct ApplicationMeta
+struct ApplicationMeta
 {
 	// defined in user code
 	static const char *const name;

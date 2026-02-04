@@ -36,7 +36,7 @@ struct WindowData
 
 	auto windowBounds() const { return windowRect; }
 	auto contentBounds() const { return contentRect; }
-	void updateWindowViewport(const IG::Window &, IG::Viewport, const IG::Gfx::Renderer &);
+	void updateWindowViewport(const Window&, Viewport, const Gfx::Renderer &);
 
 	void applyViewRect(auto &view)
 	{
@@ -48,17 +48,17 @@ struct MainWindowData : public WindowData
 {
 	EmuViewController viewController;
 
-	MainWindowData(ViewAttachParams attach, VController &vCtrl, EmuVideoLayer &layer, EmuSystem &system):
+	MainWindowData(ViewAttachParams attach, VController& vCtrl, EmuVideoLayer& layer, EmuSystem& system):
 		viewController{attach, vCtrl, layer, system} {}
 };
 
-inline auto &windowData(const IG::Window &win)
+inline auto &windowData(const Window& win)
 {
 	auto data = win.appData<WindowData>();
 	return *data;
 }
 
-inline auto &mainWindowData(const IG::Window &win)
+inline auto &mainWindowData(const Window& win)
 {
 	auto data = win.appData<MainWindowData>();
 	return *data;

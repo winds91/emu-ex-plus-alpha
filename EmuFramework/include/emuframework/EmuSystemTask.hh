@@ -140,7 +140,7 @@ public:
 private:
 	EmuApp& app;
 	Window* winPtr{};
-	IG::OnFrameDelegate onFrameUpdate;
+	OnFrameDelegate onFrameUpdate;
 	MessagePort<CommandMessage> commandPort{"EmuSystemTask Command"};
 	std::thread taskThread;
 	ThreadId threadId_{};
@@ -161,9 +161,9 @@ private:
 	void addOnFrameDelayed();
 	void addOnFrame();
 	void removeOnFrame();
-	IG::OnFrameDelegate onFrameCalibrate();
-	IG::OnFrameDelegate onFrameDelayed(uint16_t delay);
-	void addOnFrameDelegate(IG::OnFrameDelegate);
+	OnFrameDelegate onFrameCalibrate();
+	OnFrameDelegate onFrameDelayed(uint16_t delay);
+	void addOnFrameDelegate(OnFrameDelegate);
 	void setIntendedFrameRate(FrameRateConfig);
 	FrameRate remapScreenFrameRate(FrameRate) const;
 	FrameRateConfig configFrameRate(const Screen&);

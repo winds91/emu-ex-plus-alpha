@@ -18,12 +18,12 @@
 #include <stella/common/AudioQueue.hxx>
 #include <stella/common/audio/SimpleResampler.hxx>
 #include <stella/common/audio/LanczosResampler.hxx>
-#include <OSystem.hxx>
 #include <SoundEmuEx.hh>
 import emuex;
 import imagine;
 
 using namespace EmuEx;
+using namespace IG;
 
 SoundEmuEx::SoundEmuEx(OSystem& osystem): Sound(osystem) {}
 
@@ -91,7 +91,7 @@ void SoundEmuEx::setResampleQuality(AudioSettings::ResamplingQuality quality)
 	updateResampler();
 }
 
-void SoundEmuEx::setEmuAudio(EmuEx::EmuAudio *audio)
+void SoundEmuEx::setEmuAudio(EmuEx::EmuAudio* audio)
 {
 	audioQueue->onFragmentEnqueued =
 	[this, audio](AudioQueue &queue, uInt32 fragFrames)
@@ -103,7 +103,7 @@ void SoundEmuEx::setEmuAudio(EmuEx::EmuAudio *audio)
 		while(queue.size())
 		{
 			float buffF[512];
-			IG::assume(fragSamples <= std::ssize(buffF));
+			assume(fragSamples <= std::ssize(buffF));
 			myResampler->fillFragment(buffF, fragFrames);
 			if(audio)
 			{

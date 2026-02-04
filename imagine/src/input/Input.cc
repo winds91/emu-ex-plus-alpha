@@ -282,7 +282,7 @@ void BaseApplication::removeInputDevice(ApplicationContext ctx, InputDeviceConta
 uint8_t BaseApplication::nextInputDeviceEnumId(std::string_view name) const
 {
 	static constexpr uint8_t maxEnum = 64;
-	for(auto i : iotaCount(maxEnum))
+	for(auto i: iotaCount(maxEnum))
 	{
 		auto it = std::ranges::find_if(inputDev,
 			[&](auto &devPtr){ return devPtr->name() == name && devPtr->enumId() == i; });

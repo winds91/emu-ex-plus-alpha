@@ -14,13 +14,16 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 module;
+#include <imagine/base/ApplicationContext.hh>
+#include <imagine/pixmap/Pixmap.hh>
+#include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/ranges.hh>
 #include <android/bitmap.h>
 #include <jni.h>
 #include <sys/types.h>
 #include <sys/resource.h>
 
 export module imagine.internal.android;
-import imagine;
 import std;
 
 namespace IG
@@ -49,7 +52,7 @@ public:
 				log.info("started no-op thread");
 				while(isRunning.load(std::memory_order_relaxed))
 				{
-					for([[maybe_unused]] auto i : iotaCount(16))
+					for([[maybe_unused]] auto i: iotaCount(16))
 					{
 						asm("nop");
 					}

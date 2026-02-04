@@ -49,7 +49,7 @@ public:
 	void onAddedToController(ViewController *, const Input::Event &) final;
 
 private:
-	IG::WindowRect unbindB, cancelB;
+	WindowRect unbindB, cancelB;
 	Gfx::Text text;
 	Gfx::Text unbind, cancel;
 	Gfx::IQuads quads;

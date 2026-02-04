@@ -1,7 +1,12 @@
+target_sources(gbcemu PRIVATE FILE_SET CXX_MODULES
+	BASE_DIRS main
+	FILES main/system.ccm
+)
+
 target_sources(gbcemu PRIVATE
 	main/Main.cc
+	main/AppMeta.cc
 	main/options.cc
-	main/input.cc
 	main/EmuMenuViews.cc
 	main/Cheats.cc
 	main/Palette.cc

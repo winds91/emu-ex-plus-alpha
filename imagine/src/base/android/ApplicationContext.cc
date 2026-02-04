@@ -15,10 +15,13 @@
 
 #include <imagine/config/macros.h>
 #include <imagine/base/ApplicationContext.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/base/Timer.hh>
 #include <imagine/io/PosixIO.hh>
+#include <imagine/io/FileIO.hh>
 #include <imagine/fs/FSUtils.hh>
 #include <imagine/util/jni.hh>
+#include <imagine/util/format.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <android/asset_manager.h>
 #include <unistd.h>

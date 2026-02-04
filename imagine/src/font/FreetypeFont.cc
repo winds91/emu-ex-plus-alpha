@@ -181,9 +181,9 @@ static FreetypeFont::GlyphRenderData makeGlyphRenderDataWithFace(FT_Library libr
 		assume(bitmap.num_grays == 2); // only handle 2 gray levels for now
 		//log.info("new bitmap has {} gray levels", convBitmap.num_grays);
 		// scale 1-bit values to 8-bit range
-		for(auto y : iotaCount(bitmap.rows))
+		for(auto y: iotaCount(bitmap.rows))
 		{
-			for(auto x : iotaCount(bitmap.width))
+			for(auto x: iotaCount(bitmap.width))
 			{
 				if(bitmap.buffer[(y * bitmap.pitch) + x] != 0)
 					bitmap.buffer[(y * bitmap.pitch) + x] = 0xFF;
@@ -359,7 +359,7 @@ bool FreetypeFont::loadIntoNextSlot(CStringView name)
 
 FreetypeFont::GlyphRenderData FreetypeFont::makeGlyphRenderData(int idx, FreetypeFontSize &fontSize, bool keepPixData)
 {
-	for(auto i : iotaCount(f.size()))
+	for(auto i: iotaCount(f.size()))
 	{
 		auto &font = f[i];
 		if(!font.face)
@@ -433,7 +433,7 @@ FontSize Font::makeSize(FontSettings settings)
 {
 	FontSize size{settings};
 	// create FT_Size objects for slots in use
-	for(auto i : iotaCount(f.size()))
+	for(auto i: iotaCount(f.size()))
 	{
 		if(!f[i].face)
 		{

@@ -52,14 +52,14 @@ public:
 	};
 
 	DataPathSelectView(UTF16Convertible auto &&name, ViewAttachParams attach, FS::PathString initialDir,
-		FileChangeCallable auto &&onFileChange, EmuSystem::NameFilterFunc fsFilter_ = {}):
+		FileChangeCallable auto &&onFileChange, NameFilterFunc fsFilter_ = {}):
 		TableView{IG_forward(name), attach, item},
 		selectFolder
 		{
 			"Select Folder", attach,
 			[=](View &view, const Input::Event &e)
 			{
-				auto fPicker = view.makeView<FilePicker>(FSPicker::Mode::DIR, EmuSystem::NameFilterFunc{}, e);
+				auto fPicker = view.makeView<FilePicker>(FSPicker::Mode::DIR, NameFilterFunc{}, e);
 				auto &thisView = asThis(view);
 				fPicker->setPath(thisView.searchDir, e);
 				fPicker->setOnSelectPath(
@@ -126,7 +126,7 @@ protected:
 	ConditionalMember<mode == DataPathSelectMode::Folder, TextMenuItem> selectFolder;
 	TextMenuItem selectFile;
 	TextMenuItem unset;
-	ConditionalMember<mode == DataPathSelectMode::File, EmuSystem::NameFilterFunc> fsFilter;
+	ConditionalMember<mode == DataPathSelectMode::File, NameFilterFunc> fsFilter;
 	StaticArrayList<MenuItem*, 4> item;
 	FS::PathString searchDir;
 

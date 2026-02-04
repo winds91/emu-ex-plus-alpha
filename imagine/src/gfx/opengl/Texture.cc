@@ -331,7 +331,7 @@ bool Texture::setFormat(PixmapDesc desc, int levels, ColorSpace colorSpace, Text
 					GL::imageFormatToString(format), GL::dataTypeToString(dataType),
 					desc.format == IG::PixelFmtBGRA8888 && internalFormat != GL_BGRA ? "write format:BGRA" : "");
 				int w = desc.w(), h = desc.h();
-				for(auto i : iotaCount(levels))
+				for(auto i: iotaCount(levels))
 				{
 					GL::runChecked([&]()
 					{
@@ -520,7 +520,7 @@ WSize Texture::size(int level) const
 {
 	assume(levels_);
 	int w = pixDesc.w(), h = pixDesc.h();
-	for([[maybe_unused]] auto i : iotaCount(level))
+	for([[maybe_unused]] auto i: iotaCount(level))
 	{
 		w = std::max(1, (w / 2));
 		h = std::max(1, (h / 2));

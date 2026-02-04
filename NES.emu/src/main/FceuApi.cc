@@ -14,7 +14,6 @@
 	along with NES.emu.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/logger/logger.h>
-#include "MainSystem.hh"
 #include <fceu/driver.h>
 #include <fceu/video.h>
 #include <fceu/fceu.h>
@@ -24,21 +23,29 @@
 #include <fceu/cart.h>
 #include <fceu/nsf.h>
 #include <fceu/x6502.h>
+import system;
 import emuex;
 import imagine;
+import std;
 
-bool turbo = 0;
+// Separate front & back buffers not needed for our video implementation
+uint8 *XBuf{};
+uint8 *XBackBuf{};
+uint8 *XDBuf{};
+uint8 *XDBackBuf{};
+int dendy = 0;
+bool paldeemphswap = false;
+bool swapDuty = false;
+bool turbo = false;
 int closeFinishedMovie = 0;
 int StackAddrBackup = -1;
 int KillFCEUXonFrame = 0;
 int eoptions = 0;
 
-namespace EmuEx
-{
-constexpr SystemLogger log{"NES.emu"};
-}
+using namespace IG;
+using namespace EmuEx;
 
-void FCEUI_Emulate(EmuEx::EmuSystemTaskContext taskCtx, EmuEx::NesSystem &sys, EmuEx::EmuVideo *video, int skip, EmuEx::EmuAudio *audio)
+void FCEUI_Emulate(EmuSystemTaskContext taskCtx, NesSystemHolder& sys, EmuVideo* video, int skip, EmuAudio* audio)
 {
 	#ifdef _S9XLUA_H
 	FCEU_LuaFrameBoundary();
@@ -64,15 +71,15 @@ void FCEUI_Emulate(EmuEx::EmuSystemTaskContext taskCtx, EmuEx::NesSystem &sys, E
 	timestamp = 0;
 }
 
-void FCEUI_Emulate(EmuEx::NesSystem &sys, EmuEx::EmuVideo *video, int skip, EmuEx::EmuAudio *audio)
+void FCEUI_Emulate(NesSystemHolder& sys, EmuVideo* video, int skip, EmuAudio* audio)
 {
 	FCEUI_Emulate({}, sys, video, skip, audio);
 }
 
-FILE *FCEUD_UTF8fopen(const char *fn, const char *mode)
+FILE *FCEUD_UTF8fopen(const char* fn, const char* mode)
 {
-	EmuEx::log.info("opening file:{} mode:{}", fn, mode);
-	return IG::FileUtils::fopenUri(EmuEx::gAppContext(), fn, mode);
+	NesSystem::log.info("opening file:{} mode:{}", fn, mode);
+	return FileUtils::fopenUri(gAppContext(), fn, mode);
 }
 
 void FCEU_printf(const char *format, ...)
@@ -90,7 +97,7 @@ void FCEUD_PrintError(const char *errormsg)
 {
 	if(!Config::DEBUG_BUILD)
 		return;
-	EmuEx::log.error("{}", errormsg);
+	NesSystem::log.error("{}", errormsg);
 }
 
 void FCEUD_Message(const char *s)
@@ -208,13 +215,13 @@ void FCEUD_FlushTrace() {}
 
 void FCEUD_SetInput(bool fourscore, bool microphone, ESI port0, ESI port1, ESIFC fcexp)
 {
-	EmuEx::log.info("called set input");
+	NesSystem::log.info("called set input");
 }
 
 int FCEUD_FDSReadBIOS(void *buff, uint32 size)
 {
 	using namespace EmuEx;
-	auto &sys = static_cast<NesSystem&>(EmuEx::gSystem());
+	auto &sys = static_cast<NesSystem&>(gSystem());
 	auto appCtx = sys.appContext();
 	const auto &fdsBiosPath = sys.fdsBiosPath;
 	if(fdsBiosPath.empty())
@@ -222,7 +229,7 @@ int FCEUD_FDSReadBIOS(void *buff, uint32 size)
 		sys.loaderErrorString = "No FDS BIOS set";
 		return -1;
 	}
-	EmuEx::log.info("loading FDS BIOS:{}", fdsBiosPath);
+	NesSystem::log.info("loading FDS BIOS:{}", fdsBiosPath);
 	if(EmuApp::hasArchiveExtension(appCtx.fileUriDisplayName(fdsBiosPath)))
 	{
 		for(auto &entry : FS::ArchiveIterator{appCtx.openFileUri(fdsBiosPath)})
@@ -233,7 +240,7 @@ int FCEUD_FDSReadBIOS(void *buff, uint32 size)
 			}
 			if(hasFDSBIOSExtension(entry.name()))
 			{
-				EmuEx::log.info("archive file entry:%s", entry.name().data());
+				NesSystem::log.info("archive file entry:%s", entry.name().data());
 				if(entry.size() != size)
 				{
 					sys.loaderErrorString = "Incompatible FDS BIOS";
@@ -261,8 +268,8 @@ void RefreshThrottleFPS() {}
 
 void FCEUD_GetPalette(uint8 index, uint8 *r, uint8 *g, uint8 *b)
 {
-	EmuEx::log.warn("called FCEUD_GetPalette()");
-	IG::unreachable();
+	NesSystem::log.warn("called FCEUD_GetPalette()");
+	unreachable();
 }
 
 // for boards/transformer.cpp
@@ -307,7 +314,7 @@ void NetplayUpdate(uint8 *joyp) { }
 // from fceu.cpp
 bool CheckFileExists(const char* filename)
 {
-	return IG::FS::exists(filename);
+	return FS::exists(filename);
 }
 
 //The code in this function is a modified version
@@ -343,7 +350,6 @@ void EncodeGG(char *str, int a, int v, int c)
 
 std::string FCEU_MakeFName(int type, int id1, const char *cd1)
 {
-	using namespace EmuEx;
 	auto &app = gApp();
 	auto &sys = static_cast<NesSystem&>(app.system());
 	switch(type)
@@ -368,7 +374,7 @@ std::string FCEU_MakeFName(int type, int id1, const char *cd1)
 		case FCEUMKF_MOVIEGLOB:
 		case FCEUMKF_MOVIEGLOB2:
 		case FCEUMKF_STATEGLOB:
-			EmuEx::log.warn("unused filename type:%d", type);
+			NesSystem::log.warn("unused filename type:%d", type);
 	}
 	return {};
 }

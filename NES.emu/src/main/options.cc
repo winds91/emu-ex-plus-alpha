@@ -13,25 +13,15 @@
 	You should have received a copy of the GNU General Public License
 	along with NES.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "MainSystem.hh"
+module;
+#include <fceu/driver.h>
 #include <fceu/sound.h>
 #include <fceu/fceu.h>
-import emuex;
+
+module system;
 
 namespace EmuEx
 {
-
-const char *EmuSystem::configFilename = "NesEmu.config";
-
-std::span<const AspectRatioInfo> NesSystem::aspectRatioInfos()
-{
-	static constexpr AspectRatioInfo aspectRatioInfo[]
-	{
-		{"4:3 (Original)", {4, 3}},
-		EMU_SYSTEM_DEFAULT_ASPECT_RATIO_INFO_INIT
-	};
-	return aspectRatioInfo;
-}
 
 void NesSystem::onOptionsLoaded()
 {

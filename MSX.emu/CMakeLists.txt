@@ -42,4 +42,7 @@ target_compile_options(msxemu PRIVATE
 	-Wno-unused-function
 	-Wno-unused-variable
 )
+if(CMAKE_C_COMPILER_ID MATCHES "GNU")
+	target_compile_options(msxemu PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wno-global-module>)
+endif()
 add_subdirectory(src)

@@ -69,7 +69,7 @@ bool IdentInputDeviceView::inputEvent(const Input::Event& e, ViewInputEventParam
 
 void IdentInputDeviceView::draw(Gfx::RendererCommands&__restrict__ cmds, ViewDrawParams) const
 {
-	using namespace IG::Gfx;
+	using namespace Gfx;
 	auto &basicEffect = cmds.basicEffect();
 	cmds.set(BlendMode::OFF);
 	basicEffect.disableTexture(cmds);
@@ -382,9 +382,9 @@ InputManagerDeviceView::InputManagerDeviceView(UTF16String name, ViewAttachParam
 	{
 		[&]
 		{
-			DynArray<TextMenuItem> items{EmuSystem::maxPlayers + 1uz};
+			DynArray<TextMenuItem> items{AppMeta::maxPlayers + 1uz};
 			items[0] = {"Multiple", attach, {.id = playerIndexMulti}};
-			for(auto i : iotaCount(EmuSystem::maxPlayers))
+			for(auto i: iotaCount(AppMeta::maxPlayers))
 			{
 				items[i + 1] = {playerNumStrings[i], attach, {.id = i}};
 			}
@@ -621,20 +621,20 @@ void InputManagerDeviceView::loadItems()
 {
 	auto &dev = devConf.device();
 	item.clear();
-	auto categoryCount = EmuApp::keyCategories().size();
+	auto categoryCount = AppMeta::keyCategories().size();
 	bool hasJoystick = dev.motionAxes().size();
 	auto joystickItemCount = hasJoystick ? 9 : 0;
 	item.reserve(categoryCount + joystickItemCount + 12);
 	inputCategory.clear();
 	inputCategory.reserve(categoryCount + 1);
-	if(EmuSystem::maxPlayers > 1)
+	if(AppMeta::maxPlayers > 1)
 	{
 		item.emplace_back(&player);
 	}
 	item.emplace_back(&loadProfile);
 	item.emplace_back(&categories);
 	addCategoryItem(appKeyCategory);
-	for(auto &cat : EmuApp::keyCategories())
+	for(auto &cat : AppMeta::keyCategories())
 	{
 		if(cat.multiplayerIndex && devConf.savedPlayer() != playerIndexMulti)
 			continue;

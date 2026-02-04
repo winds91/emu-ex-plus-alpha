@@ -78,14 +78,14 @@ public:
 	void showMenuView(bool updateTopView);
 	void placeEmuViews();
 	void placeElements();
-	void updateMainWindowViewport(IG::Window &, IG::Viewport, Gfx::RendererTask &);
-	void updateExtraWindowViewport(IG::Window &, IG::Viewport, Gfx::RendererTask &);
-	bool drawMainWindow(IG::Window &win, IG::WindowDrawParams, Gfx::RendererTask &);
-	bool drawExtraWindow(IG::Window &win, IG::WindowDrawParams, Gfx::RendererTask &);
+	void updateMainWindowViewport(Window &, Viewport, Gfx::RendererTask &);
+	void updateExtraWindowViewport(Window &, Viewport, Gfx::RendererTask &);
+	bool drawMainWindow(Window &win, WindowDrawParams, Gfx::RendererTask &);
+	bool drawExtraWindow(Window &win, WindowDrawParams, Gfx::RendererTask &);
 	void popToSystemActionsMenu();
 	void postDrawToEmuWindows();
-	IG::Screen *emuWindowScreen() const;
-	IG::Window &emuWindow() const;
+	Screen *emuWindowScreen() const;
+	Window &emuWindow() const;
 	WindowData &emuWindowData();
 	bool hasModalView() const;
 	void popModalViews();
@@ -99,11 +99,11 @@ public:
 	void onSystemClosed();
 	MainMenuView &mainMenu();
 	bool isMenuDismissKey(const Input::KeyEvent &) const;
-	IG::ApplicationContext appContext() const;
+	ApplicationContext appContext() const;
 	bool isShowingEmulation() const { return showingEmulation; }
 	void onHide();
-	void movePopupToWindow(IG::Window &win);
-	void moveEmuViewToWindow(IG::Window &win);
+	void movePopupToWindow(Window &win);
+	void moveEmuViewToWindow(Window &win);
 	View &top() const { return viewStack.top(); }
 
 public:

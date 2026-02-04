@@ -14,6 +14,8 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/io/PosixFileIO.hh>
+#include <imagine/io/IO.hh>
+#include <imagine/io/IOUtils-impl.hh>
 #include <imagine/util/variant.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/fd-utils.h>

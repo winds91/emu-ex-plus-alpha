@@ -15,6 +15,7 @@
 
 #include <imagine/config/macros.h>
 #include <imagine/gfx/opengl/android/SurfaceTextureStorage.hh>
+#include <imagine/gfx/Renderer.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/opengl/glHeaders.h>
 #include <android/native_window_jni.h>

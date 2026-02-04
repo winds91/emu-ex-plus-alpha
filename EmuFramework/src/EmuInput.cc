@@ -218,7 +218,7 @@ bool InputManager::handleAppActionKeyInput(EmuApp& app, InputAction action, cons
 
 void InputManager::handleSystemKeyInput(EmuApp& app, KeyInfo keyInfo, Input::Action act, uint32_t metaState, SystemKeyInputFlags flags)
 {
-	if(flags.allowTurboModifier && turboModifierActive && std::ranges::all_of(keyInfo.codes, app.allowsTurboModifier))
+	if(flags.allowTurboModifier && turboModifierActive && std::ranges::all_of(keyInfo.codes, AppMeta::allowsTurboModifier))
 		keyInfo.flags.turbo = 1;
 	if(keyInfo.flags.toggle)
 	{
@@ -259,7 +259,7 @@ KeyConfigDesc InputManager::keyConfig(std::string_view name, const Input::Device
 	auto conf = customKeyConfig(name, dev);
 	if(conf)
 		return conf->desc();
-	for(auto &conf : EmuApp::defaultKeyConfigs())
+	for(auto &conf: AppMeta::defaultKeyConfigs())
 	{
 		if(conf.name == name && conf.map == dev.map())
 			return conf;
@@ -396,7 +396,7 @@ bool InputManager::readCustomKeyConfig(MapIO &io)
 bool InputManager::readSavedInputDevices(MapIO &io)
 {
 	auto confs = io.get<uint8_t>();
-	for(auto _ : iotaCount(confs))
+	for(auto _: iotaCount(confs))
 	{
 		InputDeviceSavedConfig devConf;
 		auto enumIdWithFlags = io.get<uint8_t>();
@@ -404,7 +404,7 @@ bool InputManager::readSavedInputDevices(MapIO &io)
 		devConf.enumId = enumIdWithFlags & devConf.ENUM_ID_MASK;
 		devConf.enabled = io.get<uint8_t>();
 		devConf.player = io.get<uint8_t>();
-		if(devConf.player != playerIndexMulti && devConf.player > EmuSystem::maxPlayers)
+		if(devConf.player != playerIndexMulti && devConf.player > AppMeta::maxPlayers)
 		{
 			log.warn("player {} out of range", devConf.player);
 			devConf.player = 0;
@@ -504,12 +504,12 @@ bool InputManager::readInputDeviceSessionConfigs(ApplicationContext ctx, MapIO &
 {
 	savedSessionDevConfigs.clear();
 	auto confs = io.get<uint8_t>();
-	for(auto _ : iotaCount(confs))
+	for(auto _: iotaCount(confs))
 	{
 		InputDeviceSavedSessionConfig devConf;
 		devConf.enumId = io.get<uint8_t>();
 		devConf.player = io.get<int8_t>();
-		if(devConf.player != playerIndexMulti && devConf.player != playerIndexUnset && devConf.player > EmuSystem::maxPlayers)
+		if(devConf.player != playerIndexMulti && devConf.player != playerIndexUnset && devConf.player > AppMeta::maxPlayers)
 		{
 			log.warn("player {} out of range", devConf.player);
 			devConf.player = playerIndexUnset;
@@ -546,7 +546,7 @@ bool InputManager::readInputDeviceSessionConfigs(ApplicationContext ctx, MapIO &
 KeyConfigDesc InputManager::defaultConfig(const Input::Device &dev) const
 {
 	KeyConfigDesc firstConfig{}, firstSubtypeConfig{};
-	for(const auto &conf : EmuApp::defaultKeyConfigs())
+	for(const auto &conf: AppMeta::defaultKeyConfigs())
 	{
 		if(dev.map() == conf.map && !firstConfig)
 			firstConfig = conf;
@@ -584,7 +584,7 @@ std::string InputManager::toString(KeyCode c, KeyFlags flags) const
 {
 	if(flags.appCode)
 		return std::string{EmuEx::toString(AppKeyCode(c))};
-	return std::string{EmuApp::systemKeyCodeToString(c)};
+	return std::string{AppMeta::systemKeyCodeToString(c)};
 }
 
 void InputManager::updateKeyboardMapping()
@@ -605,7 +605,7 @@ void EmuApp::setDisabledInputKeys(std::span<const KeyCode> keys)
 	if(!vController.hasWindow())
 		return;
 	vController.place();
-	system().clearInputBuffers(viewController().inputView);
+	system().clearInputBuffers();
 }
 
 void EmuApp::unsetDisabledInputKeys()
@@ -627,7 +627,7 @@ const KeyCategory *InputManager::categoryOfKeyCode(KeyInfo key) const
 {
 	if(key.isAppKey())
 		return &appKeyCategory;
-	for(const auto &cat : EmuApp::keyCategories())
+	for(const auto &cat : AppMeta::keyCategories())
 	{
 		if(find(cat.keys, [&](auto &k) { return k.codes == key.codes; }))
 			return &cat;
@@ -643,7 +643,7 @@ KeyInfo InputManager::validateSystemKey(KeyInfo key, bool isUIKey) const
 		if(isUIKey)
 			return appKeyCategory.keys[0];
 		else
-			return EmuApp::keyCategories()[0].keys[0];
+			return AppMeta::keyCategories()[0].keys[0];
 	}
 	return key;
 }

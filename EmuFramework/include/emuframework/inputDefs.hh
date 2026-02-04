@@ -15,14 +15,17 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#ifndef IG_USE_MODULE_IMAGINE
+#ifdef IG_USE_MODULES
+import imagine;
+import std;
+#else
 #include <imagine/input/inputDefs.hh>
 #include <imagine/util/container/array.hh>
 #include <imagine/util/concepts.hh>
-#endif
-#ifndef IG_USE_MODULE_STD
+#include <imagine/util/2DOrigin.h>
 #include <array>
 #include <cstdint>
+#include <span>
 #endif
 
 namespace EmuEx
@@ -95,6 +98,56 @@ struct KeyMapping
 		key{key}, mapKey{mapKey} {}
 	constexpr KeyMapping(KeyInfo key, MappedKeys mapKey):
 		key{key}, mapKey{mapKey} {}
+};
+
+struct InputAction
+{
+	KeyCode code{};
+	KeyFlags flags{};
+	Input::Action state{};
+	uint32_t metaState{};
+
+	constexpr bool isPushed() const { return state == Input::Action::PUSHED; }
+	constexpr operator KeyInfo() const { return KeyInfo{code, flags}; }
+};
+
+enum class InputComponent : uint8_t
+{
+	ui, dPad, button, trigger
+};
+
+struct InputComponentFlags
+{
+	uint8_t
+	altConfig:1{},
+	rowSize:2{},
+	staggeredLayout:1{};
+};
+
+struct InputComponentDesc
+{
+	const char *name{};
+	std::span<const KeyInfo> keyCodes{};
+	InputComponent type{};
+	_2DOrigin layoutOrigin{};
+	InputComponentFlags flags{};
+};
+
+struct SystemInputDeviceDesc
+{
+	const char *name;
+	std::span<const InputComponentDesc> components;
+};
+
+inline constexpr int VControllerVKeyCols = 20;
+inline constexpr int VControllerKeyRows = 4;
+inline constexpr int VControllerKeyCols = VControllerVKeyCols / 2;
+using VControllerKbMap = std::array<KeyInfo, VControllerKeyRows * VControllerKeyCols>;
+
+enum class VControllerKbMode: uint8_t
+{
+	LAYOUT_1,
+	LAYOUT_2
 };
 
 }

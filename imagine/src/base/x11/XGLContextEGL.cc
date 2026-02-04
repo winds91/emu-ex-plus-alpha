@@ -14,11 +14,13 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/base/GLContext.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <imagine/util/egl.hh>
 #include <xcb/xproto.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#include <ranges>
 import xutils;
 
 namespace IG

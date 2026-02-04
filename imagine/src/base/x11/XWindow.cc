@@ -14,7 +14,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/base/Window.hh>
-#include <imagine/base/x11/XApplication.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/pixmap/PixelFormat.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <cstring>

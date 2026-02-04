@@ -64,7 +64,7 @@ void GlyphTextureSet::freeCaches(uint32_t purgeBits)
 		return;
 	}
 	auto tableBits = usedGlyphTableBits;
-	for(auto i : iotaCount(32))
+	for(auto i: iotaCount(32))
 	{
 		if((tableBits & 1) && (purgeBits & 1))
 		{

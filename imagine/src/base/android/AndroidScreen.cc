@@ -14,6 +14,7 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/base/Screen.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/util/utility.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <unistd.h>

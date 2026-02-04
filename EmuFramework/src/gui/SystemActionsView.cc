@@ -222,7 +222,7 @@ void SystemActionsView::onShow()
 
 void SystemActionsView::loadStandardItems()
 {
-	if(EmuSystem::hasCheats)
+	if(AppMeta::hasCheats)
 	{
 		item.emplace_back(&cheats);
 	}

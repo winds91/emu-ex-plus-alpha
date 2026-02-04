@@ -13,21 +13,21 @@
 	You should have received a copy of the GNU General Public License
 	along with Swan.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuSystemInlines.hh>
-#include <emuframework/EmuAppInlines.hh>
+module;
+#include <mednafen/mednafen.h>
 #include <mednafen/state-driver.h>
 #include <mednafen/hash/md5.h>
-#include <mednafen-emuex/MDFNUtils.hh>
 #include <mednafen/video/surface.h>
 using namespace Mednafen; // needed for following includes
 #include <wswan/gfx.h>
 #include <wswan/sound.h>
 #include <wswan/memory.h>
-import imagine;
 
-namespace MDFN_IEN_WSWAN
+module system;
+
+extern "C++" namespace MDFN_IEN_WSWAN
 {
-uint32 GetSoundRate();
+	uint32 GetSoundRate();
 }
 
 namespace EmuEx
@@ -35,21 +35,8 @@ namespace EmuEx
 
 using namespace MDFN_IEN_WSWAN;
 
-static SystemLogger log{"Swan.emu"};
-const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2011-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nMednafen Team\nmednafen.github.io";
-bool EmuApp::needsGlobalInstance = true;
-
-EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter =
-	[](std::string_view name)
-	{
-		return IG::endsWithAnyCaseless(name, ".ws", ".wsc", ".bin");
-	};
-
-WsApp::WsApp(ApplicationInitParams initParams, ApplicationContext &ctx):
-	EmuApp{initParams, ctx}, wsSystem{ctx} {}
-
-const char *EmuSystem::shortSystemName() const { return "WS"; }
-const char *EmuSystem::systemName() const { return "WonderSwan"; }
+extern "C++" std::string_view EmuSystem::shortSystemName() const { return "WS"; }
+extern "C++" std::string_view EmuSystem::systemName() const { return "WonderSwan"; }
 
 void WsSystem::reset(EmuApp &, ResetMode mode)
 {
@@ -109,7 +96,7 @@ void WsSystem::loadContent(IO &io, EmuSystemCreateParams, OnLoadProgressDelegate
 	WSwan_SetPixelFormat(toMDFNSurface(mSurfacePix).format);
 }
 
-bool WsSystem::onVideoRenderFormatChange(EmuVideo &, IG::PixelFormat fmt)
+bool WsSystem::onVideoRenderFormatChange(EmuVideo &, PixelFormat fmt)
 {
 	mSurfacePix = {{vidBufferPx, fmt}, pixBuff};
 	if(!hasContent())
@@ -134,7 +121,7 @@ void WsSystem::configAudioRate(FrameRate outputFrameRate, int outputRate)
 
 void WsSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio *audio)
 {
-	static constexpr size_t maxAudioFrames = 48000 / minFrameRate;
+	static constexpr size_t maxAudioFrames = 48000 / AppMeta::minFrameRate;
 	EmuEx::runFrame(*this, mdfnGameInfo, taskCtx, video, mSurfacePix, audio, maxAudioFrames);
 	if(configuredLCDVTotal != lcdVTotal()) [[unlikely]]
 	{
@@ -142,26 +129,14 @@ void WsSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio 
 	}
 }
 
-IG::Rotation WsSystem::contentRotation() const
+Rotation WsSystem::contentRotation() const
 {
 	return isRotated() ? Rotation::RIGHT : Rotation::UP;
 }
 
-void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
-{
-	const Gfx::LGradientStopDesc navViewGrad[] =
-	{
-		{ .0, Gfx::PackedColor::format.build((0./255.) * .4, (158./255.) * .4, (211./255.) * .4, 1.) },
-		{ .3, Gfx::PackedColor::format.build((0./255.) * .4, (158./255.) * .4, (211./255.) * .4, 1.) },
-		{ .97, Gfx::PackedColor::format.build((0./255.) * .4, (53./255.) * .4, (70./255.) * .4, 1.) },
-		{ 1., view.separatorColor() },
-	};
-	view.setBackgroundGradient(navViewGrad);
 }
 
-}
-
-namespace Mednafen
+extern "C++" namespace Mednafen
 {
 
 void MDFND_commitVideoFrame(EmulateSpecStruct *espec)

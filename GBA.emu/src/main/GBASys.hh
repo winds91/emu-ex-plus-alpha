@@ -668,6 +668,29 @@ struct GBASys
 
 extern GBASys gGba;
 
+namespace IG
+{
+class ApplicationContext;
+}
+
+void CPULoop(GBASys&, EmuEx::EmuSystemTaskContext, EmuEx::EmuVideo*, EmuEx::EmuAudio*);
+void CPUCleanUp();
+bool CPUReadState(IG::ApplicationContext, GBASys&, const char*);
+bool CPUWriteState(IG::ApplicationContext, GBASys&, const char*);
+void setSaveType(int type, int size);
+const char* saveTypeStr(int type, int size);
+bool saveMemoryHasContent();
+int soundVolumeAsInt(GBASys&, bool gbVol);
+int soundFilteringAsInt(GBASys&);
+
+struct CheatsData;
+void cheatsEnable(CheatsData&);
+void cheatsDisable(ARM7TDMI&, CheatsData&);
+
+bool patchApplyIPS(FILE* f, uint8_t** rom, int* size);
+bool patchApplyUPS(FILE* f, uint8_t** rom, int* size);
+bool patchApplyPPF(FILE* f, uint8_t** rom, int* size);
+
 uint32_t biosRead8(ARM7TDMI &cpu, uint32_t address);
 uint32_t biosRead16(ARM7TDMI &cpu, uint32_t address);
 uint32_t biosRead32(ARM7TDMI &cpu, uint32_t address);

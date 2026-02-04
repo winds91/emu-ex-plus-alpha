@@ -1,11 +1,5 @@
-set(imagineModuleSrcs
-	imagine.ccm
-	glm.ccm
-)
-
-target_sources(imagine PRIVATE FILE_SET CXX_MODULES FILES ${imagineModuleSrcs})
-
-install(FILES ${imagineModuleSrcs} DESTINATION share/modules)
+target_sources(imagine PRIVATE FILE_SET CXX_MODULES FILES glm.ccm)
+install(FILES imagine.ccm glm.ccm DESTINATION share/modules)
 
 add_subdirectory(base)
 add_subdirectory(audio)

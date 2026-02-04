@@ -15,6 +15,8 @@
 
 #include <imagine/data-type/image/PixmapReader.hh>
 #include <imagine/data-type/image/PixmapWriter.hh>
+#include <imagine/data-type/image/PixmapSource.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/logger/SystemLogger.hh>
 #include <android/bitmap.h>
 import imagine.internal.android;

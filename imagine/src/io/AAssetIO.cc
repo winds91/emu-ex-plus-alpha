@@ -14,7 +14,10 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/io/AAssetIO.hh>
+#include <imagine/io/IOUtils-impl.hh>
+#include <imagine/base/ApplicationContext.hh>
 #include <imagine/logger/SystemLogger.hh>
+#include <imagine/util/format.hh>
 #include <android/asset_manager.h>
 #include <unistd.h>
 #include <sys/mman.h>

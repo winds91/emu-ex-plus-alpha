@@ -1,7 +1,13 @@
+target_sources(2600emu PRIVATE FILE_SET CXX_MODULES
+	BASE_DIRS main
+	FILES main/system.ccm
+)
+
 file(GLOB cartSrcs "stella/emucore/Cart*.cxx")
 
 target_sources(2600emu PRIVATE
 	main/Main.cc
+	main/AppMeta.cc
 	main/options.cc
 	main/input.cc
 	main/EmuMenuViews.cc

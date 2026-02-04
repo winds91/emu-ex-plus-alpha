@@ -86,17 +86,17 @@ static Gfx::Shader makeEffectFragmentShader(Gfx::Renderer &r, std::string_view s
 	return r.makeCompatShader(shaderSrc, Gfx::ShaderType::FRAGMENT);
 }
 
-static PixelFormat effectFormat(IG::PixelFormat format, Gfx::ColorSpace colSpace)
+static PixelFormat effectFormat(PixelFormat format, Gfx::ColorSpace colSpace)
 {
 	assume(format);
 	if(colSpace == Gfx::ColorSpace::SRGB)
 	{
-		return IG::PixelFmtRGBA8888;
+		return PixelFmtRGBA8888;
 	}
 	return format;
 }
 
-VideoImageEffect::VideoImageEffect(Gfx::Renderer &r, Id effect, IG::PixelFormat fmt, Gfx::ColorSpace colSpace,
+VideoImageEffect::VideoImageEffect(Gfx::Renderer &r, Id effect, PixelFormat fmt, Gfx::ColorSpace colSpace,
 	Gfx::TextureSamplerConfig samplerConf, WSize size):
 		quad{r.mainTask, {.size = 1}},
 		inputImgSize{size == WSize{} ? WSize{1, 1} : size}, format{effectFormat(fmt, colSpace)}, colorSpace{colSpace}
@@ -112,7 +112,7 @@ void VideoImageEffect::initRenderTargetTexture(Gfx::Renderer &r, Gfx::TextureSam
 		return;
 	renderTargetImgSize.x = inputImgSize.x * renderTargetScale.x;
 	renderTargetImgSize.y = inputImgSize.y * renderTargetScale.y;
-	IG::PixmapDesc renderPix{renderTargetImgSize, format};
+	PixmapDesc renderPix{renderTargetImgSize, format};
 	if(!renderTarget_)
 	{
 		Gfx::TextureConfig conf{renderPix, samplerConf};
@@ -158,7 +158,7 @@ void VideoImageEffect::compileEffect(Gfx::Renderer &r, EffectDesc desc, bool use
 {
 	auto ctx = r.appContext();
 	const char *fallbackStr = useFallback ? "fallback-" : "";
-	auto releaseShaderCompiler = IG::scopeGuard([&](){ r.autoReleaseShaderCompiler(); });
+	auto releaseShaderCompiler = scopeGuard([&](){ r.autoReleaseShaderCompiler(); });
 
 	auto vShader = makeEffectVertexShader(r,
 		ctx.openAsset(IG::format<FS::PathString>("shaders/{}{}", fallbackStr, desc.vShaderFilename),
@@ -211,7 +211,7 @@ void VideoImageEffect::setImageSize(Gfx::Renderer &r, WSize size, Gfx::TextureSa
 	initRenderTargetTexture(r, samplerConf);
 }
 
-void VideoImageEffect::setFormat(Gfx::Renderer &r,IG::PixelFormat fmt, Gfx::ColorSpace colSpace, Gfx::TextureSamplerConfig samplerConf)
+void VideoImageEffect::setFormat(Gfx::Renderer &r, PixelFormat fmt, Gfx::ColorSpace colSpace, Gfx::TextureSamplerConfig samplerConf)
 {
 	fmt = effectFormat(fmt, colSpace);
 	if(format == fmt && colorSpace == colSpace)

@@ -55,7 +55,7 @@ protected:
 
 inline std::unique_ptr<View> resetAlertView(ViewAttachParams attachParams, EmuApp &app)
 {
-	if(EmuSystem::hasResetModes)
+	if(AppMeta::hasResetModes)
 	{
 		return std::make_unique<ResetAlertView>(attachParams, "Really reset?", app);
 	}

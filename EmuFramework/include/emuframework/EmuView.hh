@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/config.hh>
+#include <emuframework/defs.hh>
 #include <emuframework/EmuTiming.hh>
 #ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/gui/View.hh>

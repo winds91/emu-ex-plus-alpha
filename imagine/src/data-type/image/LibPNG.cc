@@ -445,7 +445,7 @@ bool PixmapWriter::writeToFile(PixmapView pix, const char *path) const
 		int rowBytes = png_get_rowbytes(pngPtr, infoPtr);
 		assume(rowBytes == tempPix.pitchBytes());
 		auto rowData = (png_const_bytep)tempPix.data();
-		for([[maybe_unused]] auto i : iotaCount(tempPix.h()))
+		for([[maybe_unused]] auto i: iotaCount(tempPix.h()))
 		{
 			png_write_row(pngPtr, rowData);
 			rowData += tempPix.pitchBytes();

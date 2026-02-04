@@ -15,20 +15,22 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/config.hh>
-#include <emuframework/VController.hh>
-#include <emuframework/TurboInput.hh>
-#include <emuframework/ToggleInput.hh>
+#include <emuframework/defs.hh>
 #include <emuframework/inputDefs.hh>
-#ifndef IG_USE_MODULE_IMAGINE
+#ifdef IG_USE_MODULES
+import imagine;
+import std;
+#else
 #include <imagine/input/inputDefs.hh>
-#endif
-#ifndef IG_USE_MODULE_STD
+#include <imagine/io/FileIO.hh>
+#include <imagine/io/MapIO.hh>
+#include <imagine/util/used.hh>
 #include <string>
 #include <string_view>
 #include <memory>
 #include <span>
 #include <algorithm>
+#include <vector>
 #endif
 
 namespace EmuEx
@@ -180,48 +182,6 @@ struct InputDeviceSavedSessionConfig
 struct SystemKeyInputFlags
 {
 	bool allowTurboModifier{true};
-};
-
-class InputManager
-{
-public:
-	VController vController;
-	std::vector<std::unique_ptr<KeyConfig>> customKeyConfigs;
-	std::vector<std::unique_ptr<InputDeviceSavedConfig>> savedDevConfigs;
-	std::vector<std::unique_ptr<InputDeviceSavedSessionConfig>> savedSessionDevConfigs;
-	TurboInput turboActions;
-	ToggleInput toggleInput;
-	DelegateFunc<void ()> onUpdateDevices;
-	bool turboModifierActive{};
-
-	InputManager(ApplicationContext ctx):
-		vController{ctx} {}
-	bool handleKeyInput(EmuApp&, KeyInfo, const Input::Event &srcEvent);
-	bool handleAppActionKeyInput(EmuApp&, InputAction, const Input::Event &srcEvent);
-	void handleSystemKeyInput(EmuApp&, KeyInfo, Input::Action, uint32_t metaState = 0, SystemKeyInputFlags flags = {});
-	void updateInputDevices(ApplicationContext);
-	KeyConfig *customKeyConfig(std::string_view name, const Input::Device &) const;
-	KeyConfigDesc keyConfig(std::string_view name, const Input::Device &) const;
-	void deleteKeyProfile(ApplicationContext, KeyConfig *);
-	void deleteDeviceSavedConfig(ApplicationContext, const InputDeviceSavedConfig&);
-	void deleteDeviceSavedConfig(ApplicationContext, const InputDeviceSavedSessionConfig&);
-	void resetSessionOptions(ApplicationContext);
-	bool readSessionConfig(ApplicationContext, MapIO&, uint16_t);
-	void writeSessionConfig(FileIO &io) const;
-	bool readInputDeviceSessionConfigs(ApplicationContext, MapIO&);
-	void writeInputDeviceSessionConfigs(FileIO&) const;
-	void writeCustomKeyConfigs(FileIO &) const;
-	void writeSavedInputDevices(ApplicationContext, FileIO &) const;
-	bool readCustomKeyConfig(MapIO &);
-	bool readSavedInputDevices(MapIO &);
-	KeyConfigDesc defaultConfig(const Input::Device &dev) const;
-	KeyInfo transpose(KeyInfo, int index) const;
-	std::string toString(KeyInfo) const;
-	std::string toString(KeyCode, KeyFlags) const;
-	const KeyCategory *categoryOfKeyCode(KeyInfo) const;
-	KeyInfo validateSystemKey(KeyInfo key, bool isUIKey) const;
-	void updateKeyboardMapping();
-	void toggleKeyboard();
 };
 
 }

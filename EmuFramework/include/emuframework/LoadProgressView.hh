@@ -30,7 +30,7 @@ using namespace IG;
 class LoadProgressView : public View, public EmuAppHelper
 {
 public:
-	using MessagePortType = IG::MessagePort<EmuSystem::LoadProgressMessage>;
+	using MessagePortType = MessagePort<EmuSystem::LoadProgressMessage>;
 
 	LoadProgressView(ViewAttachParams, const Input::Event &, EmuApp::CreateSystemCompleteDelegate);
 	void setMax(int val);

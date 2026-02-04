@@ -206,7 +206,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 						auto action = touchEventAction(actionCode);
 						//logMsg("touch motion event: id:%d (%s) action:%s pointers:%d:%d",
 						//	devId, devPtr->name().data(), actionStr(action), (int)pointers, actionPIdx);
-						for(auto i : iotaCount(pointers))
+						for(auto i: iotaCount(pointers))
 						{
 							auto pAction = action;
 							// a pointer not performing the action just needs its position updated
@@ -272,7 +272,7 @@ bool AndroidApplication::processInputEvent(AInputEvent* event, Input::Device *de
 					else
 					{
 						// no getAxisValue, can only use 2 axis values (X and Y)
-						for(auto i : iotaCount(std::min(axes.size(), 2uz)))
+						for(auto i: iotaCount(std::min(axes.size(), 2uz)))
 						{
 							auto pos = i ? AMotionEvent_getY(event, 0) : AMotionEvent_getX(event, 0);
 							axes[i].dispatchInputEvent(pos, Input::Map::SYSTEM, time, *devPtr, win);

@@ -15,8 +15,11 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/config.hh>
-#ifndef IG_USE_MODULE_IMAGINE
+#include <emuframework/defs.hh>
+#ifdef IG_USE_MODULES
+import imagine;
+import std;
+#else
 #include <imagine/time/Time.hh>
 #include <imagine/util/used.hh>
 #endif
@@ -54,9 +57,9 @@ class EmuTiming
 public:
 	SteadyClockDuration videoFrameDuration{};
 	SteadyClockTimePoint startFrameTime{};
-	int64_t lastFrame{};
-	int8_t savedAdvancedFrames{};
-	int8_t exactFrameDivisor{};
+	std::int64_t lastFrame{};
+	std::int8_t savedAdvancedFrames{};
+	std::int8_t exactFrameDivisor{};
 
 	EmuFrameTimingInfo advanceFrames(FrameParams);
 	void setFrameDuration(SteadyClockDuration);

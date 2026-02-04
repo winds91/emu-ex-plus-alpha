@@ -15,7 +15,9 @@
 
 #include <imagine/bluetooth/PS3Controller.hh>
 #include <imagine/input/bluetoothInputDefs.hh>
+#include <imagine/base/Application.hh>
 #include <imagine/util/ranges.hh>
+#include <imagine/util/variant.hh>
 #include <imagine/logger/SystemLogger.hh>
 import std;
 import packedInputAccess;
@@ -227,7 +229,7 @@ bool PS3Controller::dataHandler(Input::Device& dev, const char* packetPtr, size_
 
 			const uint8_t *stickData = &packet[7];
 			//log.info("left: {},{} right: {},{}", stickData[0], stickData[1], stickData[2], stickData[3]);
-			for(auto i : iotaCount(4))
+			for(auto i: iotaCount(4))
 			{
 				if(axis[i].dispatchInputEvent(int(stickData[i]) - 127, Map::PS3PAD, time, dev, ctx.mainWindow()))
 					ctx.endIdleByUserActivity();

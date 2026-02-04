@@ -22,7 +22,9 @@ import std;
 namespace Mednafen::MThreading
 {
 
-[[maybe_unused]] constexpr IG::SystemLogger log{"MDFNThreading"};
+using namespace IG;
+
+[[maybe_unused]] constexpr SystemLogger log{"MDFNThreading"};
 
 struct Thread : public std::thread
 {
@@ -30,9 +32,9 @@ struct Thread : public std::thread
 };
 struct Mutex : public std::mutex {};
 struct Cond : public std::condition_variable {};
-struct Sem : public IG::counting_semaphore<0x80000>
+struct Sem : public counting_semaphore<0x80000>
 {
-	using IG::counting_semaphore<0x80000>::counting_semaphore;
+	using counting_semaphore<0x80000>::counting_semaphore;
 };
 
 Thread* Thread_Create(int (*fn)(void *), void *data, const char* debug_name)

@@ -153,7 +153,7 @@ bool PlaceVideoView::inputEvent(const Input::Event& e, ViewInputEventParams)
 
 void PlaceVideoView::draw(Gfx::RendererCommands&__restrict__ cmds, ViewDrawParams) const
 {
-	using namespace IG::Gfx;
+	using namespace Gfx;
 	vController.draw(cmds, true);
 	cmds.setColor({.5, .5, .5});
 	auto &basicEffect = cmds.basicEffect();

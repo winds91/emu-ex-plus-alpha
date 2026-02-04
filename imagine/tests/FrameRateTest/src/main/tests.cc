@@ -17,7 +17,7 @@ module tests;
 import imagine;
 import cpuUtils;
 
-namespace tests
+namespace frameRateTest
 {
 
 using namespace IG;
@@ -275,7 +275,7 @@ void WriteTest::frameUpdateTest(Gfx::RendererTask& rendererTask, Screen& screen,
 			writeColor = PixelDescRGB565.build(.7, .7, .0, 1.);
 		else
 			writeColor = PixelDescRGB565.build(.7, .0, .0, 1.);
-		for(auto i : iotaCount(pix.w() * pix.h()))
+		for(auto i: iotaCount(pix.w() * pix.h()))
 		{
 			((uint16_t*)pix.data())[i] = writeColor;
 		}

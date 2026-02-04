@@ -15,7 +15,9 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#ifndef IG_USE_MODULE_IMAGINE
+#ifdef IG_USE_MODULES
+import imagine;
+#else
 #include <imagine/gfx/Texture.hh>
 #include <imagine/data-type/image/PixmapReader.hh>
 #include <imagine/util/enum.hh>
@@ -84,7 +86,7 @@ public:
 private:
 	mutable Gfx::Texture assetBuffImg[enumCount<AssetFileID>];
 public:
-	[[no_unique_address]] IG::Data::PixmapReader pixmapReader;
+	[[no_unique_address]] Data::PixmapReader pixmapReader;
 };
 
 }

@@ -13,25 +13,14 @@
 	You should have received a copy of the GNU General Public License
 	along with Swan.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "MainSystem.hh"
-#include <mednafen-emuex/MDFNUtils.hh>
+module;
+#include <mednafen/mednafen.h>
 #include <mednafen/general.h>
-import emuex;
+
+module system;
 
 namespace EmuEx
 {
-
-const char *EmuSystem::configFilename = "SwanEmu.config";
-
-std::span<const AspectRatioInfo> WsSystem::aspectRatioInfos()
-{
-	static constexpr AspectRatioInfo aspectRatioInfo[]
-	{
-		{"14:9 (Original)", {14, 9}},
-		EMU_SYSTEM_DEFAULT_ASPECT_RATIO_INFO_INIT
-	};
-	return aspectRatioInfo;
-}
 
 bool WsSystem::readConfig(ConfigType type, MapIO &io, unsigned key)
 {
@@ -118,11 +107,10 @@ void WsSystem::setRotation(WsRotation r)
 
 }
 
-namespace Mednafen
+extern "C++" namespace Mednafen
 {
 
 #define EMU_MODULE "wswan"
-constexpr IG::SystemLogger log{"Lynx.emu"};
 
 using namespace EmuEx;
 
@@ -136,7 +124,7 @@ uint64 MDFN_GetSettingUI(const char *name_)
 		return sys.userProfile.birthMonth;
 	if(EMU_MODULE".byear" == name)
 		return sys.userProfile.birthYear;
-	log.error("unhandled settingUI:{}", name_);
+	WsSystem::log.error("unhandled settingUI:{}", name_);
 	unreachable();
 }
 
@@ -150,13 +138,13 @@ int64 MDFN_GetSettingI(const char *name_)
 		return sys.userProfile.sex;
 	if(EMU_MODULE".blood" == name)
 		return sys.userProfile.bloodType;
-	log.error("unhandled settingI:{}", name_);
+	WsSystem::log.error("unhandled settingI:{}", name_);
 	unreachable();
 }
 
 double MDFN_GetSettingF(const char *name)
 {
-	log.error("unhandled settingF:{}", name);
+	WsSystem::log.error("unhandled settingF:{}", name);
 	unreachable();
 }
 
@@ -172,7 +160,7 @@ bool MDFN_GetSettingB(const char *name_)
 		return 0;
 	if("filesys.untrusted_fip_check" == name)
 		return 0;
-	log.error("unhandled settingB:{}", name_);
+	WsSystem::log.error("unhandled settingB:{}", name_);
 	unreachable();
 }
 
@@ -184,7 +172,7 @@ std::string MDFN_GetSettingS(const char *name_)
 		return std::string{sys.userName};
 	if(EMU_MODULE".excomm.path" == name)
 		return {};
-	log.error("unhandled settingS:{}", name_);
+	WsSystem::log.error("unhandled settingS:{}", name_);
 	unreachable();
 }
 
@@ -195,7 +183,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
 		case MDFNMKF_STATE:
 		case MDFNMKF_SAV:
 		case MDFNMKF_SAVBACK:
-			return savePathMDFN(id1, cd1);
+			return savePathMDFN(static_cast<WsApp&>(EmuEx::gApp()), id1, cd1);
 		default: unreachable();
 	}
 }

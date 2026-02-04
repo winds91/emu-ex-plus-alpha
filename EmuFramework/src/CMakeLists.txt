@@ -1,12 +1,13 @@
 target_sources(emuframework PRIVATE FILE_SET CXX_MODULES
 	BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
-	FILES emuex.ccm configFile.ccm pathUtils.ccm
+	FILES configFile.ccm pathUtils.ccm
 )
 
 install(FILES emuex.ccm DESTINATION share/modules)
 
 target_sources(
-	emuframework PRIVATE 
+	emuframework PRIVATE
+	AppMeta.cc
 	AssetManager.cc
 	AutosaveManager.cc
 	ConfigFile.cc

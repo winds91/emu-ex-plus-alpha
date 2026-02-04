@@ -86,6 +86,9 @@ struct UnusedType
 template <class T>
 concept Unused = requires {typename T::UnusedTypeTag;};
 
+template <class T>
+concept Used = !Unused<T>;
+
 // selects either type T and an empty type that converts to T and returns VALUE,
 // used in combination with [[no_unique_address]] and a unique Tag value to declare
 // a class member that conditionally doesn't consume any space without using the C-preprocessor
@@ -99,8 +102,6 @@ struct UseIfOrConstantTagInjector // used to inject the line count as "tag" when
     using Type = UseIfOrConstant<condition, T, value, tag>;
 };
 
-#define ConditionalMemberOr [[no_unique_address]] IG::UseIfOrConstantTagInjector<__LINE__>::Type
-
 // same as above but always returns a default constructed value so class types can be used
 template<bool condition, class T, int tag = 0>
 using UseIf = std::conditional_t<condition, T, UnusedType<T, tag>>;
@@ -111,8 +112,6 @@ struct UseIfTagInjector
     template<bool condition, class T>
     using Type = UseIf<condition, T, tag>;
 };
-
-#define ConditionalMember [[no_unique_address]] IG::UseIfTagInjector<__LINE__>::Type
 
 // test that a variable's type is used in UseIf and not the UnusedType case
 constexpr bool used(auto&&) { return true; }
@@ -144,16 +143,5 @@ constexpr auto doIfUsedOr(Unused auto&, auto&&, auto&& defaultFunc)
 {
 	return defaultFunc();
 }
-
-#define IG_GetDefaultValueOr(value, orValue) \
-[]() \
-{ \
-    if constexpr(requires {value;}) \
-        return decltype(value)(); \
-    else \
-        return orValue; \
-}()
-
-#define IG_GetValueTypeOr(value, OrType) decltype(IG_GetDefaultValueOr(value, OrType()))
 
 }

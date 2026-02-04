@@ -13,8 +13,12 @@
 	You should have received a copy of the GNU General Public License
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
+module;
+
+#include <imagine/io/ioDefs.hh>
+#include <imagine/util/utility.hh>
+
 export module imagine.internal.io;
-import imagine;
 
 export namespace IG
 {

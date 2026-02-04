@@ -259,7 +259,7 @@ void FrameTimingView::loadStockItems()
 {
 	item.emplace_back(&frameInterval);
 	item.emplace_back(&frameRate);
-	if(EmuSystem::hasPALVideoSystem)
+	if(AppMeta::hasPALVideoSystem)
 	{
 		item.emplace_back(&frameRatePAL);
 	}

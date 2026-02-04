@@ -26,7 +26,7 @@ extern "C"
 	void timer_mkstate(Stream *gzf,int mode);
 	void pd4990a_mkstate(Stream *gzf,int mode);
 }
-
+import system;
 import imagine;
 import std;
 
@@ -59,8 +59,6 @@ using namespace IG;
 namespace EmuEx
 {
 
-static IG::SystemLogger log{"NEO.emu"};
-
 bool openState(MapIO &io, int mode)
 {
 	static const char *stateSig = "GNGST3";
@@ -71,7 +69,7 @@ bool openState(MapIO &io, int mode)
 
 		if(std::strcmp(string, stateSig))
 		{
-			log.error("{} is not a valid gngeo state header", string);
+			NeoSystem::log.error("{} is not a valid gngeo state header", string);
 			return false;
 		}
 
@@ -79,7 +77,7 @@ bool openState(MapIO &io, int mode)
 
 		if (flags != (m68k_flag | z80_flag | endian_flag))
 		{
-			log.error("This save state comes from a different endian architecture.\n"
+			NeoSystem::log.error("This save state comes from a different endian architecture.\n"
 					"This is not currently supported :(");
 			return false;
 		}

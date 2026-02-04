@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/config.hh>
+#include <emuframework/defs.hh>
 #include <emuframework/EmuSystem.hh>
 #include <emuframework/EmuSystemTask.hh>
 #include <emuframework/EmuAudio.hh>
@@ -27,6 +27,8 @@
 #include <emuframework/RecentContent.hh>
 #include <emuframework/RewindManager.hh>
 #include <emuframework/AssetManager.hh>
+#include <emuframework/InputManager.hh>
+#include <emuframework/AppMeta.hh>
 #ifndef IG_USE_MODULE_IMAGINE
 #include <imagine/input/inputDefs.hh>
 #include <imagine/input/android/MogaManager.hh>
@@ -70,21 +72,6 @@ class Cheat;
 class CheatsView;
 class BaseEditCheatsView;
 
-enum class AltSpeedMode
-{
-	fast, slow
-};
-
-enum class OutputFrameRateMode: uint8_t
-{
-	Auto, Detect, Screen
-};
-
-enum class CPUAffinityMode: uint8_t
-{
-	Auto, Any, Manual
-};
-
 struct DrawableConfig
 {
 	Property<PixelFormat, CFGKEY_WINDOW_PIXEL_FORMAT> pixelFormat;
@@ -99,13 +86,11 @@ struct DrawableConfig
 	constexpr operator Gfx::DrawableConfig() const { return {.pixelFormat = pixelFormat, .colorSpace = colorSpace}; }
 };
 
-inline constexpr float menuVideoBrightnessScale = .25f;
-
-class EmuApp : public IG::Application
+class EmuApp : public Application
 {
 public:
 	using CreateSystemCompleteDelegate = DelegateFunc<void (const Input::Event &)>;
-	using NavView = BasicNavView;
+	using NavView = AppNavView;
 
 	enum class ViewID
 	{
@@ -118,28 +103,13 @@ public:
 		GUI_OPTIONS,
 	};
 
-	// Static app configuration
-	static bool hasIcon;
-	static bool needsGlobalInstance;
-	static bool handlesRecentContent;
-
-	EmuApp(IG::ApplicationInitParams, IG::ApplicationContext &);
-
-	// required sub-class API functions
-	AssetDesc vControllerAssetDesc(KeyInfo) const;
-	static std::span<const KeyCategory> keyCategories();
-	static std::span<const KeyConfigDesc> defaultKeyConfigs();
-	static std::string_view systemKeyCodeToString(KeyCode);
+	EmuApp(ApplicationInitParams, ApplicationContext &);
 
 	// optional sub-class API functions
 	bool willCreateSystem(ViewAttachParams, const Input::Event &);
-	static bool allowsTurboModifier(KeyCode);
-	std::unique_ptr<View> makeEditCheatsView(ViewAttachParams, CheatsView&);
-	std::unique_ptr<View> makeEditCheatView(ViewAttachParams, Cheat&, BaseEditCheatsView&);
 
-	void mainInitCommon(IG::ApplicationInitParams, IG::ApplicationContext);
-	static void onCustomizeNavView(NavView &v);
-	void createSystemWithMedia(IG::IO, CStringView path, std::string_view displayName,
+	void mainInitCommon(ApplicationInitParams, ApplicationContext);
+	void createSystemWithMedia(IO, CStringView path, std::string_view displayName,
 		const Input::Event &, EmuSystemCreateParams, ViewAttachParams, CreateSystemCompleteDelegate);
 	void closeSystem();
 	void closeSystemWithoutSave();
@@ -174,7 +144,7 @@ public:
 	bool shouldOverwriteExistingState() const;
 	FS::PathString inContentSearchPath(std::string_view name) const;
 	FS::PathString validSearchPath(const FS::PathString &) const;
-	static void updateLegacySavePath(IG::ApplicationContext, CStringView path);
+	static void updateLegacySavePath(ApplicationContext, CStringView path);
 	auto screenshotDirectory() const { return system().userPath(userScreenshotPath); }
 	std::unique_ptr<View> makeCustomView(ViewAttachParams attach, ViewID id);
 	bool handleKeyInput(KeyInfo i, const Input::Event &srcEvent) { return inputManager.handleKeyInput(*this, i, srcEvent); }
@@ -192,7 +162,7 @@ public:
 	void startAudio();
 	EmuViewController &viewController();
 	const EmuViewController &viewController() const;
-	IG::ToastView &toastView();
+	ToastView &toastView();
 	const Screen &emuScreen() const;
 	Window &emuWindow();
 	const Window &emuWindow() const;
@@ -205,26 +175,24 @@ public:
 	VController &defaultVController() { return inputManager.vController; }
 	std::unique_ptr<View> makeView(ViewAttachParams, ViewID);
 	std::unique_ptr<YesNoAlertView> makeCloseContentView();
-	void applyOSNavStyle(IG::ApplicationContext, bool inEmu);
-	void setCPUNeedsLowLatency(IG::ApplicationContext, bool needed);
+	void applyOSNavStyle(ApplicationContext, bool inEmu);
+	void setCPUNeedsLowLatency(ApplicationContext, bool needed);
 	void reportFrameWorkDuration(Nanoseconds);
 	void renderSystemFramebuffer(EmuVideo &);
 	void renderSystemFramebuffer() { renderSystemFramebuffer(video); }
-	bool writeScreenshot(IG::PixmapView, CStringView path);
+	bool writeScreenshot(PixmapView, CStringView path);
 	FS::PathString makeNextScreenshotFilename();
 	bool mogaManagerIsActive() const { return bool(mogaManagerPtr); }
 	void setMogaManagerActive(bool on, bool notify);
 	void closeBluetoothConnections();
 	ViewAttachParams attachParams();
-	IG::Viewport makeViewport(const Window &win) const;
-	void setEmuViewOnExtraWindow(bool on, IG::Screen &);
+	Viewport makeViewport(const Window &win) const;
+	void setEmuViewOnExtraWindow(bool on, Screen &);
 	void record(FrameTimingStatEvent, SteadyClockTimePoint t = {});
-	static std::u16string_view mainViewName();
 	void runBenchmarkOneShot(EmuVideo &);
-	void onSelectFileFromPicker(IG::IO, CStringView path, std::string_view displayName,
+	void onSelectFileFromPicker(IO, CStringView path, std::string_view displayName,
 		const Input::Event &, EmuSystemCreateParams, ViewAttachParams);
 	void handleOpenFileCommand(CStringView path);
-	static bool hasGooglePlayStoreFeatures();
 	EmuSystem &system();
 	const EmuSystem &system() const;
 	ApplicationContext appContext() const { return system().appContext(); }
@@ -233,16 +201,16 @@ public:
 
 	// Video Options
 	bool setWindowDrawableConfig(Gfx::DrawableConfig);
-	IG::PixelFormat windowPixelFormat() const;
-	void setRenderPixelFormat(IG::PixelFormat);
+	PixelFormat windowPixelFormat() const;
+	void setRenderPixelFormat(PixelFormat);
 	bool setVideoAspectRatio(float val);
 	float videoAspectRatio() const;
 	float defaultVideoAspectRatio() const;
-	IG::PixelFormat videoEffectPixelFormat() const;
+	PixelFormat videoEffectPixelFormat() const;
 	bool setContentScale(uint8_t val);
 	bool setMenuScale(int8_t val);
 	bool supportsShowOnSecondScreen(ApplicationContext ctx) { return ctx.androidSDK() >= 17; }
-	void setContentRotation(IG::Rotation);
+	void setContentRotation(Rotation);
 	void updateVideoContentRotation();
 	void updateContentRotation();
 	Gfx::PresentMode effectivePresentMode() const
@@ -281,7 +249,7 @@ public:
 	void setEmuOrientation(Orientations);
 	void setMenuOrientation(Orientations);
 	void setShowsBundledGames(bool);
-	auto canShowNotificationIcon(IG::ApplicationContext ctx) { return Config::envIsAndroid && ctx.androidSDK() < 17; }
+	auto canShowNotificationIcon(ApplicationContext ctx) { return Config::envIsAndroid && ctx.androidSDK() < 17; }
 	void setShowsBluetoothScanItems(bool on);
 	void setLayoutBehindSystemUI(bool);
 	bool doesLayoutBehindSystemUI() const { return layoutBehindSystemUI; };
@@ -323,7 +291,7 @@ public:
 				func(conf);
 			}
 		}
-		for(const auto& conf : defaultKeyConfigs())
+		for(const auto& conf: AppMeta::defaultKeyConfigs())
 		{
 			if(conf.map == map)
 			{
@@ -346,62 +314,123 @@ public:
 	FrameTimingStats frameTimingStats;
 	OutputTimingManager outputTimingManager;
 	EmuSystemTask systemTask{*this};
-	[[no_unique_address]] IG::VibrationManager vibrationManager;
+	[[no_unique_address]] VibrationManager vibrationManager;
 	DrawableConfig windowDrawableConfig;
 	BluetoothAdapter bluetoothAdapter;
 	RecentContent recentContent;
 	FS::PathString contentSearchPath;
 	std::string userScreenshotPath;
-	Property<IG::PixelFormat, CFGKEY_RENDER_PIXEL_FORMAT,
-		PropertyDesc<IG::PixelFormat>{.isValid = renderPixelFormatIsValid}> renderPixelFormat;
+	Property<PixelFormat, CFGKEY_RENDER_PIXEL_FORMAT,
+	{
+		.isValid = renderPixelFormatIsValid
+	}> renderPixelFormat;
 	ConditionalProperty<Config::cpuAffinity, CPUMask, CFGKEY_CPU_AFFINITY_MASK> cpuAffinityMask;
-	Property<int16_t, CFGKEY_FAST_MODE_SPEED, {.defaultValue = 800, .isValid = isValidFastSpeed}> fastModeSpeed;
-	Property<int16_t, CFGKEY_SLOW_MODE_SPEED, {.defaultValue = 50, .isValid = isValidSlowSpeed}> slowModeSpeed;
+	Property<int16_t, CFGKEY_FAST_MODE_SPEED,
+	{
+		.defaultValue = 800, .isValid = isValidFastSpeed
+	}> fastModeSpeed;
+	Property<int16_t, CFGKEY_SLOW_MODE_SPEED,
+	{
+		.defaultValue = 50, .isValid = isValidSlowSpeed
+	}> slowModeSpeed;
 	Property<int16_t, CFGKEY_FONT_Y_SIZE,
 	{
 		.defaultValue = Config::MACHINE_IS_PANDORA ? 6500 : (Config::envIsIOS || Config::envIsAndroid) ? 3000 : 8000,
 		.mutableDefault = true,
 		.isValid = isValidFontSize
 	}> fontSize;
-	Property<int8_t, CFGKEY_FRAME_INTERVAL, {.defaultValue = 1, .isValid = isValidFrameInterval}> frameInterval;
-	ConditionalProperty<Config::envIsAndroid, bool, CFGKEY_NOTIFICATION_ICON, {.defaultValue = true, .mutableDefault = true}> showsNotificationIcon;
-	ConditionalProperty<CAN_HIDE_TITLE_BAR, bool, CFGKEY_TITLE_BAR, {.defaultValue = true}> showsTitleBar;
-	ConditionalProperty<Config::NAVIGATION_BAR, InEmuTristate, CFGKEY_LOW_PROFILE_OS_NAV, {.defaultValue = InEmuTristate::InEmu}> lowProfileOSNav;
+	Property<int8_t, CFGKEY_FRAME_INTERVAL,
+	{
+		.defaultValue = 1, .isValid = isValidFrameInterval
+	}> frameInterval;
+	ConditionalProperty<Config::envIsAndroid, bool, CFGKEY_NOTIFICATION_ICON,
+	{
+		.defaultValue = true, .mutableDefault = true
+	}> showsNotificationIcon;
+	ConditionalProperty<CAN_HIDE_TITLE_BAR, bool, CFGKEY_TITLE_BAR,
+	{
+		.defaultValue = true
+	}> showsTitleBar;
+	ConditionalProperty<Config::NAVIGATION_BAR, InEmuTristate, CFGKEY_LOW_PROFILE_OS_NAV,
+	{
+		.defaultValue = InEmuTristate::InEmu
+	}> lowProfileOSNav;
 	ConditionalProperty<Config::NAVIGATION_BAR, InEmuTristate, CFGKEY_HIDE_OS_NAV,
-		{.defaultValue = InEmuTristate::Off, .mutableDefault = true}> hidesOSNav;
-	ConditionalProperty<Config::STATUS_BAR, InEmuTristate, CFGKEY_HIDE_STATUS_BAR, {.defaultValue = InEmuTristate::InEmu}> hidesStatusBar;
+	{
+		.defaultValue = InEmuTristate::Off, .mutableDefault = true
+	}> hidesOSNav;
+	ConditionalProperty<Config::STATUS_BAR, InEmuTristate, CFGKEY_HIDE_STATUS_BAR,
+	{
+		.defaultValue = InEmuTristate::InEmu
+	}> hidesStatusBar;
 	Property<Orientations, CFGKEY_GAME_ORIENTATION> emuOrientation;
 	Property<Orientations, CFGKEY_MENU_ORIENTATION> menuOrientation;
-	Property<bool, CFGKEY_SHOW_BUNDLED_GAMES, {.defaultValue = true}> showsBundledGames;
+	Property<bool, CFGKEY_SHOW_BUNDLED_GAMES,
+	{
+		.defaultValue = true
+	}> showsBundledGames;
 	ConditionalProperty<Config::Input::BLUETOOTH, bool, CFGKEY_SHOW_BLUETOOTH_SCAN,
-		{.defaultValue = true, .mutableDefault = true}> showsBluetoothScan;
+	{
+		.defaultValue = true, .mutableDefault = true
+	}> showsBluetoothScan;
 	Property<PixelFormatId, CFGKEY_IMAGE_EFFECT_PIXEL_FORMAT,
-		{.defaultValue = PixelFormatId::Unset, .isValid = imageEffectPixelFormatIsValid}> imageEffectPixelFormat;
-	Property<int8_t, CFGKEY_MENU_SCALE, {.defaultValue = 100, .isValid = optionMenuScaleIsValid}> menuScale;
+	{
+		.defaultValue = PixelFormatId::Unset, .isValid = imageEffectPixelFormatIsValid
+	}> imageEffectPixelFormat;
+	Property<int8_t, CFGKEY_MENU_SCALE,
+	{
+		.defaultValue = 100, .isValid = optionMenuScaleIsValid
+	}> menuScale;
 	ConditionalProperty<Config::BASE_MULTI_WINDOW && Config::BASE_MULTI_SCREEN, bool, CFGKEY_SHOW_ON_2ND_SCREEN> showOnSecondScreen;
 	Property<Gfx::TextureBufferMode, CFGKEY_TEXTURE_BUFFER_MODE> textureBufferMode;
-	Property<Rotation, CFGKEY_CONTENT_ROTATION, {.defaultValue = Rotation::ANY, .isValid = enumIsValidUpToLast}> contentRotation;
+	Property<Rotation, CFGKEY_CONTENT_ROTATION,
+	{
+		.defaultValue = Rotation::ANY
+	}> contentRotation;
 	Property<bool, CFGKEY_IDLE_DISPLAY_POWER_SAVE> idleDisplayPowerSave;
 	Property<bool, CFGKEY_SHOW_HIDDEN_FILES> showHiddenFilesInPicker;
-	Property<bool, CFGKEY_CONFIRM_OVERWRITE_STATE, {.defaultValue = true}> confirmOverwriteState;
-	Property<bool, CFGKEY_SYSTEM_ACTIONS_IS_DEFAULT_MENU, {.defaultValue = true}> systemActionsIsDefaultMenu;
-	ConditionalProperty<Config::windowFocus, bool, CFGKEY_PAUSE_UNFOCUSED, {.defaultValue = true}> pauseUnfocused;
+	Property<bool, CFGKEY_CONFIRM_OVERWRITE_STATE,
+	{
+		.defaultValue = true
+	}> confirmOverwriteState;
+	Property<bool, CFGKEY_SYSTEM_ACTIONS_IS_DEFAULT_MENU,
+	{
+		.defaultValue = true
+	}> systemActionsIsDefaultMenu;
+	ConditionalProperty<Config::windowFocus, bool, CFGKEY_PAUSE_UNFOCUSED,
+	{
+		.defaultValue = true
+	}> pauseUnfocused;
 	ConditionalProperty<Config::envIsAndroid, bool, CFGKEY_SUSTAINED_PERFORMANCE_MODE> useSustainedPerformanceMode;
 	ConditionalProperty<Config::Input::BLUETOOTH && Config::BASE_CAN_BACKGROUND_APP, bool, CFGKEY_KEEP_BLUETOOTH_ACTIVE> keepBluetoothActive;
-	ConditionalProperty<Config::Input::DEVICE_HOTSWAP, bool, CFGKEY_NOTIFY_INPUT_DEVICE_CHANGE, {.defaultValue = true}> notifyOnInputDeviceChange;
+	ConditionalProperty<Config::Input::DEVICE_HOTSWAP, bool, CFGKEY_NOTIFY_INPUT_DEVICE_CHANGE,
+	{
+		.defaultValue = true
+	}> notifyOnInputDeviceChange;
 	ConditionalMember<Config::multipleScreenFrameRates, double> overrideScreenFrameRate{};
 	Property<FrameClockSource, CFGKEY_FRAME_CLOCK,
-		{.defaultValue = FrameClockSource::Unset, .isValid = enumIsValidUpToLast}> frameClockSource;
+	{
+		.defaultValue = FrameClockSource::Unset
+	}> frameClockSource;
 	ConditionalProperty<Config::cpuAffinity, CPUAffinityMode, CFGKEY_CPU_AFFINITY_MODE,
-		{.defaultValue = CPUAffinityMode::Auto, .isValid = enumIsValidUpToLast}> cpuAffinityMode;
+	{
+		.defaultValue = CPUAffinityMode::Auto
+	}> cpuAffinityMode;
 	ConditionalMember<Config::envIsAndroid && Config::DEBUG_BUILD, bool> useNoopThread{};
 	ConditionalProperty<Gfx::supportsPresentModes, Gfx::PresentMode, CFGKEY_RENDERER_PRESENT_MODE,
-		{.defaultValue = Gfx::PresentMode::Auto, .isValid = enumIsValidUpToLast}> presentMode;
+	{
+		.defaultValue = Gfx::PresentMode::Auto
+	}> presentMode;
 	Property<bool, CFGKEY_BLANK_FRAME_INSERTION> allowBlankFrameInsertion;
 	Property<bool, CFGKEY_SHOW_FRAME_TIMING_STATS> showFrameTimingStats;
 	Property<OutputFrameRateMode, CFGKEY_OUTPUT_FRAME_RATE_MODE,
-		{.defaultValue = OutputFrameRateMode::Auto, .isValid = enumIsValidUpToLast}> outputFrameRateMode;
-	Property<bool, CFGKEY_LOW_LATENCY_VIDEO, {.defaultValue = true}> lowLatencyVideo;
+	{
+		.defaultValue = OutputFrameRateMode::Auto
+	}> outputFrameRateMode;
+	Property<bool, CFGKEY_LOW_LATENCY_VIDEO,
+	{
+		.defaultValue = true
+	}> lowLatencyVideo;
 
 protected:
 	struct ConfigParams
@@ -409,17 +438,17 @@ protected:
 		Gfx::DrawableConfig windowDrawableConf;
 	};
 
-	[[no_unique_address]] IG::Data::PixmapWriter pixmapWriter;
+	[[no_unique_address]] Data::PixmapWriter pixmapWriter;
 	[[no_unique_address]] PerformanceHintManager perfHintManager;
 	[[no_unique_address]] PerformanceHintSession perfHintSession;
 	ConditionalMember<MOGA_INPUT, std::unique_ptr<Input::MogaManager>> mogaManagerPtr;
 	ConditionalMember<Config::TRANSLUCENT_SYSTEM_UI, bool> layoutBehindSystemUI{};
 
 	void onMainWindowCreated(ViewAttachParams, const Input::Event &);
-	ConfigParams loadConfigFile(IG::ApplicationContext);
-	void saveConfigFile(IG::ApplicationContext);
+	ConfigParams loadConfigFile(ApplicationContext);
+	void saveConfigFile(ApplicationContext);
 	void saveConfigFile(FileIO &);
-	void initOptions(IG::ApplicationContext);
+	void initOptions(ApplicationContext);
 	void applyRenderPixelFormat();
 	FS::PathString sessionConfigPath();
 	void loadSystemOptions();
@@ -432,7 +461,7 @@ protected:
 };
 
 // Global instance access if required by the emulated system, valid if EmuApp::needsGlobalInstance initialized to true
-EmuApp &gApp();
-IG::ApplicationContext gAppContext();
+EmuApp& gApp();
+ApplicationContext gAppContext();
 
 }

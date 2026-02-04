@@ -13,27 +13,21 @@
 	You should have received a copy of the GNU General Public License
 	along with Saturn.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include "MainSystem.hh"
-#include <mednafen-emuex/MDFNUtils.hh>
+module;
+#include <mednafen/mednafen.h>
 #include <mednafen/general.h>
+#include <mednafen/Stream.h>
+#include <mednafen/state.h>
+#include <ss/ss.h>
 #include <ss/smpc.h>
 #include <ss/db.h>
-import emuex;
+#include <ss/cart.h>
+#include "mdfnDefs.hh"
+
+module system;
 
 namespace EmuEx
 {
-
-const char *EmuSystem::configFilename = "SaturnEmu.config";
-
-std::span<const AspectRatioInfo> SaturnSystem::aspectRatioInfos()
-{
-	static constexpr AspectRatioInfo aspectRatioInfo[]
-	{
-		{"4:3 (Original)", {4, 3}},
-		EMU_SYSTEM_DEFAULT_ASPECT_RATIO_INFO_INIT
-	};
-	return aspectRatioInfo;
-}
 
 void SaturnSystem::onSessionOptionsLoaded(EmuApp &app)
 {
@@ -132,10 +126,8 @@ Rotation SaturnSystem::contentRotation() const
 
 }
 
-namespace Mednafen
+extern "C++" namespace Mednafen
 {
-
-constexpr IG::SystemLogger log{"Lynx.emu"};
 
 using namespace EmuEx;
 
@@ -155,7 +147,7 @@ uint64 MDFN_GetSettingUI(const char *name_)
 		return MDFN_IEN_SS::CPUCACHE_EMUMODE__COUNT;
 	if(name == "ss.midi")
 		return 0;
-	log.error("unhandled settingUI:{}", name_);
+	SaturnSystem::log.error("unhandled settingUI:{}", name_);
 	unreachable();
 }
 
@@ -175,7 +167,7 @@ int64 MDFN_GetSettingI(const char *name_)
 		return sys.videoLines.first;
 	if("ss.slend" == name || "ss.slendp" == name)
 		return sys.videoLines.last;
-	log.error("unhandled settingI:{}", name_);
+	SaturnSystem::log.error("unhandled settingI:{}", name_);
 	unreachable();
 }
 
@@ -184,7 +176,7 @@ double MDFN_GetSettingF(const char *name_)
 	std::string_view name{name_};
 	if(name.ends_with(".mouse_sensitivity"))
 		return 0.50;
-	log.error("unhandled settingF:{}", name_);
+	SaturnSystem::log.error("unhandled settingF:{}", name_);
 	unreachable();
 }
 
@@ -216,7 +208,7 @@ bool MDFN_GetSettingB(const char *name_)
 		return false; // multitaps are handled in onSessionOptionsLoaded()
 	if("ss.input.sport2.multitap" == name)
 		return false;
-	log.error("unhandled settingB:{}", name_);
+	SaturnSystem::log.error("unhandled settingB:{}", name_);
 	unreachable();
 }
 
@@ -231,7 +223,7 @@ std::string MDFN_GetSettingS(const char *name_)
 		return "kof95";
 	if(name == "ss.cart.ultraman_path")
 		return "ultraman";
-	log.error("unhandled settingS:{}", name_);
+	SaturnSystem::log.error("unhandled settingS:{}", name_);
 	unreachable();
 }
 
@@ -240,13 +232,13 @@ uint64 MDFN_GetSettingMultiM(const char *name_)
 	std::string_view name{name_};
 	if(name == "ss.dbg_hh")
 		return (unsigned)-1;
-	log.error("unhandled settingMultiM:{}", name_);
+	SaturnSystem::log.error("unhandled settingMultiM:{}", name_);
 	unreachable();
 }
 
 std::vector<uint64> MDFN_GetSettingMultiUI(const char *name_)
 {
-	log.error("unhandled settingMultiUI:{}", name_);
+	SaturnSystem::log.error("unhandled settingMultiUI:{}", name_);
 	unreachable();
 }
 
@@ -257,7 +249,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
 		case MDFNMKF_STATE:
 		case MDFNMKF_SAV:
 		case MDFNMKF_SAVBACK:
-			return savePathMDFN(id1, cd1);
+			return savePathMDFN(static_cast<SaturnApp&>(EmuEx::gApp()), id1, cd1);
 		case MDFNMKF_FIRMWARE:
 		{
 			// saturn-specific

@@ -17,11 +17,13 @@
 #include <mednafen/FileStream.h>
 #include <mednafen/MemoryStream.h>
 #include <mednafen/mednafen.h>
-import emuex;
+#include <emuframework/EmuApp.hh>
 import std;
 
 namespace Mednafen
 {
+
+using namespace IG;
 
 std::pair<IG::OpenFlags, uint8_t> modeToAttribs(uint32 mode)
 {

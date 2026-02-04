@@ -13,10 +13,10 @@
 	You should have received a copy of the GNU General Public License
 	along with C64.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuAppInlines.hh>
-#include <emuframework/EmuSystemInlines.hh>
+module;
+#include <cstdlib>
+#include <format>
 #include <sys/time.h>
-
 extern "C"
 {
 	#include "machine.h"
@@ -56,25 +56,25 @@ extern "C"
 	#include "joyport.h"
 }
 
-import imagine;
+module system;
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"C64.emu"};
-const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2013-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nVice Team\nvice-emu.sourceforge.io";
-bool EmuSystem::hasPALVideoSystem = true;
-bool EmuSystem::hasResetModes = true;
-bool EmuSystem::handlesGenericIO = false;
-bool EmuSystem::hasRectangularPixels = true;
-bool EmuSystem::stateSizeChangesAtRuntime = true;
-bool EmuApp::needsGlobalInstance = true;
-bool EmuApp::handlesRecentContent = true;
-
-C64App::C64App(ApplicationInitParams initParams, ApplicationContext &ctx):
-	EmuApp{initParams, ctx}, c64System{ctx}
+extern "C++" bool EmuApp::willCreateSystem(ViewAttachParams attach, const Input::Event& e)
 {
-	audio.setStereo(false);
+	auto& self = static_cast<C64App&>(*this);
+	if(!self.system().c64FailedInit)
+		return true;
+	pushAndShowModalView(std::make_unique<YesNoAlertView>(attach,
+		std::format("A system file {} failed loading, you must restart the app and try again after verifying the file", self.system().lastMissingSysFile),
+		"Exit Now", "Cancel", YesNoAlertView::Delegates{ .onYes = [](View &v) { v.appContext().exit(); } }), e);
+	return false;
+}
+
+extern "C++" void EmuApp::onMainWindowCreated(ViewAttachParams, const Input::Event&)
+{
+	inputManager.updateKeyboardMapping();
 }
 
 C64System::C64System(ApplicationContext ctx):
@@ -96,15 +96,8 @@ C64System::C64System(ApplicationContext ctx):
 	}
 }
 
-const char *EmuSystem::shortSystemName() const
-{
-	return "C64";
-}
-
-const char *EmuSystem::systemName() const
-{
-	return "Commodore 64";
-}
+extern "C++" std::string_view EmuSystem::shortSystemName() const { return "C64"; }
+extern "C++" std::string_view EmuSystem::systemName() const { return "Commodore 64"; }
 
 void C64System::setModel(int model)
 {
@@ -162,50 +155,7 @@ bool C64System::currSystemIsC64Or128() const
 	return currSystemIsC64() || currSystem == ViceSystem::C128;
 }
 
-int systemCartType(ViceSystem system)
-{
-	switch(system)
-	{
-		case ViceSystem::CBM2:
-		case ViceSystem::CBM5X0:
-			return CARTRIDGE_CBM2_GENERIC_C1;
-		case ViceSystem::PLUS4:
-			return CARTRIDGE_PLUS4_DETECT;
-		case ViceSystem::VIC20:
-			return CARTRIDGE_VIC20_DETECT;
-		default:
-			return CARTRIDGE_CRT;
-	}
-}
-
-bool hasC64DiskExtension(std::string_view name)
-{
-	return IG::endsWithAnyCaseless(name,
-		".d64", ".d67", ".d71", ".d80", ".d81", ".d82", ".d1m", ".d2m", ".d4m", ".g64", ".p64", ".g41", ".x64", ".dsk");
-}
-
-bool hasC64TapeExtension(std::string_view name)
-{
-	return IG::endsWithAnyCaseless(name, ".t64", ".tap");
-}
-
-bool hasC64CartExtension(std::string_view name)
-{
-	return endsWithAnyCaseless(name, ".bin", ".crt",
-		".20", ".40", ".60", ".70", ".a0", ".b0"); // VIC-20 headerless carts
-}
-
-static bool hasC64Extension(std::string_view name)
-{
-	return hasC64DiskExtension(name) ||
-			hasC64TapeExtension(name) ||
-			hasC64CartExtension(name) ||
-			IG::endsWithAnyCaseless(name, ".prg", ".p00");
-}
-
-EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter = hasC64Extension;
-
-void C64System::reset(EmuApp &, ResetMode mode)
+void C64System::reset(EmuApp&, ResetMode mode)
 {
 	assume(hasContent());
 	plugin.machine_trigger_reset(mode == ResetMode::HARD ? MACHINE_RESET_MODE_POWER_CYCLE : MACHINE_RESET_MODE_RESET_CPU);
@@ -213,7 +163,7 @@ void C64System::reset(EmuApp &, ResetMode mode)
 
 FS::FileString C64System::stateFilename(int slot, std::string_view name) const
 {
-	return IG::format<FS::FileString>("{}.{}{}", name, saveSlotChar(slot), stateFilenameExt());
+	return format<FS::FileString>("{}.{}{}", name, saveSlotChar(slot), stateFilenameExt());
 }
 
 void C64System::enterCPUTrap()
@@ -221,9 +171,9 @@ void C64System::enterCPUTrap()
 	assume(emuThreadId);
 	if(inCPUTrap)
 		return;
-	plugin.interrupt_maincpu_trigger_trap([](uint16_t, void *data)
+	plugin.interrupt_maincpu_trigger_trap([](uint16_t, void* data)
 	{
-		auto &sys = *((C64System*)data);
+		auto& sys = *((C64System*)data);
 		sys.inCPUTrap = true;
 		sys.signalEmuTaskThreadAndWait();
 		sys.inCPUTrap = false;
@@ -240,7 +190,7 @@ struct SnapshotData
 	size_t buffSize{};
 };
 
-static std::array<char, 32> snapshotVPath(SnapshotData &data)
+static std::array<char, 32> snapshotVPath(SnapshotData& data)
 {
 	std::array<char, 32> fileStr;
 	// Encode the data/size pointers after the string null terminator
@@ -260,22 +210,22 @@ static std::array<char, 32> snapshotVPath(SnapshotData &data)
 	return fileStr;
 }
 
-static bool saveSnapshot(auto &plugin, SnapshotData &snapData)
+static bool saveSnapshot(auto& plugin, SnapshotData& snapData)
 {
 	//log.info("saving state at:{} size:{}", (void*)snapData.buffData, snapData.buffSize);
 	if(auto err = plugin.machine_write_snapshot(snapshotVPath(snapData).data(), 1, 1, 0);
 		err < 0)
 	{
-		log.error("error writing snapshot:{}", err);
+		C64System::log.error("error writing snapshot:{}", err);
 		return false;
 	}
 	return true;
 }
 
-static bool loadSnapshot(auto &plugin, SnapshotData &snapData)
+static bool loadSnapshot(auto& plugin, SnapshotData& snapData)
 {
 	assume(snapData.buffData);
-	log.info("loading state at:{} size:{}", (void*)snapData.buffData, snapData.buffSize);
+	C64System::log.info("loading state at:{} size:{}", (void*)snapData.buffData, snapData.buffSize);
 	if(plugin.machine_read_snapshot(snapshotVPath(snapData).data(), 0) < 0)
 		return false;
 	return true;
@@ -289,7 +239,7 @@ size_t C64System::stateSize()
 	return data.buffSize;
 }
 
-void C64System::readState(EmuApp &app, std::span<uint8_t> buff)
+void C64System::readState(EmuApp& app, std::span<uint8_t> buff)
 {
 	signalViceThreadAndWait();
 	enterCPUTrap();
@@ -338,9 +288,9 @@ void C64System::closeSystem()
 	plugin.cartridge_detach_image(-1);
 }
 
-static bool hasSysFilePath(ApplicationContext ctx, const auto &paths)
+static bool hasSysFilePath(ApplicationContext ctx, const auto& paths)
 {
-	for(const auto &path : paths)
+	for(const auto& path : paths)
 	{
 		if(!path.empty() && !ctx.fileUriDisplayName(path).empty())
 			return true;
@@ -348,7 +298,7 @@ static bool hasSysFilePath(ApplicationContext ctx, const auto &paths)
 	return false;
 }
 
-bool C64System::initC64(EmuApp &app)
+bool C64System::initC64(EmuApp& app)
 {
 	if(c64IsInit)
 		return false;
@@ -363,16 +313,6 @@ bool C64System::initC64(EmuApp &app)
 	}
 	c64IsInit = true;
 	return true;
-}
-
-bool C64App::willCreateSystem(ViewAttachParams attach, const Input::Event &e)
-{
-	if(!system().c64FailedInit)
-		return true;
-	pushAndShowModalView(std::make_unique<YesNoAlertView>(attach,
-		std::format("A system file {} failed loading, you must restart the app and try again after verifying the file", system().lastMissingSysFile),
-		"Exit Now", "Cancel", YesNoAlertView::Delegates{ .onYes = [](View &v) { v.appContext().exit(); } }), e);
-	return false;
 }
 
 static FS::PathString vic20ExtraCartPath(ApplicationContext ctx, std::string_view baseCartName, std::string_view searchPath)
@@ -397,7 +337,7 @@ static FS::PathString vic20ExtraCartPath(ApplicationContext ctx, std::string_vie
 	{
 		return {};
 	}
-	const auto &addrSuffixChar = baseCartName[addrSuffixOffset];
+	const auto& addrSuffixChar = baseCartName[addrSuffixOffset];
 	bool addrCharIsUpper = addrSuffixChar == 'A' || addrSuffixChar == 'B';
 	for(auto c : std::array{'2', '4', '6', 'a', 'b'}) // looks for a matching file with a valid memory address suffix
 	{
@@ -429,7 +369,7 @@ void C64System::tryLoadingSplitVic20Cart()
 	}
 }
 
-void C64System::loadContent(IO &, EmuSystemCreateParams params, OnLoadProgressDelegate)
+void C64System::loadContent(IO&, EmuSystemCreateParams params, OnLoadProgressDelegate)
 {
 	bool shouldAutostart = !(params.systemFlags & SYSTEM_FLAG_NO_AUTOSTART) && optionAutostartOnLaunch;
 	if(shouldAutostart && plugin.autostart_autodetect_)
@@ -488,7 +428,7 @@ void C64System::loadContent(IO &, EmuSystemCreateParams params, OnLoadProgressDe
 	}
 }
 
-void C64System::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio *audio)
+void C64System::runFrame(EmuSystemTaskContext taskCtx, EmuVideo* video, EmuAudio* audio)
 {
 	audioPtr = audio;
 	setCanvasSkipFrame(!video);
@@ -500,7 +440,7 @@ void C64System::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio
 	audioPtr = {};
 }
 
-void C64System::renderFramebuffer(EmuVideo &video)
+void C64System::renderFramebuffer(EmuVideo& video)
 {
 	video.startFrameWithAltFormat({}, canvasSrcPix);
 }
@@ -520,27 +460,10 @@ bool C64System::shouldFastForward() const
 	return *plugin.warp_mode_enabled;
 }
 
-void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
+bool C64System::onVideoRenderFormatChange(EmuVideo&, PixelFormat fmt)
 {
-	const Gfx::LGradientStopDesc navViewGrad[] =
-	{
-		{ .0, Gfx::PackedColor::format.build(48./255., 36./255., 144./255., 1.) },
-		{ .3, Gfx::PackedColor::format.build(48./255., 36./255., 144./255., 1.) },
-		{ .97, Gfx::PackedColor::format.build((48./255.) * .4, (36./255.) * .4, (144./255.) * .4, 1.) },
-		{ 1., view.separatorColor() },
-	};
-	view.setBackgroundGradient(navViewGrad);
-}
-
-void EmuApp::onMainWindowCreated(ViewAttachParams attach, const Input::Event &e)
-{
-	inputManager.updateKeyboardMapping();
-}
-
-bool C64System::onVideoRenderFormatChange(EmuVideo &, IG::PixelFormat fmt)
-{
-	if(fmt == IG::PixelFmtRGB565)
-		fmt = IG::PixelFmtRGBA8888; // internally render in 32bpp
+	if(fmt == PixelFmtRGB565)
+		fmt = PixelFmtRGBA8888; // internally render in 32bpp
 	pixFmt = fmt;
 	if(activeCanvas)
 	{

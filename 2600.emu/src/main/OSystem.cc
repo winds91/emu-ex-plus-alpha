@@ -29,7 +29,7 @@
 import emuex;
 import imagine;
 
-OSystem::OSystem(EmuEx::EmuApp &app):
+OSystem::OSystem(EmuEx::EmuApp& app):
 	appPtr{&app},
 	myRandom{uInt32(TimerManager::getTicks())}
 {
@@ -40,7 +40,7 @@ OSystem::OSystem(EmuEx::EmuApp &app):
 	mySettings.setValue(AudioSettings::SETTING_VOLUME, 100);
 }
 
-void OSystem::makeConsole(unique_ptr<Cartridge>& cart, const Properties& props, const char *gamePath)
+void OSystem::makeConsole(unique_ptr<Cartridge>& cart, const Properties& props, const char* gamePath)
 {
 	myRomFile = FSNode{gamePath};
 	myConsole.emplace(*this, cart, props, myAudioSettings);
@@ -73,9 +73,4 @@ FSNode OSystem::nvramDir(std::string_view name) const
 FSNode OSystem::baseDir(std::string_view name) const
 {
 	return FSNode{std::string{appPtr->system().contentFilePath(name)}};
-}
-
-EmuEx::EmuApp &OSystem::app()
-{
-	return *appPtr;
 }

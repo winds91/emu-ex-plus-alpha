@@ -14,6 +14,8 @@
 	along with Imagine.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <imagine/io/IO.hh>
+#include <imagine/io/FileIO.hh>
+#include <imagine/io/IOUtils-impl.hh>
 #include <imagine/util/format.hh>
 #include <sys/types.h>
 import imagine.internal.io;

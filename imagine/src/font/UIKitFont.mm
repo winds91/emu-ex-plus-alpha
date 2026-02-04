@@ -80,8 +80,8 @@ static GlyphRenderData makeGlyphRenderData(int idx, FontSize &fontSize, CGColorS
 	// measure real bounds
 	auto pixView = mdspan{pixBuffer, cYFullSize, cXFullSize};
 	int minX = cXFullSize, maxX = 0, minY = cYFullSize, maxY = 0;
-	for(auto y : iotaCount(cYFullSize))
-		for(auto x : iotaCount(cXFullSize))
+	for(auto y: iotaCount(cYFullSize))
+		for(auto x: iotaCount(cXFullSize))
 		{
 			if(pixView[y, x])
 			{

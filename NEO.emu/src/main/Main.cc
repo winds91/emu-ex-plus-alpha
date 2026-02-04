@@ -13,9 +13,7 @@
 	You should have received a copy of the GNU General Public License
 	along with NEO.emu.  If not, see <http://www.gnu.org/licenses/> */
 
-#include <emuframework/EmuSystemInlines.hh>
-#include <emuframework/EmuAppInlines.hh>
-
+module;
 extern "C"
 {
 	#include <gngeo/roms.h>
@@ -29,30 +27,26 @@ extern "C"
 	#include <gngeo/menu.h>
 }
 
-import imagine;
+module system;
 
 extern "C"
 {
 	CONFIG conf{};
 	GN_Rect visible_area;
-	GN_Surface *buffer{};
+	GN_Surface* buffer{};
 	static CONF_ITEM rompathConfItem{};
 
-	void main_frame(void *emuTaskPtr, void *neoSystemPtr, void *emuVideoPtr);
+	void main_frame(void* emuTaskPtr, void* neoSystemPtr, void* emuVideoPtr);
 }
 
 namespace EmuEx
 {
 
-constexpr SystemLogger log{"NEO.emu"};
-const char *EmuSystem::creditsViewStr = CREDITS_INFO_STRING "(c) 2012-2025\nRobert Broglia\nwww.explusalpha.com\n\nPortions (c) the\nGngeo Team\ncode.google.com/p/gngeo";
-bool EmuSystem::handlesGenericIO = false; // TODO: need to re-factor GnGeo file loading code
-bool EmuSystem::canRenderRGBA8888 = false;
-bool EmuSystem::hasRectangularPixels = true;
-bool EmuApp::needsGlobalInstance = true;
-
-NeoApp::NeoApp(ApplicationInitParams initParams, ApplicationContext &ctx):
-	EmuApp{initParams, ctx}, neoSystem{ctx} {}
+extern "C++"
+{
+	bool openState(MapIO&, int mode);
+	void makeState(MapIO&, int mode);
+}
 
 NeoSystem::NeoSystem(ApplicationContext ctx):
 	EmuSystem{ctx}
@@ -69,26 +63,12 @@ NeoSystem::NeoSystem(ApplicationContext ctx):
 	strcpy(rompathConfItem.data.dt_str.str, ".");
 	if(!Config::envIsAndroid)
 	{
-		IG::formatTo(datafilePath, "{}/gngeo_data.zip", appContext().assetPath());
+		formatTo(datafilePath, "{}/gngeo_data.zip", appContext().assetPath());
 	}
 }
 
-const char *EmuSystem::shortSystemName() const
-{
-	return "NeoGeo";
-}
-
-const char *EmuSystem::systemName() const
-{
-	return "Neo Geo";
-}
-
-static bool hasNeoGeoExtension(std::string_view name)
-{
-	return false; // archives handled by EmuFramework
-}
-
-EmuSystem::NameFilterFunc EmuSystem::defaultFsFilter = hasNeoGeoExtension;
+extern "C++" std::string_view EmuSystem::shortSystemName() const { return "NeoGeo"; }
+extern "C++" std::string_view EmuSystem::systemName() const { return "Neo Geo"; }
 
 void NeoSystem::reset(EmuApp &, ResetMode mode)
 {
@@ -100,7 +80,7 @@ void NeoSystem::reset(EmuApp &, ResetMode mode)
 
 FS::FileString NeoSystem::stateFilename(int slot, std::string_view name) const
 {
-	return IG::format<FS::FileString>("{}.0{}.sta", name, saveSlotCharUpper(slot));
+	return format<FS::FileString>("{}.0{}.sta", name, saveSlotCharUpper(slot));
 }
 
 size_t NeoSystem::stateSize()
@@ -215,7 +195,7 @@ void NeoSystem::closeSystem()
 	memcardFileIO = {};
 }
 
-static auto openGngeoDataIO(IG::ApplicationContext ctx, IG::CStringView filename)
+static auto openGngeoDataIO(ApplicationContext ctx, CStringView filename)
 {
 	#ifdef __ANDROID__
 	return ctx.openAsset(filename, {.accessHint = IOAccessHint::All});
@@ -232,14 +212,14 @@ void NeoSystem::loadContent(IO &, EmuSystemCreateParams, OnLoadProgressDelegate 
 		throwMissingContentDirError();
 	}
 	onLoadProgress = onLoadProgressFunc;
-	auto resetOnLoadProgress = IG::scopeGuard([&](){ onLoadProgress = {}; });
+	auto resetOnLoadProgress = scopeGuard([&](){ onLoadProgress = {}; });
 	auto ctx = appContext();
 	ROM_DEF *drv = res_load_drv(&ctx, contentName().data());
 	if(!drv)
 	{
 		throw std::runtime_error("This game isn't recognized");
 	}
-	auto freeDrv = IG::scopeGuard([&](){ free(drv); });
+	auto freeDrv = scopeGuard([&](){ std::free(drv); });
 	log.info("rom set {}, {}", drv->name, drv->longname);
 	auto gnoFilename = EmuSystem::contentSaveFilePath(".gno");
 	if(optionCreateAndUseCache && ctx.fileUriExists(gnoFilename))
@@ -316,7 +296,7 @@ void NeoSystem::runFrame(EmuSystemTaskContext taskCtx, EmuVideo *video, EmuAudio
 	}
 }
 
-FS::FileString NeoSystem::contentDisplayNameForPath(IG::CStringView path) const
+FS::FileString NeoSystem::contentDisplayNameForPath(CStringView path) const
 {
 	auto contentName = contentDisplayNameForPathDefaultImpl(path);
 	if(contentName.empty())
@@ -325,20 +305,8 @@ FS::FileString NeoSystem::contentDisplayNameForPath(IG::CStringView path) const
 	ROM_DEF *drv = res_load_drv(&ctx, contentName.data());
 	if(!drv)
 		return contentName;
-	auto freeDrv = IG::scopeGuard([&](){ free(drv); });
+	auto freeDrv = scopeGuard([&](){ std::free(drv); });
 	return drv->longname;
-}
-
-void EmuApp::onCustomizeNavView(EmuApp::NavView &view)
-{
-	const Gfx::LGradientStopDesc navViewGrad[] =
-	{
-		{ .0, Gfx::PackedColor::format.build((255./255.) * .4, (215./255.) * .4, (0./255.) * .4, 1.) },
-		{ .3, Gfx::PackedColor::format.build((255./255.) * .4, (215./255.) * .4, (0./255.) * .4, 1.) },
-		{ .97, Gfx::PackedColor::format.build((85./255.) * .4, (71./255.) * .4, (0./255.) * .4, 1.) },
-		{ 1., view.separatorColor() },
-	};
-	view.setBackgroundGradient(navViewGrad);
 }
 
 }
@@ -352,27 +320,27 @@ extern "C" int gn_strictROMChecking()
 
 extern "C" ROM_DEF *res_load_drv(void *contextPtr, const char *name)
 {
-	auto drvFilename = IG::format<FS::PathString>(DATAFILE_PREFIX "rom/{}.drv", name);
-	auto io = EmuEx::openGngeoDataIO(*((IG::ApplicationContext*)contextPtr), drvFilename);
+	auto drvFilename = format<FS::PathString>(DATAFILE_PREFIX "rom/{}.drv", name);
+	auto io = openGngeoDataIO(*((ApplicationContext*)contextPtr), drvFilename);
 	if(!io)
 	{
-		EmuEx::log.error("Can't open driver:{}", name);
+		NeoSystem::log.error("Can't open driver:{}", name);
 		return nullptr;
 	}
 
 	// Fill out the driver struct
-	auto drv = (ROM_DEF*)calloc(1, sizeof(ROM_DEF));
+	auto drv = (ROM_DEF*)std::calloc(1, sizeof(ROM_DEF));
 	io.read(drv->name, 32);
 	io.read(drv->parent, 32);
 	io.read(drv->longname, 128);
 	drv->year = io.get<uint32_t>(); // TODO: LE byte-swap on uint32_t reads
-	for(auto i : iotaCount(10))
+	for(auto i: iotaCount(10))
 	{
 		drv->romsize[i] = io.get<uint32_t>();
 		//EmuEx::log.debug("ROM region:{} size:{:X}", i, drv->romsize[i]);
 	}
 	drv->nb_romfile = io.get<uint32_t>();
-	for(auto i : iotaCount(drv->nb_romfile))
+	for(auto i: iotaCount(drv->nb_romfile))
 	{
 		io.read(drv->rom[i].filename, 32);
 		drv->rom[i].region = io.get<uint8_t>();
@@ -388,14 +356,14 @@ extern "C" ROM_DEF *res_load_drv(void *contextPtr, const char *name)
 
 extern "C" void *res_load_data(void *contextPtr, const char *name)
 {
-	auto io = EmuEx::openGngeoDataIO(*((IG::ApplicationContext*)contextPtr), name);
+	auto io = openGngeoDataIO(*((ApplicationContext*)contextPtr), name);
 	if(!io)
 	{
-		EmuEx::log.error("Can't open data file:{}", name);
+		NeoSystem::log.error("Can't open data file:{}", name);
 		return nullptr;
 	}
 	auto size = io.size();
-	auto buffer = (char*)malloc(size);
+	auto buffer = (char*)std::malloc(size);
 	io.read(buffer, size);
 	return buffer;
 }
@@ -417,23 +385,23 @@ extern "C" void screen_update(void *emuTaskCtxPtr, void *neoSystemPtr, void *emu
 
 extern "C" int currentZ80Timeslice()
 {
-	return IG::remap(memory.vid.current_line, 0, 264, 0, 256);
+	return remap(memory.vid.current_line, 0, 264, 0, 256);
 }
 
-void sramWritten()
+extern "C" void sramWritten()
 {
 	EmuEx::gSystem().onBackupMemoryWritten(SRAM_DIRTY_BIT);
 }
 
-void memcardWritten()
+extern "C" void memcardWritten()
 {
 	EmuEx::gSystem().onBackupMemoryWritten(MEMCARD_DIRTY_BIT);
 }
 
-void gn_init_pbar(unsigned action, int size)
+extern "C" void gn_init_pbar(unsigned action, int size)
 {
 	auto &sys = static_cast<NeoSystem&>(gSystem());
-	EmuEx::log.info("init pbar:{},{}", action, size);
+	NeoSystem::log.info("init pbar:{},{}", action, size);
 	if(sys.onLoadProgress)
 	{
 		auto actionString = [](unsigned action)
@@ -450,10 +418,10 @@ void gn_init_pbar(unsigned action, int size)
 	}
 }
 
-void gn_update_pbar(int pos)
+extern "C" void gn_update_pbar(int pos)
 {
 	auto &sys = static_cast<NeoSystem&>(gSystem());
-	EmuEx::log.info("update pbar:{}", pos);
+	NeoSystem::log.info("update pbar:{}", pos);
 	if(sys.onLoadProgress)
 	{
 		sys.onLoadProgress(pos, 0, nullptr);
@@ -462,7 +430,6 @@ void gn_update_pbar(int pos)
 
 extern "C" CONF_ITEM* cf_get_item_by_name(const char *nameStr)
 {
-	using namespace EmuEx;
 	static CONF_ITEM conf{};
 	std::string_view name{nameStr};
 	if(name == "dump")
@@ -484,20 +451,20 @@ extern "C" CONF_ITEM* cf_get_item_by_name(const char *nameStr)
 	}
 	else
 	{
-		EmuEx::log.error("unknown conf item:{}", nameStr);
+		NeoSystem::log.error("unknown conf item:{}", nameStr);
 	}
 	return &conf;
 }
 
 extern "C" const char *get_gngeo_dir(void *contextPtr)
 {
-	auto &sys = EmuEx::EmuApp::get(*(IG::ApplicationContext*)contextPtr).system();
+	auto &sys = EmuApp::get(*(ApplicationContext*)contextPtr).system();
 	return sys.contentSaveDirectoryPtr();
 }
 
 extern "C" PathArray get_rom_path(void *contextPtr)
 {
-	auto &sys = EmuEx::EmuApp::get(*(IG::ApplicationContext*)contextPtr).system();
+	auto &sys = EmuApp::get(*(ApplicationContext*)contextPtr).system();
 	PathArray path;
 	strncpy(path.data, sys.contentDirectory().data(), sizeof(path));
 	return path;

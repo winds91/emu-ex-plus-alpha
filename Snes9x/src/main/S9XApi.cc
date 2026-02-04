@@ -1,19 +1,26 @@
+/*  This file is part of Snes9x EX.
+
+	Please see COPYING file in root directory for license information. */
+
 #include <imagine/logger/logger.h>
-#include "MainSystem.hh"
 #include <sys/stat.h>
 #include <zlib.h>
 #ifndef SNES9X_VERSION_1_4
 #include <apu/apu.h>
 #include <controls.h>
 #else
+#include <snes9x.h>
 #include <apu.h>
 #include <soundux.h>
 #endif
 #include <display.h>
 #include <memmap.h>
+import system;
 import emuex;
 import imagine;
+import std;
 
+using namespace IG;
 using namespace EmuEx;
 
 #ifndef SNES9X_VERSION_1_4
@@ -31,12 +38,12 @@ static std::string globalPath;
 void S9xMessage(int, int, const char *msg)
 {
 	if(msg)
-		logMsg("%s", msg);
+		Snes9xSystem::log.info("{}", msg);
 }
 
 void S9xPrintf(const char* msg, ...)
 {
-	if(!IG::Log::isEnabled())
+	if(!Log::isEnabled())
 		return;
 	va_list args;
 	va_start(args, msg);
@@ -46,7 +53,7 @@ void S9xPrintf(const char* msg, ...)
 
 void S9xPrintfError(const char* msg, ...)
 {
-	if(!IG::Log::isEnabled())
+	if(!Log::isEnabled())
 		return;
 	va_list args;
 	va_start(args, msg);
@@ -364,7 +371,7 @@ void S9xCloseSnapshotFile(STREAM file)
 
 FILE *fopenHelper(const char* filename, const char* mode)
 {
-	return IG::FileUtils::fopenUri(EmuEx::gAppContext(), filename, mode);
+	return FileUtils::fopenUri(EmuEx::gAppContext(), filename, mode);
 }
 
 void removeFileHelper(const char* filename)

@@ -24,7 +24,7 @@ namespace EmuEx
 
 constexpr SystemLogger log{"FilePathOptionView"};
 
-static FS::FileString savePathStrToDisplayName(IG::ApplicationContext ctx, std::string_view savePathStr)
+static FS::FileString savePathStrToDisplayName(ApplicationContext ctx, std::string_view savePathStr)
 {
 	if(savePathStr.size())
 	{
@@ -39,12 +39,12 @@ static FS::FileString savePathStrToDisplayName(IG::ApplicationContext ctx, std::
 	}
 }
 
-static auto savesMenuName(IG::ApplicationContext ctx, std::string_view savePath)
+static auto savesMenuName(ApplicationContext ctx, std::string_view savePath)
 {
 	return std::format("Saves: {}", savePathStrToDisplayName(ctx, savePath));
 }
 
-static auto screenshotsMenuName(IG::ApplicationContext ctx, std::string_view userPath)
+static auto screenshotsMenuName(ApplicationContext ctx, std::string_view userPath)
 {
 	return std::format("Screenshots: {}", userPathToDisplayName(ctx, userPath));
 }
@@ -60,7 +60,7 @@ FilePathOptionView::FilePathOptionView(ViewAttachParams attach, bool customMenu)
 			multiChoiceView->appendItem("Select Folder",
 				[this](const Input::Event &e)
 				{
-					auto fPicker = makeView<FilePicker>(FSPicker::Mode::DIR, EmuSystem::NameFilterFunc{}, e);
+					auto fPicker = makeView<FilePicker>(FSPicker::Mode::DIR, NameFilterFunc{}, e);
 					auto userSavePath = system().userSaveDirectory();
 					fPicker->setPath(userSavePath.size() && userSavePath != optionSavePathDefaultToken ? userSavePath
 						: app().contentSearchPath, e);
@@ -104,7 +104,7 @@ FilePathOptionView::FilePathOptionView(ViewAttachParams attach, bool customMenu)
 						{
 							.onYes = [this](const Input::Event &e)
 							{
-								auto fPicker = makeView<FilePicker>(FSPicker::Mode::DIR, EmuSystem::NameFilterFunc{}, e);
+								auto fPicker = makeView<FilePicker>(FSPicker::Mode::DIR, NameFilterFunc{}, e);
 								fPicker->setPath("");
 								fPicker->setOnSelectPath(
 									[this](FSPicker &picker, CStringView path, [[maybe_unused]] std::string_view displayName, const Input::Event&)

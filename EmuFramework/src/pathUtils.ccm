@@ -88,16 +88,16 @@ export bool hasWriteAccessToDir(CStringView path)
 	// even though parts are locked-down by the OS (like on 4.4+)
 	if constexpr(Config::envIsAndroid)
 	{
-		if(IG::isUri(path))
+		if(isUri(path))
 			return true;
 		auto testFilePath = FS::pathString(path, ".safe-to-delete-me");
 		PosixIO testFile{testFilePath, OpenFlags::testNewFile()};
-		auto removeTestFile = IG::scopeGuard([&]() { if(testFile) FS::remove(testFilePath); });
+		auto removeTestFile = scopeGuard([&]() { if(testFile) FS::remove(testFilePath); });
 		return (bool)testFile;
 	}
 	else
 	{
-		assume(!IG::isUri(path));
+		assume(!isUri(path));
 		return FS::access(path, FS::acc::w);
 	}
 }
