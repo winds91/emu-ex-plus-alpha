@@ -15,7 +15,6 @@
 
 module;
 #include <cstdlib>
-#include <format>
 #include <sys/time.h>
 extern "C"
 {

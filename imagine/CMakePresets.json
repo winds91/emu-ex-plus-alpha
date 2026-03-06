@@ -48,5 +48,127 @@
 			"inherits": "ninja-multi",
 			"toolchainFile": "$env{IMAGINE_PATH}/cmake/ios-armv7.cmake"
 		}
+	],
+	"buildPresets": [
+		{
+			"name": "android-arm64-debug",
+			"configurePreset": "android-arm64",
+			"configuration": "Debug"
+		},
+		{
+			"name": "android-arm64-release",
+			"configurePreset": "android-arm64",
+			"configuration": "Release"
+		},
+		{
+			"name": "android-arm64-release+debug",
+			"configurePreset": "android-arm64",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "android-armv7-debug",
+			"configurePreset": "android-armv7",
+			"configuration": "Debug"
+		},
+		{
+			"name": "android-armv7-release",
+			"configurePreset": "android-armv7",
+			"configuration": "Release"
+		},
+		{
+			"name": "android-armv7-release+debug",
+			"configurePreset": "android-armv7",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "android-x86_64-debug",
+			"configurePreset": "android-x86_64",
+			"configuration": "Debug"
+		},
+		{
+			"name": "android-x86_64-release",
+			"configurePreset": "android-x86_64",
+			"configuration": "Release"
+		},
+		{
+			"name": "android-x86_64-release+debug",
+			"configurePreset": "android-x86_64",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "android-x86-debug",
+			"configurePreset": "android-x86",
+			"configuration": "Debug"
+		},
+		{
+			"name": "android-x86-release",
+			"configurePreset": "android-x86",
+			"configuration": "Release"
+		},
+		{
+			"name": "android-x86-release+debug",
+			"configurePreset": "android-x86",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "linux-x86_64-debug",
+			"configurePreset": "linux-x86_64",
+			"configuration": "Debug"
+		},
+		{
+			"name": "linux-x86_64-release",
+			"configurePreset": "linux-x86_64",
+			"configuration": "Release"
+		},
+		{
+			"name": "linux-x86_64-release+debug",
+			"configurePreset": "linux-x86_64",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "linux-armv7-pandora-debug",
+			"configurePreset": "linux-armv7-pandora",
+			"configuration": "Debug"
+		},
+		{
+			"name": "linux-armv7-pandora-release",
+			"configurePreset": "linux-armv7-pandora",
+			"configuration": "Release"
+		},
+		{
+			"name": "linux-armv7-pandora-release+debug",
+			"configurePreset": "linux-armv7-pandora",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "ios-arm64-debug",
+			"configurePreset": "ios-arm64",
+			"configuration": "Debug"
+		},
+		{
+			"name": "ios-arm64-release",
+			"configurePreset": "ios-arm64",
+			"configuration": "Release"
+		},
+		{
+			"name": "ios-arm64-release+debug",
+			"configurePreset": "ios-arm64",
+			"configuration": "RelWithDebInfo"
+		},
+		{
+			"name": "ios-armv7-debug",
+			"configurePreset": "ios-armv7",
+			"configuration": "Debug"
+		},
+		{
+			"name": "ios-armv7-release",
+			"configurePreset": "ios-armv7",
+			"configuration": "Release"
+		},
+		{
+			"name": "ios-armv7-release+debug",
+			"configurePreset": "ios-armv7",
+			"configuration": "RelWithDebInfo"
+		}
 	]
 }

@@ -785,9 +785,7 @@ void abort(const char* msg)
 	__android_log_assert("", "imagine", "%s", msg);
 }
 
-}
-
-extern "C" void LVISIBLE ANativeActivity_onCreate(ANativeActivity* nActivity, [[maybe_unused]] void* savedState, [[maybe_unused]] size_t savedStateSize)
+void AndroidApplication::main(ANativeActivity* nActivity, [[maybe_unused]] void* savedState, [[maybe_unused]] size_t savedStateSize)
 {
 	using namespace IG;
 	if(Config::DEBUG_BUILD)
@@ -804,4 +802,6 @@ extern "C" void LVISIBLE ANativeActivity_onCreate(ANativeActivity* nActivity, [[
 		if(!ctx.windows().size())
 			IG::log.warn("didn't create a window");
 	}
+}
+
 }

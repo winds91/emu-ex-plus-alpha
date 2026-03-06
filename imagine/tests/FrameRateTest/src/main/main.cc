@@ -19,6 +19,7 @@ import gui;
 import cpuUtils;
 import tests;
 import std;
+#include <imagine/base/MainInlines.hh>
 
 namespace frameRateTest
 {

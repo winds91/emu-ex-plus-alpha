@@ -450,10 +450,10 @@ int VicePlugin::cart_getid_slotmain()
 const char* VicePlugin::cartridge_get_file_name(int type)
 {
 	if(cartridge_get_file_name_)
+	{
 		return cartridge_get_file_name_(type);
-	if(!libHandle)
-		return "";
-	const char* filename{};
+	}
+	const char* filename{""};
 	switch(type)
 	{
 		case CARTRIDGE_CBM2_GENERIC_C1:
@@ -468,8 +468,6 @@ const char* VicePlugin::cartridge_get_file_name(int type)
 		case CARTRIDGE_CBM2_GENERIC_C6:
 			resources_get_string("Cart6Name", &filename);
 			break;
-		default:
-			log.error("cartridge_get_file_name: unsupported type ({})", type);
 	}
 	return filename;
 }
@@ -643,38 +641,22 @@ VicePlugin commonVicePlugin(void* lib, ViceSystem system)
 	else if(system == ViceSystem::PLUS4)
 	{
 		loadSymbolCheck(plugin.autostart_autodetect_, lib, "autostart_autodetect");
-		plugin.cart_getid_slotmain_ =
-			[]()
-			{
-				return 0;
-			};
-		plugin.cartridge_get_file_name_ =
-			[](int type)
-			{
-				return "";
-			};
+		plugin.cart_getid_slotmain_ = [] { return 0; };
+		loadSymbolCheck(plugin.cartridge_get_file_name_, lib, "cartridge_get_filename_by_slot");
 		loadSymbolCheck(plugin.cartridge_attach_image_, lib, "cartridge_attach_image");
 		loadSymbolCheck(plugin.cartridge_detach_image_, lib, "cartridge_detach_image");
 	}
 	else if(system == ViceSystem::CBM2 || system == ViceSystem::CBM5X0)
 	{
-		plugin.cart_getid_slotmain_ =
-			[]()
-			{
-				return CARTRIDGE_CBM2_GENERIC_C1;
-			};
+		plugin.cart_getid_slotmain_ = [] { return CARTRIDGE_CBM2_GENERIC_C1; };
 		loadSymbolCheck(plugin.cartridge_attach_image_, lib, "cartridge_attach_image");
 		loadSymbolCheck(plugin.cartridge_detach_image_, lib, "cartridge_detach_image");
 	}
 	else if(system == ViceSystem::VIC20)
 	{
 		loadSymbolCheck(plugin.autostart_autodetect_, lib, "autostart_autodetect");
-		plugin.cart_getid_slotmain_ =
-			[]()
-			{
-				return CARTRIDGE_VIC20_DETECT;
-			};
-		loadSymbolCheck(plugin.cartridge_get_file_name_, lib, "cartridge_get_file_name");
+		plugin.cart_getid_slotmain_ = [] { return CARTRIDGE_VIC20_DETECT; };
+		loadSymbolCheck(plugin.cartridge_get_file_name_, lib, "cartridge_get_filename_by_slot");
 		loadSymbolCheck(plugin.cartridge_attach_image_, lib, "cartridge_attach_image");
 		loadSymbolCheck(plugin.cartridge_attach_add_image_, lib, "cartridge_attach_add_image");
 		loadSymbolCheck(plugin.cartridge_detach_image_, lib, "cartridge_detach_image");
@@ -684,7 +666,7 @@ VicePlugin commonVicePlugin(void* lib, ViceSystem system)
 		loadSymbolCheck(plugin.autostart_autodetect_, lib, "autostart_autodetect");
 		if(system != ViceSystem::C64DTV)
 			loadSymbolCheck(plugin.cart_getid_slotmain_, lib, "cart_getid_slotmain");
-		loadSymbolCheck(plugin.cartridge_get_file_name_, lib, "cartridge_get_file_name");
+		loadSymbolCheck(plugin.cartridge_get_file_name_, lib, "cartridge_get_filename_by_slot");
 		loadSymbolCheck(plugin.cartridge_attach_image_, lib, "cartridge_attach_image");
 		loadSymbolCheck(plugin.cartridge_detach_image_, lib, "cartridge_detach_image");
 	}

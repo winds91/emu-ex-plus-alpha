@@ -39,7 +39,7 @@ std::string_view EmuSystem::stateSlotName(int slot)
 
 bool EmuApp::shouldOverwriteExistingState() const
 {
-	return !confirmOverwriteState || !system().stateExists(system().stateSlot());
+	return !confirmOverwriteState || !system().stateExists(stateSlot());
 }
 
 void EmuSystem::loadState(EmuApp &app, CStringView uri)
