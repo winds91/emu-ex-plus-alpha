@@ -58,9 +58,7 @@ void abort(const char* msg)
 	std::abort();
 }
 
-}
-
-extern "C" int main(int argc, char** argv)
+int LinuxApplication::main(int argc, char* argv[])
 {
 	using namespace IG;
 	Log::setLogDirectoryPrefix(".");
@@ -73,4 +71,6 @@ extern "C" int main(int argc, char** argv)
 	bool eventLoopRunning = true;
 	eventLoop.run(eventLoopRunning);
 	return 0;
+}
+
 }

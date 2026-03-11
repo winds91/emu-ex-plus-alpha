@@ -12,8 +12,10 @@ endif()
 
 set(IMAGINE_SDK_PLATFORM_PATH "${IMAGINE_SDK_PATH}/${IMAGINE_SDK_PLATFORM}")
 set(PKG_CONFIG_PATH "${IMAGINE_SDK_PLATFORM_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}")
-include_directories("${IMAGINE_SDK_PLATFORM_PATH}/include")
-link_directories("${IMAGINE_SDK_PLATFORM_PATH}/lib")
+if(NOT CMAKE_SCRIPT_MODE_FILE)
+	include_directories("${IMAGINE_SDK_PLATFORM_PATH}/include")
+	link_directories("${IMAGINE_SDK_PLATFORM_PATH}/lib")
+endif()
 
 if(USE_EXTERNAL_LIBCXX)
 	set(CXX_STD_LINK_OPTS -nostdlib++)

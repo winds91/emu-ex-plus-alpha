@@ -37,7 +37,7 @@ bash makeAll-android.sh install
 Use a CMake preset to configure and build a specific port. For example, to build and install the release version of the Linux port as symlinks:
 
 cmake --preset linux-x86_64
-CMAKE_INSTALL_MODE=REL_SYMLINK cmake --build build/linux-x86_64 --target install
+CMAKE_INSTALL_MODE=REL_SYMLINK cmake --build --preset linux-x86_64-release --target install
 
 For Android, the bash script android.sh configures and builds all architectures at once and any required java files. The following command has the same effect as the previous example combined into one step:
 

@@ -1,11 +1,11 @@
 /*  This file is part of EmuFramework.
 
-	Imagine is free software: you can redistribute it and/or modify
+	EmuFramework is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
 
-	Imagine is distributed in the hope that it will be useful,
+	EmuFramework is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
@@ -15,6 +15,7 @@
 
 #include <meta.h>
 #include <imagine/config/version.h>
+#include <imagine/base/MainInlines.hh>
 
 const char *const IG::ApplicationMeta::name{CONFIG_APP_NAME};
 const char *const IG::ApplicationMeta::id{CONFIG_APP_ID};

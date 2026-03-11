@@ -142,6 +142,17 @@ public:
 	bool loadState(CStringView path);
 	bool loadStateWithSlot(int slot);
 	bool shouldOverwriteExistingState() const;
+	int stateSlot() const { return saveStateSlot; }
+	void setStateSlot(int slot)
+	{
+		if(slot < 0) slot = 9;
+		if(slot > 9) slot = 0;
+		system().sessionOptionSet();
+		saveStateSlot = slot;
+	}
+	void decStateSlot() { setStateSlot(saveStateSlot - 1); }
+	void incStateSlot() { setStateSlot(saveStateSlot + 1); }
+	std::string_view stateSlotName() { return system().stateSlotName(stateSlot()); }
 	FS::PathString inContentSearchPath(std::string_view name) const;
 	FS::PathString validSearchPath(const FS::PathString &) const;
 	static void updateLegacySavePath(ApplicationContext, CStringView path);
@@ -393,6 +404,10 @@ public:
 	{
 		.defaultValue = true
 	}> confirmOverwriteState;
+	Property<int8_t, CFGKEY_SAVE_STATE_SLOT,
+	{
+		.isValid = isValidWithMinMax<0, 9>
+	}> saveStateSlot;
 	Property<bool, CFGKEY_SYSTEM_ACTIONS_IS_DEFAULT_MENU,
 	{
 		.defaultValue = true

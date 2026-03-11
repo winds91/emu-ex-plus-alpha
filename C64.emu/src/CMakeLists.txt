@@ -14,8 +14,8 @@ target_sources(c64emu PRIVATE
 	main/sysfile.cc
 	main/video.cc
 	main/sound.cc
-	main/log.cc
 	main/zfile.cc
+	$<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/main/log.cc>
 )
 
 function(addObjectLib target prefix)

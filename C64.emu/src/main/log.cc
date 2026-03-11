@@ -25,6 +25,11 @@ import imagine;
 
 using namespace IG;
 
+// In release builds these are defined as dummy functions in pluginCommon.c
+
+extern "C"
+{
+
 int log_message(log_t, const char* format, ...)
 {
 	if(!Log::isEnabled())
@@ -96,9 +101,6 @@ int log_printf(const char* format, ...)
 	va_end(ap);
 	return 0;
 }
-
-extern "C"
-{
 
 void archdep_startup_log_error(const char* format, ...)
 {

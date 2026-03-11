@@ -54,6 +54,7 @@ class AndroidApplication : public BaseApplication
 {
 public:
 	AndroidApplication(ApplicationInitParams);
+	static void main(ANativeActivity*, void* savedState, size_t savedStateSize);
 	void onWindowFocusChanged(ApplicationContext, int focused);
 	JNIEnv* thisThreadJniEnv() const;
 	bool hasHardwareNavButtons() const { return deviceFlags.permanentMenuKey; }

@@ -204,11 +204,6 @@ public:
 	DynArray<uint8_t> uncompressGzipState(std::span<uint8_t> buff, size_t expectedSize = 0);
 	bool stateExists(int slot) const;
 	static std::string_view stateSlotName(int slot);
-	std::string_view stateSlotName() { return stateSlotName(stateSlot()); }
-	int stateSlot() const { return saveStateSlot; }
-	void setStateSlot(int slot) { saveStateSlot = slot; }
-	void decStateSlot() { if(--saveStateSlot < 0) saveStateSlot = 9; }
-	void incStateSlot() { if(++saveStateSlot > 9) saveStateSlot = 0; }
 	std::string_view systemName() const;
 	std::string_view shortSystemName() const;
 	const auto &contentDirectory() const { return contentDirectory_; }
@@ -329,7 +324,6 @@ protected:
 	double audioFramesPerVideoFrameFloat{};
 	double currentAudioFramesPerVideoFrame{};
 	int audioFramesPerVideoFrame{};
-	int saveStateSlot{};
 	State state{};
 	bool sessionOptionsSet{};
 	BackupMemoryDirtyFlags backupMemoryDirtyFlags{};

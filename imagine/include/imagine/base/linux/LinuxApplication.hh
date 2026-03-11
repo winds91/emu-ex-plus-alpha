@@ -49,6 +49,7 @@ class LinuxApplication : public BaseApplication
 public:
 	LinuxApplication(ApplicationInitParams);
 	~LinuxApplication();
+	static int main(int argc, char* argv[]);
 	void setIdleDisplayPowerSave(bool wantsAllowScreenSaver);
 	void endIdleByUserActivity();
 	bool registerInstance(ApplicationInitParams, const char *name);

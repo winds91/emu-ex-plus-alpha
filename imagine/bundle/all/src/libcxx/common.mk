@@ -1,7 +1,8 @@
-libcxxVersion := 21.1.6
-libcxxSrcDir := $(tempDir)/llvm-project-$(libcxxVersion).src/libcxx
-libcxxabiSrcDir := $(tempDir)/llvm-project-$(libcxxVersion).src/libcxxabi
-libcSrcDir := $(tempDir)/llvm-project-$(libcxxVersion).src/libc
+libcxxVersion := 22.1.0
+llvmSrcDir := $(tempDir)/llvm-project-$(libcxxVersion).src
+libcxxSrcDir := $(llvmSrcDir)/libcxx
+libcxxabiSrcDir := $(llvmSrcDir)/libcxxabi
+libcSrcDir := $(llvmSrcDir)/libc
 # Archive containing the libcxx & libcxxabi directories along with a minimal set of cmake support files
 libcxxSrcArchive := llvm-project-libcxx-$(libcxxVersion).src.tar.xz
 
@@ -16,6 +17,8 @@ ifeq ($(wildcard $(libcxxabiSrcDir)/src),)
  $(info Extracting libc++...)
  $(shell mkdir -p $(tempDir))
  $(shell tar -mxJf $(libcxxSrcArchive) -C $(tempDir))
+ $(shell patch -s -d $(llvmSrcDir) -p1 -i $(CURDIR)/unwind.patch)
+ $(if $(filter-out 0,$(.SHELLSTATUS)), $(error patch failed with exit status $(.SHELLSTATUS)))
 endif
 
 VPATH += $(libcxxabiSrcDir)/src

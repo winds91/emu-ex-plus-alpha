@@ -560,9 +560,7 @@ void abort(const char* msg)
 	std::abort();
 }
 
-}
-
-int main(int argc, char *argv[])
+int IOSApplication::main(int argc, char* argv[])
 {
 	using namespace IG;
 	// check if running from system apps directory
@@ -578,6 +576,8 @@ int main(int argc, char *argv[])
 	{
 		return UIApplicationMain(argc, argv, @"MainUIApp", @"MainApp");
 	}
+}
+
 }
 
 CLINK int32_t __isOSVersionAtLeast(int32_t major, int32_t minor, int32_t subminor)
