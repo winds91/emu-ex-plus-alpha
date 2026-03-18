@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 4.1)
 
 project(
 	EmuFramework
-	VERSION 1.5.84
+	VERSION 1.5.85
 	DESCRIPTION "Emulator App Framework"
 	HOMEPAGE_URL "https://www.explusalpha.com/"
 )

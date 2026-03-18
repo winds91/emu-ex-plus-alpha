@@ -14,7 +14,7 @@
 	along with EmuFramework.  If not, see <http://www.gnu.org/licenses/> */
 
 #include <meta.h>
-#include <imagine/config/version.h>
+#include <imagine/config/macros.h>
 #include <imagine/base/MainInlines.hh>
 
 const char *const IG::ApplicationMeta::name{CONFIG_APP_NAME};

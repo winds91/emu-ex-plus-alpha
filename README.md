@@ -1,8 +1,33 @@
 # EX Emulators
 
-## Nightly builds
+The EX Emulator project is a series of emulators primarily targeting Android and Linux with a minimalist UI 
+and a focus on low audio/video latency. They consist of 3 components:
 
-### Download the latest builds from continuous integration:
+1. Imagine, a platform abstraction library
+2. EmuFramework, a common application framework library
+3. The emulator applications themselves
+
+## Requirements
+
+Android: Any 64-bit device or a 32-bit device with at least Android 2.3 going as far back as the Xperia Play  
+Linux: A desktop with OpenGL 3.3 support or the Pandora handheld
+
+Saturn.emu requires a 64-bit device.
+
+## Building
+
+See doc/INSTALL in Imagine and EmuFramework
+
+## Android builds
+
+### Google Play
+
+The latest stable builds are available on the Play Store via my [developer page](https://play.google.com/store/apps/collection/cluster?gsr=SktqGFp2dmEzNmZEOXhIaXV4b2ZkYXBaTHc9PbICKwoOCgpjb20uUGNlRW11EAcSFwgCEhM1MDUxMDg2NTA4NjQ2MzQ4OTg2GACwEgA%3D:S:ANO1ljKaDG4&hl) 
+and directly help fund development.
+
+### Nightly builds
+
+Latest builds from continuous integration:
 
 | Name                    | Status                            | File                                       |
 |-------------------------|-----------------------------------|--------------------------------------------|

@@ -53,16 +53,14 @@ function(generateConfigHeader target)
 	getJoinedProp(configEnable ${target} configEnable)
 	getJoinedProp(configDisable ${target} configDisable)
 	getJoinedProp(configInc ${target} configInc)
-	if(NOT configEnable AND NOT configDisable AND NOT configInc)
-		return()
-	endif()
+	set(configDefs "IMAGINE_VERSION_BASE=\"${PROJECT_VERSION}\"")
 	set(configFilename "${target}-config.h")
 	set(genDir "${CMAKE_BINARY_DIR}/gen")
 	set(configFilePath "${genDir}/${configFilename}")
 	message("Config Header: ${configFilePath}")
 	execute_process(
 		COMMAND mkdir -p ${genDir}
-		COMMAND bash ${IMAGINE_PATH}/make/writeConfig.sh "${configFilePath}" "${configEnable}" "${configDisable}" "${configInc}"
+		COMMAND bash ${IMAGINE_PATH}/make/writeConfig.sh "${configFilePath}" "${configEnable}" "${configDisable}" "${configInc}" "${configDefs}"
 		COMMAND_ERROR_IS_FATAL ANY
 	)	
 	target_include_directories(${target} PRIVATE ${genDir})

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 4.1)
 
 project(
 	Imagine
-	VERSION 1.5.84
+	VERSION 1.5.85
 	DESCRIPTION "Game/Multimedia Engine"
 	HOMEPAGE_URL "https://www.explusalpha.com/"
 )
