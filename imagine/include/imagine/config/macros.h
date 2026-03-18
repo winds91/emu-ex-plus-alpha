@@ -20,9 +20,13 @@
 #include IMAGINE_CONFIG_H_INCLUDE
 #undef IMAGINE_CONFIG_H_INCLUDE
 #else
-	#if __has_include (<imagine-config.h>)
-	#include <imagine-config.h>
-	#endif
+#include <imagine-config.h>
+#endif
+
+#ifdef NDEBUG
+#define IMAGINE_VERSION IMAGINE_VERSION_BASE
+#else
+#define IMAGINE_VERSION IMAGINE_VERSION_BASE "D"
 #endif
 
 #include <imagine/util/macros.h>

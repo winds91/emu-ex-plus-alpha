@@ -23,8 +23,10 @@ endif()
 string(FIND "${CMAKE_C_COMPILER}" clang clangSubStringPos)
 if(${clangSubStringPos} GREATER -1)
 	# Glibc's fortify source macro causes internal linkage errors when building the std module
-	string(APPEND CXXFLAGS " -stdlib=libc++ -D_FORTIFY_SOURCE=0")
+	string(APPEND CXXFLAGS " -stdlib=libc++ -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
 	include("${CMAKE_CURRENT_LIST_DIR}/clang.cmake")
 else()
+	# Glibc's fortify source macro causes an ICE with memset() & memcpy() from the std module, GCC bug #124477
+	string(APPEND CXXFLAGS " -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
 	include("${CMAKE_CURRENT_LIST_DIR}/gcc.cmake")
 endif()
