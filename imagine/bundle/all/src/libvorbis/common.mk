@@ -33,7 +33,7 @@ $(libvorbisSrcDir)/configure : | $(libvorbisSrcArchive)
 
 $(outputLibFile) : $(makeFile)
 	@echo "Building libvorbis..."
-	$(MAKE) -C $(<D)
+	$(MAKE) -C $(<D) -j1
 
 $(makeFile) : $(libvorbisSrcDir)/configure
 	@echo "Configuring libvorbis..."
