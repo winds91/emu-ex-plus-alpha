@@ -1,3 +1,5 @@
+#!/bin/bash
+
 makefilesToRun='
 	src/btstack/ios-armv7.mk
 

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 makefilesToRun='
 	src/libcxx/android-armv7.mk
 

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 makefilesToRun='
 	src/libpng/linux-x86_64.mk
 	

@@ -43,6 +43,7 @@ LoadProgressView::LoadProgressView(ViewAttachParams attach, const Input::Event &
 						msgs.readExtraData(std::span{errorStr, len});
 						msgPort.detach();
 						auto &app = this->app();
+						app.gameManager.setGameState({.mode = GameStateMode::None});
 						app.popModalViews();
 						app.postErrorMessage(4, std::string_view{errorStr, len});
 						return;

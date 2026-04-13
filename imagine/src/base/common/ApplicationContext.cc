@@ -16,6 +16,7 @@
 #include <imagine/base/ApplicationContext.hh>
 #include <imagine/base/Application.hh>
 #include <imagine/base/PerformanceHintManager.hh>
+#include <imagine/base/GameManager.hh>
 #include <imagine/base/VibrationManager.hh>
 #include <imagine/base/Sensor.hh>
 #include <imagine/fs/FS.hh>
@@ -438,6 +439,8 @@ void ApplicationContext::setSwappedConfirmKeys(std::optional<bool> opt)
 
 [[gnu::weak]] PerformanceHintManager ApplicationContext::performanceHintManager() { return {}; }
 
+[[gnu::weak]] GameManager ApplicationContext::gameManager() { return {}; }
+
 [[gnu::weak]] bool ApplicationContext::packageIsInstalled(CStringView) const { return false; }
 
 [[gnu::weak]] int32_t ApplicationContext::androidSDK() const { return 0; }
@@ -479,6 +482,9 @@ std::string ApplicationContext::formatDateAndTimeAsFilename(WallClockTimePoint t
 [[gnu::weak]] PerformanceHintSession::operator bool() const { return false; }
 [[gnu::weak]] PerformanceHintSession PerformanceHintManager::session(std::span<const ThreadId>, Nanoseconds) { return {}; }
 [[gnu::weak]] PerformanceHintManager::operator bool() const { return false; }
+
+[[gnu::weak]] void GameManager::setGameState(GameState) {}
+[[gnu::weak]] GameManager::operator bool() const { return false; }
 
 OnExit::OnExit(ResumeDelegate del, ApplicationContext ctx, int priority): del{del}, ctx{ctx}
 {

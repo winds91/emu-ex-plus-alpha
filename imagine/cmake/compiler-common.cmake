@@ -26,7 +26,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CFLAGS_DEBUG "-Og")
 set(CFLAGS_OPTIMIZE "-ffast-math -flto -fno-stack-protector -fno-asynchronous-unwind-tables")

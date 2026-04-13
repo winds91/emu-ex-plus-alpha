@@ -18,6 +18,8 @@ package com.imagine;
 import android.widget.TextView;
 import android.widget.PopupWindow;
 import android.app.NativeActivity;
+import android.app.GameManager;
+import android.app.GameState;
 import android.content.Intent;
 import android.content.Context;
 import android.graphics.drawable.Icon;
@@ -616,6 +618,17 @@ public final class BaseActivity extends NativeActivity implements AudioManager.O
 	static String formatDateTime(long time)
 	{
 		return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(new Date(time));
+	}
+
+	void setGameState(boolean isLoading, int state)
+	{
+		if(Build.VERSION.SDK_INT < 33)
+			return;
+		GameManager gameManager = getSystemService(GameManager.class);
+		if(gameManager == null)
+			return;
+		GameState gameState = new GameState(isLoading, state);
+		gameManager.setGameState(gameState);
 	}
 
 	// Storage Access Framework support
