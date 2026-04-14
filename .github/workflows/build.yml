@@ -47,7 +47,7 @@ jobs:
     - name: Set up environment
       run: |
         mkdir imagine-sdk
-        NDK_VERSION='r29'
+        NDK_VERSION='r30-beta1'
         wget "https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip"
         unzip android-ndk-${NDK_VERSION}-linux.zip
         rm android-ndk-${NDK_VERSION}-linux.zip
@@ -71,7 +71,6 @@ jobs:
     - name: Run script
       working-directory: imagine/bundle/all
       run: |
-        chmod +x ./makeAll-android.sh
         ./makeAll-android.sh install
       shell: bash
     - name: Build environment

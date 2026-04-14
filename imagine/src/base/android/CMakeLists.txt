@@ -10,6 +10,7 @@ target_sources(
 	ALooperEventLoop.cc
 	AndroidGLContext.cc
 	FrameTimer.cc
+	GameManager.cc
 	HardwareBuffer.cc
 	inputConfig.cc
 	TextField.cc

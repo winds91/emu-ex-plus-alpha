@@ -49,6 +49,7 @@ EmuApp::EmuApp(ApplicationInitParams initParams, ApplicationContext &ctx):
 	inputManager{ctx},
 	assetManager{ctx},
 	vibrationManager{ctx},
+	gameManager{ctx.gameManager()},
 	bluetoothAdapter{ctx},
 	pixmapWriter{ctx},
 	perfHintManager{ctx.performanceHintManager()},
@@ -655,6 +656,7 @@ void EmuApp::startEmulation()
 	system().start(*this);
 	systemTask.start(emuWindow());
 	setCPUNeedsLowLatency(appContext(), true);
+	gameManager.setGameState({.mode = GameStateMode::GameplayInterruptible});
 }
 
 void EmuApp::showUI(bool updateTopView)
@@ -671,6 +673,7 @@ void EmuApp::pauseEmulation()
 {
 	systemTask.stop();
 	setCPUNeedsLowLatency(appContext(), false);
+	gameManager.setGameState({.mode = GameStateMode::None});
 	system().pause(*this);
 	setRunSpeed(1.);
 	videoLayer.setBrightnessScale(pausedVideoBrightnessScale);
@@ -783,6 +786,7 @@ void EmuApp::createSystemWithMedia(IO io, CStringView path, std::string_view dis
 	auto loadProgressView = std::make_unique<LoadProgressView>(attachParams, e, onComplete);
 	auto &msgPort = loadProgressView->messagePort();
 	pushAndShowModalView(std::move(loadProgressView), e);
+	gameManager.setGameState({.mode = GameStateMode::None, .isLoading = true});
 	makeDetachedThread(
 		[this, io{std::move(io)}, pathStr = FS::PathString{path}, nameStr = FS::FileString{displayName}, &msgPort, params]() mutable
 		{

@@ -408,6 +408,7 @@ set(LDFLAGS_SHARED)
 set(TARGET_EXT_Debug -debug)
 set(TARGET_EXT_RelWithDebInfo -rdebug)
 set(GEN_TARGET_EXT)
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
 
 foreach(config IN LISTS CMAKE_CONFIGURATION_TYPES)
 	string(APPEND GEN_TARGET_EXT "$<$<CONFIG:${config}>:${TARGET_EXT_${config}}>")

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 makefilesToRun='
 	src/xz/linux-armv7-pandora.mk
 	

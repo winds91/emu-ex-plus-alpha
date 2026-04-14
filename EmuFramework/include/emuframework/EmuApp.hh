@@ -40,6 +40,7 @@
 #include <imagine/base/Application.hh>
 #include <imagine/base/VibrationManager.hh>
 #include <imagine/base/PerformanceHintManager.hh>
+#include <imagine/base/GameManager.hh>
 #include <imagine/audio/Manager.hh>
 #include <imagine/gfx/Renderer.hh>
 #include <imagine/data-type/image/PixmapWriter.hh>
@@ -326,6 +327,7 @@ public:
 	OutputTimingManager outputTimingManager;
 	EmuSystemTask systemTask{*this};
 	[[no_unique_address]] VibrationManager vibrationManager;
+	[[no_unique_address]] GameManager gameManager;
 	DrawableConfig windowDrawableConfig;
 	BluetoothAdapter bluetoothAdapter;
 	RecentContent recentContent;

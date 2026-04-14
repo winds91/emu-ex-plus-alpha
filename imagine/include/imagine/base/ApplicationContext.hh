@@ -58,7 +58,6 @@ namespace IG
 {
 
 class PixelFormat;
-class PerformanceHintManager;
 
 using DirectoryEntryDelegate = DelegateFuncS<sizeof(void*)*3, bool(const FS::directory_entry &)>;
 
@@ -125,6 +124,7 @@ public:
 	int maxCPUFrequencyKHz(int cpuIdx) const;
 	CPUMask performanceCPUMask() const;
 	PerformanceHintManager performanceHintManager();
+	GameManager gameManager();
 
 	// App Callbacks
 

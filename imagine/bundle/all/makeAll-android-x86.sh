@@ -1,3 +1,5 @@
+#!/bin/bash
+
 makefilesToRun='
 	src/libcxx/android-x86.mk
 

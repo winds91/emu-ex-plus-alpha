@@ -127,7 +127,7 @@ fi
 
 if [ $isGame ]
 then
-	applicationOutput="$applicationOutput android:isGame=\"true\""
+	applicationOutput="$applicationOutput android:isGame=\"true\" android:appCategory=\"game\""
 fi
 
 if [ $usesLegacyStorage ]

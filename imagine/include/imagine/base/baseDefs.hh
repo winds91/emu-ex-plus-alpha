@@ -257,6 +257,8 @@ struct FDEventSourceDesc;
 class FDEventSource;
 class EventLoop;
 struct TimerDesc;
+class PerformanceHintManager;
+class GameManager;
 
 using WindowContainer = std::vector<std::unique_ptr<Window>>;
 using ScreenContainer = std::vector<std::unique_ptr<Screen>>;

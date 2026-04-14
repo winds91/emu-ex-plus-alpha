@@ -3,15 +3,15 @@ runMakefiles ()
 	makeParams=install
 	if [[ "$@" ]]
 	then
-		echo "Make parameters: $@"
 		makeParams=$@
 	fi
+	echo "Make parameters: $makeParams"
 	for makefile in $makefilesToRun
 	do
 		oldDir=`pwd`
 		cd `dirname $makefile`
-		echo "running make on $makefile"
-		make -f `basename $makefile` $makeParams
+		echo "Running makefile: $makefile"
+		make -j -f `basename $makefile` $makeParams
 		if [ $? != 0 ]
 		then
 			exit 1

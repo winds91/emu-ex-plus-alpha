@@ -9,7 +9,8 @@ libvorbisSrcDir := $(tempDir)/libvorbis-$(libvorbisVer)
 libvorbisSrcArchive := libvorbis-$(libvorbisVer).tar.xz
 
 makeFile := $(buildDir)/Makefile
-outputLibFile := $(buildDir)/lib/.libs/libvorbis.a $(buildDir)/lib/.libs/libvorbisfile.a
+outputLibFile := $(buildDir)/lib/.libs/libvorbis.a
+outputLibFiles := $(outputLibFile) $(buildDir)/lib/.libs/libvorbisfile.a
 installIncludeDir := $(installDir)/include/vorbis
 
 all : $(outputLibFile)
@@ -17,7 +18,7 @@ all : $(outputLibFile)
 install : $(outputLibFile)
 	@echo "Installing libvorbis to: $(installDir)"
 	@mkdir -p $(installIncludeDir) $(installDir)/lib/pkgconfig
-	cp $(outputLibFile) $(installDir)/lib/
+	cp $(outputLibFiles) $(installDir)/lib/
 	cp $(libvorbisSrcDir)/include/vorbis/*.h $(installIncludeDir)/
 	cp $(buildDir)/vorbis.pc $(buildDir)/vorbisfile.pc $(installDir)/lib/pkgconfig/
 
@@ -33,7 +34,7 @@ $(libvorbisSrcDir)/configure : | $(libvorbisSrcArchive)
 
 $(outputLibFile) : $(makeFile)
 	@echo "Building libvorbis..."
-	$(MAKE) -C $(<D)
+	$(MAKE) -C $(<D)/lib libvorbis.la libvorbisfile.la
 
 $(makeFile) : $(libvorbisSrcDir)/configure
 	@echo "Configuring libvorbis..."
